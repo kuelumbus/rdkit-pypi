@@ -4,7 +4,7 @@ Dockerfile and script to build [RDKit](https://github.com/rdkit/rdkit) Python wh
 
 Versions:
 
-- Linux: Python 3.7, 3.8, and 3.9, glibc >= 2.17 (e.g., Ubuntu 16.04+, CentOS 6+, ...)
+- Linux: Python >= 3.6 and glibc >= 2.17 (e.g., Ubuntu 16.04+, CentOS 6+, ...)
 
 
 ## Install RDKit using pip

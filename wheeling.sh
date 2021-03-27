@@ -14,10 +14,11 @@ function repair_wheel {
 wget https://dl.bintray.com/boostorg/release/1.67.0/source/boost_1_67_0.tar.gz
 
 # Fix: Boost has an issue detecting the include directory of python3.7m (because of the "m")
+ln -fs  /opt/python/cp36-cp36m/include/python3.6m /opt/python/cp36-cp36m/include/python3.6
 ln -fs  /opt/python/cp37-cp37m/include/python3.7m /opt/python/cp37-cp37m/include/python3.7
 
 # Python versions
-versions=(/opt/python/cp37-cp37m/bin /opt/python/cp38-cp38/bin /opt/python/cp39-cp39/bin)
+versions=(/opt/python/cp36-cp36m/bin /opt/python/cp37-cp37m/bin /opt/python/cp38-cp38/bin /opt/python/cp39-cp39/bin)
 for PYBIN in "${versions[@]}"; do
     export PYBIN
     export BOOST_ROOT="${PYBIN}/../boost/"
