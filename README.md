@@ -5,26 +5,25 @@ Dockerfile and script to build [RDKit](https://github.com/rdkit/rdkit) python wh
 ## Install RDKit python package
 
 
-### Python 3.7
+### Python 3.7 
 ```bash
-pip install 
+pip install https://github.com/kuelumbus/rdkit_platform_wheels/releases/download/2020.9.5/rdkit-2020.9.5-cp37-cp37m-manylinux2014_x86_64.whl
 or
-poetry add 
+poetry add  https://github.com/kuelumbus/rdkit_platform_wheels/releases/download/2020.9.5/rdkit-2020.9.5-cp37-cp37m-manylinux2014_x86_64.whl
 ```
 
 ### Python 3.8
-
 ```bash
-pip install 
+pip install https://github.com/kuelumbus/rdkit_platform_wheels/releases/download/2020.9.5/rdkit-2020.9.5-cp38-cp38-manylinux2014_x86_64.whl
 or
-poetry add 
+poetry add https://github.com/kuelumbus/rdkit_platform_wheels/releases/download/2020.9.5/rdkit-2020.9.5-cp38-cp38-manylinux2014_x86_64.whl
 ```
 
 ## Build wheels
 
 Clone the repository
 ```bash
-git clone https://github.com/kuelumbus/rdkit_platform_wheels
+git clone https://github.com/kuelumbus/rdkit_platform_wheels.git
 cd rdkit_platform_wheels
 ```
 
