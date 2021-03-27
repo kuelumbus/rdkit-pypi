@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 
 setup(
-    name="rdkit",
+    name="rdkit-pypi",
     version="2020.9.5",
     description="A collection of chemoinformatics and machine-learning software written in C++ and Python",
     url="http://rdkit.org/",
