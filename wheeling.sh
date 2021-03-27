@@ -17,7 +17,8 @@ wget https://dl.bintray.com/boostorg/release/1.67.0/source/boost_1_67_0.tar.gz
 ln -fs  /opt/python/cp37-cp37m/include/python3.7m /opt/python/cp37-cp37m/include/python3.7
 
 # Specify python version 
-versions=( /opt/python/cp37-cp37m/bin /opt/python/cp38-cp38/bin )
+
+versions=( /opt/python/cp37-cp37m/bin /opt/python/cp38-cp38/bin)
 for PYBIN in "${versions[@]}"; do
     export PYBIN
     export BOOST_ROOT="${PYBIN}/../boost/"

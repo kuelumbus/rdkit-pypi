@@ -12,7 +12,8 @@ setup(
     license="BSD-3-Clause",
     packages=find_packages("."),
     install_requires=["numpy == 1.20", "pillow"],
-    package_data={'': ['/rdkit/lib/*.so' ] + [str(i) for i in Path('/rdkit/rdkit').absolute().rglob('*.so')] },
+    # Include all libs and files in /rdkit/rdkit/* 
+    package_data={'': ['/rdkit/lib/*.so' ] + [str(i) for i in Path('/rdkit/rdkit').absolute().rglob('*')] },
     ext_modules=[
         CMakeExtension(name="RdkitCompile",
                        install_prefix="rdkit",
