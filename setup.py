@@ -9,7 +9,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="rdkit-pypi",
-    version="2020.9.5",
+    version=f"{os.environ['RDKIT_VERSION']}",
     description="A collection of chemoinformatics and machine-learning software written in C++ and Python",
     url="https://github.com/kuelumbus/rdkit_platform_wheels",
     project_urls={

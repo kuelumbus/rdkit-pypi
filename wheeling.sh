@@ -10,6 +10,10 @@ function repair_wheel {
     fi
 }
 
+# Clone rdkit from git
+git clone -b $RDKIT_RELEASE https://github.com/rdkit/rdkit
+cd rdkit
+
 # Download boost 
 wget https://dl.bintray.com/boostorg/release/1.67.0/source/boost_1_67_0.tar.gz
 

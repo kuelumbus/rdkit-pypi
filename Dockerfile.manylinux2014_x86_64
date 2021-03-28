@@ -21,11 +21,4 @@ RUN yum -y install epel-release &&\
     rm -rf /var/cache/yum
 
 
-ARG GIT_REPO=https://github.com/rdkit/rdkit
-ARG GIT_BRANCH=master
-ARG GIT_TAG=Release_2020_09_5
-
-RUN git clone -b $GIT_BRANCH --single-branch $GIT_REPO &&\
-  if [ $GIT_TAG ]; then cd rdkit && git fetch --tags && git checkout $GIT_TAG; fi
-
-WORKDIR /rdkit
+WORKDIR /

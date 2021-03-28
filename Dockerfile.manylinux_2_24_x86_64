@@ -19,15 +19,4 @@ RUN echo "deb http://deb.debian.org/debian stretch-backports main" >> /etc/apt/s
   libfreetype6-dev &&\
   apt-get clean -y
 
-
-
-ARG GIT_REPO=https://github.com/rdkit/rdkit
-ARG GIT_BRANCH=master
-ARG GIT_TAG=Release_2020_09_5
-
-RUN if [ $GIT_TAG ]; then echo "Checking out tag $GIT_TAG from repo $GIT_REPO branch $GIT_BRANCH"; else echo "Checking out repo $GIT_REPO branch $GIT_BRANCH"; fi
-RUN git clone -b $GIT_BRANCH --single-branch $GIT_REPO &&\
-  if [ $GIT_TAG ]; then cd rdkit && git fetch --tags && git checkout $GIT_TAG; fi
-
-
-WORKDIR /rdkit
+WORKDIR /
