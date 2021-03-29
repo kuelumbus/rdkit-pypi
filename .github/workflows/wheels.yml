@@ -34,8 +34,8 @@ jobs:
       - name: Build wheels
         uses: joerick/cibuildwheel@v1.10.0
         env:
-          - CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
-          - CIBW_BEFORE_BUILD_LINUX: "bash pre_linux.sh" 
+          CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
+          CIBW_BEFORE_BUILD_LINUX: "bash pre_linux.sh" 
 
       - uses: actions/upload-artifact@v2
         with:
