@@ -33,6 +33,8 @@ jobs:
 
       - name: Build wheels
         uses: joerick/cibuildwheel@v1.10.0
+        env:
+          - CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
 
       - uses: actions/upload-artifact@v2
         with:
