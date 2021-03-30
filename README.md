@@ -41,5 +41,5 @@ docker build -f "Dockerfile.manylinux_2_24_x86_64" -t rdkitdocker:latest .
 docker run --rm -e PLAT=manylinux_2_24_x86_64 -e RDKIT_RELEASE=Release_2020_09_5 -e RDKIT_VERSION=2020.9.5 -v `pwd`:/io rdkitdocker bash /io/wheeling.sh
 ```
 
-Afterward, you should see a `wheelhouse` directory with the wheels.
+You should now see a `wheelhouse` directory containing wheels.
 

@@ -45,7 +45,7 @@ class BuildRDKit(build_ext_orig):
 
         # copy rkdit
         rdkit_pyfiles = list(rdkit_root.glob('python*'))[0] / 'site-packages' 
-        copytree(str(rdkit_pyfiles), wheel_path)
+        copytree(str(rdkit_pyfiles), str(wheel_path) + '/')
 
         # copy *.so
         libs = wheel_path / 'rdkit' / 'libs'
