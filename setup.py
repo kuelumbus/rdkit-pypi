@@ -38,14 +38,14 @@ class BuildRDKit(build_ext_orig):
 
     def create_package(self, ext):
         from distutils.file_util import copy_file
-        from shutil import copytree, copy
+        from shutil import copytree
         wheel_path = Path(self.get_ext_fullpath(ext.name)).absolute()
         wheel_path.mkdir(parents=True, exist_ok=True)
         rdkit_root = Path(self.build_temp).absolute() / 'rdkit_install/' / 'lib'
 
         # copy rkdit
         rdkit_pyfiles = list(rdkit_root.glob('python*'))[0] / 'site-packages' 
-        copytree(str(rdkit_pyfiles), str(wheel_path) + '/')
+        copytree(str(rdkit_pyfiles), str(wheel_path) + '/rdkit')
 
         # copy *.so
         libs = wheel_path / 'rdkit' / 'libs'
