@@ -18,7 +18,7 @@ setup(
     },
     license="BSD-3-Clause",
     packages=find_packages("."),
-    install_requires=["numpy == 1.20", "pillow"],
+    install_requires=["numpy", "pillow"],
     long_description=long_description,
     long_description_content_type="text/markdown",
     python_requires=">=3.6",
