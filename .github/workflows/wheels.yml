@@ -22,10 +22,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions/setup-python@v2
-        name: Install Python
-        with:
-          python-version: '3.8'
+      # - uses: actions/setup-python@v2
+        # name: Install Python
+        # with:
+          # python-version: '3.8'
 
       - name: Install Visual C++ for Python 2.7
         if: runner.os == 'Windows'
@@ -36,6 +36,7 @@ jobs:
         env:
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
           CIBW_BEFORE_BUILD_LINUX: "bash pre_linux.sh" 
+          # CIBW_BEFORE_BUILD_MACOS: "brew install wget "
 
       - uses: actions/upload-artifact@v2
         with:
