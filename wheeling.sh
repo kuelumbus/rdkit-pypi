@@ -26,6 +26,9 @@ versions=(/opt/python/cp36-cp36m/bin /opt/python/cp37-cp37m/bin /opt/python/cp38
 for PYBIN in "${versions[@]}"; do
     export PYBIN
     export BOOST_ROOT="${PYBIN}/../boost/"
+    # Install packages necessary for the build
+    "${PYBIN}/pip" install cmake-build-extension numpy==1.17.5
+    export NUMPY_INC="$($PYBIN/python -c 'import numpy ; print(numpy.get_include())')"
 
     # Build boost
     tar -xzf boost_1_67_0.tar.gz
@@ -34,8 +37,6 @@ for PYBIN in "${versions[@]}"; do
     ./b2 install --prefix="${BOOST_ROOT}" -j 20
     cd .. 
     
-    # Install packages necessary for the build
-    "${PYBIN}/pip" install cmake-build-extension numpy
 
     # Used later in setup.py
     export PYINC=`echo  ${PYBIN}/../include/python*/ | xargs -n 1 | tail -n 1`

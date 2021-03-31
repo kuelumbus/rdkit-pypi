@@ -7,6 +7,8 @@ from pathlib import Path
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
+
+
 setup(
     name="rdkit-pypi",
     version=f"{os.environ['RDKIT_VERSION']}",
@@ -18,12 +20,12 @@ setup(
     },
     license="BSD-3-Clause",
     packages=find_packages("."),
-    install_requires=["numpy", "pillow"],
+    # install_requires=["numpy"],
     long_description=long_description,
     long_description_content_type="text/markdown",
     python_requires=">=3.6",
     # Include all libs and files in /rdkit/rdkit/* 
-    package_data={'': ['/rdkit/lib/*.so' ] + [str(i) for i in Path('/rdkit/rdkit').absolute().rglob('*')] },
+    package_data={'': [str(i) for i in Path('/rdkit/rdkit').absolute().rglob('*')] },
     ext_modules=[
         CMakeExtension(name="RdkitCompile",
                        install_prefix="rdkit",
@@ -34,6 +36,7 @@ setup(
                             f"-DRDK_BUILD_AVALON_SUPPORT=ON",
                             f"-DRDK_BUILD_PYTHON_WRAPPERS=ON",
                             f"-DBOOST_ROOT={os.environ['BOOST_ROOT']}",
+                            f"-DPYTHON_NUMPY_INCLUDE_PATH={os.environ['NUMPY_INC']}",
                        ]),
     ],
     cmdclass=dict(build_ext=BuildExtension),
