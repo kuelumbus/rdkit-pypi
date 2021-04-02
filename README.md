@@ -14,32 +14,15 @@ pip install rdkit-pypi
 python -c "from rdkit import Chem"
 ```
 
-## Build wheels 
+## Build wheels locally (works only for Linux) 
 
-Clone the repository
+cibuildwheel uses `patchelf` (`apt install patchelf`) 
+
 ```bash
 git clone https://github.com/kuelumbus/rdkit_platform_wheels.git
 cd rdkit_platform_wheels
+
+python3.8 -m pip install cibuildwheel
+
+CIBW_BUILD_VERBOSITY=1 CIBW_MANYLINUX_X86_64_IMAGE=manylinux2014 CIBW_BEFORE_BUILD_LINUX="bash pre_linux.sh" cibuildwheel --platform linux --output-dir wheelhouse
 ```
-
-- RDKIT_RELEASE (tag from [RDKit](https://github.com/rdkit/rdkit))
-- RDKIT_VERSION (format must be yyyy.m.d)
-
-### `Dockerfile.manylinux2014_x86_64` 
-Wheels for glibc >= 2.17 (Ubuntu 16.04 +)
-
-```bash
-docker build -f "Dockerfile.manylinux2014_x86_64" -t rdkitdocker:latest .
-docker run --rm -e PLAT=manylinux2014_x86_64 -e RDKIT_RELEASE=Release_2021_03_1 -e RDKIT_VERSION=2021.03.1 -v `pwd`:/io rdkitdocker bash /io/wheeling.sh
-```
-
-### `Dockerfile.manylinux_2_24_x86_64`
-Wheels for glibc >= 2.24  (Ubuntu 18.04 +)
-
-```bash
-docker build -f "Dockerfile.manylinux_2_24_x86_64" -t rdkitdocker:latest .
-docker run --rm -e PLAT=manylinux_2_24_x86_64 -e RDKIT_RELEASE=Release_2020_09_5 -e RDKIT_VERSION=2020.9.5 -v `pwd`:/io rdkitdocker bash /io/wheeling.sh
-```
-
-You should now see a `wheelhouse` directory containing wheels.
-

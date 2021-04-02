@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
       #, windows-2019, macos-10.15
-        os: [ubuntu-20.04]
+        os: [macos-10.15, ubuntu-20.04]
 
     steps:
       - uses: actions/checkout@v2
@@ -34,9 +34,10 @@ jobs:
       - name: Build wheels
         uses: joerick/cibuildwheel@v1.10.0
         env:
+          CIBW_BUILD: cp38-*
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
           CIBW_BEFORE_BUILD_LINUX: "bash pre_linux.sh" 
-          # CIBW_BEFORE_BUILD_MACOS: "brew install wget "
+          CIBW_BEFORE_BUILD_MACOS: "bash pre_mac.sh" 
 
       - uses: actions/upload-artifact@v2
         with:
