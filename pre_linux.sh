@@ -1,1 +1,1 @@
-yum install -y wget freetype-devel zlib-devel
+yum install -y wget freetype-devel zlib-devel 

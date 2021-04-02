@@ -4,7 +4,7 @@ from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext as build_ext_orig
 
 import os
-from subprocess import check_call
+from subprocess import check_call, call
 import sys
 
 from pathlib import Path
@@ -36,21 +36,33 @@ class BuildRDKit(build_ext_orig):
         # invoke the creation of the wheels package
         super().run()
 
+
+    def get_ext_filename(self, ext_name):
+        ext_path = ext_name.split('.')
+        return os.path.join(*ext_path)
+                
     def create_package(self, ext):
         from distutils.file_util import copy_file
-        from shutil import copytree
-        wheel_path = Path(self.get_ext_fullpath(ext.name)).absolute()
-        wheel_path.mkdir(parents=True, exist_ok=True)
+        from shutil import copytree, rmtree
+
+        # copy RDKit package
         rdkit_root = Path(self.build_temp).absolute() / 'rdkit_install/' / 'lib'
+        rdkit_pyfiles = list(rdkit_root.glob('python*'))[0] / 'site-packages' / 'rdkit' 
 
-        # copy rkdit
-        rdkit_pyfiles = list(rdkit_root.glob('python*'))[0] / 'site-packages' 
-        copytree(str(rdkit_pyfiles), str(wheel_path) + '/rdkit')
+        wheel_path = Path(self.get_ext_fullpath(ext.name)).absolute()
+        # remove if exists
+        if wheel_path.exists():
+            rmtree(str(wheel_path))
+        copytree(str(rdkit_pyfiles), str(wheel_path))
 
-        # copy *.so
-        libs = wheel_path / 'rdkit' / 'libs'
-        libs.mkdir(parents=True, exist_ok=True)
-        [copy_file(i, libs ) for i in Path(rdkit_root).glob('*.so')]
+        # Copy *.so files to /usr/local/lib
+        # auditwheel finds the libs at /usr/local/lib
+        libs_rdkit = Path(rdkit_root).glob('*.so*')
+        libs_boost = Path(self.build_temp).absolute() / 'boost_install' / 'lib'
+        libs_boost = libs_boost.glob('*.so*')
+
+        [copy_file(i, '/usr/local/lib' ) for i in libs_rdkit]
+        [copy_file(i, '/usr/local/lib' ) for i in libs_boost]
     
     def build_boost(self, ext):
         # Build boost libraries
@@ -73,12 +85,16 @@ class BuildRDKit(build_ext_orig):
         # Compile Boost
         os.chdir(Path(ext.boost_download_url).with_suffix('').with_suffix('').name)
         cmds = [
-            'ln -fs  /opt/python/cp36-cp36m/include/python3.6m /opt/python/cp36-cp36m/include/python3.6',
-            'ln -fs  /opt/python/cp37-cp37m/include/python3.7m /opt/python/cp37-cp37m/include/python3.7',
+            'ln -fs /opt/python/cp36-cp36m/include/python3.6m /opt/python/cp36-cp36m/include/python3.6',
+            'ln -fs /opt/python/cp37-cp37m/include/python3.7m /opt/python/cp37-cp37m/include/python3.7',]
+        # Ok to fail
+        [call(c.split()) for c in cmds]
+        cmds = [
             f'./bootstrap.sh --with-libraries=python,serialization,iostreams,system,regex --with-python={sys.executable} --with-python-root={Path(sys.executable).parent}/..',
             f'./b2 install --prefix={boost_root} -j 20',
         ]
         [check_call(c.split()) for c in cmds]
+
         os.chdir(str(cwd))
 
     def build_rdkit(self, ext):
@@ -120,13 +136,12 @@ class BuildRDKit(build_ext_orig):
 
         cmds = [
             f"cmake -S . -B build {' '.join(options)} ",
-            "cmake --build build --verbose -j 20 --config Release",
-            "make -C build install -j 20"
+            f"cmake --build build --verbose -j 20 --config Release",
+            f"make -C build install -j 20"
         ]    
         [check_call(c.split()) for c in cmds]
         os.chdir(str(cwd))
 
-            
 
 setup(
     name="rdkit-pypi",
@@ -138,7 +153,6 @@ setup(
         "RDKit Github": "https://github.com/rdkit/rdkit",
     },
     license="BSD-3-Clause",
-    install_requires=["numpy == 1.20", "pillow"],
     long_description=long_description,
     long_description_content_type="text/markdown",
     ext_modules=[
