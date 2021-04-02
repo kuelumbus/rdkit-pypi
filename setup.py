@@ -65,8 +65,8 @@ class BuildRDKit(build_ext_orig):
         libs_boost_mac = libs_boost.glob('*dylib')
         libs_boost = list(libs_boost_linux) + list(libs_boost_mac)
 
-        [copy_file(i, '/usr/local/lib' ) for i in libs_rdkit]
-        [copy_file(i, '/usr/local/lib' ) for i in libs_boost]
+        [copy_file(i, '/usr/lib' ) for i in libs_rdkit]
+        [copy_file(i, '/usr/lib' ) for i in libs_boost]
     
     def build_boost(self, ext):
         # Build boost libraries
@@ -103,8 +103,6 @@ class BuildRDKit(build_ext_orig):
 
         libs_boost = Path(self.build_temp).absolute() / 'boost_install' / 'lib'
         libs_boost_mac = libs_boost.glob('*dylib')
-        print(list(libs_boost_mac))
-        e
 
     def build_rdkit(self, ext):
         # Build RDKit
