@@ -104,7 +104,6 @@ class BuildRDKit(build_ext_orig):
         libs_boost = Path(self.build_temp).absolute() / 'boost_install' / 'lib'
         libs_boost_mac = libs_boost.glob('*dylib')
         print(list(libs_boost_mac))
-        e
 
     def build_rdkit(self, ext):
         # Build RDKit
