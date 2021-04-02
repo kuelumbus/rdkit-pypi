@@ -55,10 +55,16 @@ class BuildRDKit(build_ext_orig):
 
         # Copy *.so files to /usr/local/lib
         # auditwheel finds the libs at /usr/local/lib
-        libs_rdkit = Path(rdkit_root).glob('*.so*')
-        libs_boost = Path(self.build_temp).absolute() / 'boost_install' / 'lib'
-        libs_boost = libs_boost.glob('*.so*')
+        libs_rdkit_linux = Path(rdkit_root).glob('*.so*')
+        libs_rdkit_macos = Path(rdkit_root).glob('*dylib')
+        libs_rdkit = list(libs_rdkit_linux) + list(libs_rdkit_macos)
 
+        libs_boost = Path(self.build_temp).absolute() / 'boost_install' / 'lib'
+
+        libs_boost_linux = libs_boost.glob('*.so*')
+        libs_boost_mac = libs_boost.glob('*dylib')
+        libs_boost = list(libs_boost_linux) + list(libs_boost_mac)
+        
         [copy_file(i, '/usr/local/lib' ) for i in libs_rdkit]
         [copy_file(i, '/usr/local/lib' ) for i in libs_boost]
     
