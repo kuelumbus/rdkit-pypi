@@ -1,8 +1,6 @@
-import imp
-from shutil import copyfile
 from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext as build_ext_orig
-
+from sysconfig import get_paths
 import os
 from subprocess import check_call, call
 import sys
@@ -116,18 +114,10 @@ class BuildRDKit(build_ext_orig):
         [check_call(c.split()) for c in cmds]
         os.chdir(str('rdkit'))
 
-        # Get the Python include path (is there a better way?)
-        try:
-            pyinc_path = Path(sys.executable).parent / ".." / "include"
-            pyinc_path = list(pyinc_path.glob('python*'))[0]
-        except IndexError:
-            # pyinc_path = Path('/Library/Frameworks/Python.framework/Versions/3.8/include')
-            pyinc_path = None
-
         # Invoke cmake and compile RDKit
         options = [
                     f'-DPYTHON_EXECUTABLE={sys.executable}',
-
+                    f'-DPYTHON_INCLUDE_DIR={get_paths()["include"]}',
                     f"-DRDK_BUILD_INCHI_SUPPORT=ON",
                     f"-DRDK_BUILD_AVALON_SUPPORT=ON",
                     f"-DRDK_BUILD_PYTHON_WRAPPERS=ON",
@@ -136,12 +126,9 @@ class BuildRDKit(build_ext_orig):
                     f"-DBOOST_ROOT={boost_root}",
                     f"-DRDK_INSTALL_INTREE=off",
                     f"-DCMAKE_INSTALL_PREFIX={rdkit_root}",
-                    f"-DCMAKE_C_FLAGS=-Wno-implicit-function-declaration"
+                    f"-DCMAKE_C_FLAGS=-Wno-implicit-function-declaration",
                     f"-DCMAKE_CXX_FLAGS=-Wno-implicit-function-declaration"
                 ]
-        
-        if pyinc_path:
-            options.append(f'-DPYTHON_INCLUDE_DIR={pyinc_path}')
 
         cmds = [
             f"cmake -S . -B build {' '.join(options)} ",
