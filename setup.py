@@ -117,13 +117,17 @@ class BuildRDKit(build_ext_orig):
         os.chdir(str('rdkit'))
 
         # Get the Python include path (is there a better way?)
-        pyinc_path = Path(sys.executable).parent / ".." / "include"
-        pyinc_path = list(pyinc_path.glob('python*'))[0]
+        try:
+            pyinc_path = Path(sys.executable).parent / ".." / "include"
+            pyinc_path = list(pyinc_path.glob('python*'))[0]
+        except IndexError:
+            # pyinc_path = Path('/Library/Frameworks/Python.framework/Versions/3.8/include')
+            pyinc_path = None
 
         # Invoke cmake and compile RDKit
         options = [
                     f'-DPYTHON_EXECUTABLE={sys.executable}',
-                    f'-DPYTHON_INCLUDE_DIR={pyinc_path}',
+
                     f"-DRDK_BUILD_INCHI_SUPPORT=ON",
                     f"-DRDK_BUILD_AVALON_SUPPORT=ON",
                     f"-DRDK_BUILD_PYTHON_WRAPPERS=ON",
@@ -133,6 +137,9 @@ class BuildRDKit(build_ext_orig):
                     f"-DRDK_INSTALL_INTREE=off",
                     f"-DCMAKE_INSTALL_PREFIX={rdkit_root}"
                 ]
+        
+        if pyinc_path:
+            options.append(f'-DPYTHON_INCLUDE_DIR={pyinc_path}')
 
         cmds = [
             f"cmake -S . -B build {' '.join(options)} ",
