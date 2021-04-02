@@ -64,7 +64,7 @@ class BuildRDKit(build_ext_orig):
         libs_boost_linux = libs_boost.glob('*.so*')
         libs_boost_mac = libs_boost.glob('*dylib')
         libs_boost = list(libs_boost_linux) + list(libs_boost_mac)
-        
+
         [copy_file(i, '/usr/local/lib' ) for i in libs_rdkit]
         [copy_file(i, '/usr/local/lib' ) for i in libs_boost]
     
@@ -100,6 +100,11 @@ class BuildRDKit(build_ext_orig):
         [check_call(c.split()) for c in cmds]
 
         os.chdir(str(cwd))
+
+        libs_boost = Path(self.build_temp).absolute() / 'boost_install' / 'lib'
+        libs_boost_mac = libs_boost.glob('*dylib')
+        print(list(libs_boost_mac))
+        e
 
     def build_rdkit(self, ext):
         # Build RDKit
