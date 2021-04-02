@@ -135,7 +135,9 @@ class BuildRDKit(build_ext_orig):
                     f"-DBoost_NO_SYSTEM_PATHS=ON",
                     f"-DBOOST_ROOT={boost_root}",
                     f"-DRDK_INSTALL_INTREE=off",
-                    f"-DCMAKE_INSTALL_PREFIX={rdkit_root}"
+                    f"-DCMAKE_INSTALL_PREFIX={rdkit_root}",
+                    f"-DCMAKE_C_FLAGS=-Wno-implicit-function-declaration"
+                    f"-DCMAKE_CXX_FLAGS=-Wno-implicit-function-declaration"
                 ]
         
         if pyinc_path:
