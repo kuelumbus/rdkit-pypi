@@ -37,6 +37,7 @@ setup(
                             f"-DRDK_BUILD_PYTHON_WRAPPERS=ON",
                             f"-DBOOST_ROOT={os.environ['BOOST_ROOT']}",
                             f"-DPYTHON_NUMPY_INCLUDE_PATH={os.environ['NUMPY_INC']}",
+                            f"-DRDK_BUILD_CAIRO_SUPPORT=ON",
                        ]),
     ],
     cmdclass=dict(build_ext=BuildExtension),
