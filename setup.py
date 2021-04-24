@@ -160,6 +160,7 @@ setup(
     license="BSD-3-Clause",
     long_description=long_description,
     long_description_content_type="text/markdown",
+    packages=find_packages(),
     ext_modules=[
         RDKit(
             'rdkit',
