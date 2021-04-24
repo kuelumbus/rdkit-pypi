@@ -133,10 +133,11 @@ class BuildRDKit(build_ext_orig):
                     # f"-DRDK_BUILD_CAIRO_SUPPORT=ON",
                     f"-DBoost_NO_SYSTEM_PATHS=ON",
                     f"-DBOOST_ROOT={boost_root}",
-                    f"-DRDK_INSTALL_INTREE=off",
+                    f"-DRDK_INSTALL_INTREE=OFF",
+                    f"-DRDK_BUILD_RPATH_SUPPORT=ON",
                     f"-DCMAKE_INSTALL_PREFIX={rdkit_root}",
                     f"-DCMAKE_C_FLAGS=-Wno-implicit-function-declaration",
-                    f"-DCMAKE_CXX_FLAGS=-Wno-implicit-function-declaration"
+                    f"-DCMAKE_CXX_FLAGS=-Wno-implicit-function-declaration",
                 ]
 
         cmds = [
