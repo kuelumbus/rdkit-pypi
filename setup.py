@@ -138,6 +138,7 @@ class BuildRDKit(build_ext_orig):
                     f"-DCMAKE_INSTALL_PREFIX={rdkit_root}",
                     f"-DCMAKE_C_FLAGS=-Wno-implicit-function-declaration",
                     f"-DCMAKE_CXX_FLAGS=-Wno-implicit-function-declaration",
+                    f"-DCMAKE_SKIP_RPATH=ON",
                 ]
 
         cmds = [
