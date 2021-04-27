@@ -2,7 +2,7 @@ from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext as build_ext_orig
 from sysconfig import get_paths
 import os
-from subprocess import check_call, call
+from subprocess import check_call, call, run, PIPE
 import sys
 
 from pathlib import Path
@@ -101,7 +101,8 @@ class BuildRDKit(build_ext_orig):
             'ls /Library/Frameworks/Python.framework/Versions/3.7/include/',
             'ls /Library/Frameworks/Python.framework/Versions/3.7m/include/',
         ]
-        [call(c.split()) for c in cmds]
+        
+        print([run(c.split(), check=False, stdout=PIPE).stdout for c in cmds])
 
 
         cmds = [
