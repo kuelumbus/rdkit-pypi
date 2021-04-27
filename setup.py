@@ -88,11 +88,22 @@ class BuildRDKit(build_ext_orig):
 
         # Compile Boost
         os.chdir(Path(ext.boost_download_url).with_suffix('').with_suffix('').name)
+        # Ok to fail
         cmds = [
             'ln -fs /opt/python/cp36-cp36m/include/python3.6m /opt/python/cp36-cp36m/include/python3.6',
             'ln -fs /opt/python/cp37-cp37m/include/python3.7m /opt/python/cp37-cp37m/include/python3.7',]
-        # Ok to fail
         [call(c.split()) for c in cmds]
+
+        # same for MacOS
+        cmds = [
+            'ls /Library/Frameworks/Python.framework/Versions/',
+            'ls /Library/Frameworks/Python.framework/Versions/3.7m',
+            'ls /Library/Frameworks/Python.framework/Versions/3.7/include/',
+            'ls /Library/Frameworks/Python.framework/Versions/3.7m/include/',
+        ]
+        [call(c.split()) for c in cmds]
+
+
         cmds = [
             f'./bootstrap.sh --with-libraries=python,serialization,iostreams,system,regex --with-python={sys.executable} --with-python-root={Path(sys.executable).parent}/..',
             f'./b2 install --prefix={boost_root} -j 20',
@@ -138,8 +149,8 @@ class BuildRDKit(build_ext_orig):
                     f"-DCMAKE_C_FLAGS=-Wno-implicit-function-declaration",
                     f"-DCMAKE_CXX_FLAGS=-Wno-implicit-function-declaration",
                     # deactivate using @rpath
-                    f"-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE",
-                    f"-DMACOSX_RPATH=OFF",
+                    # f"-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE",
+                    # f"-DMACOSX_RPATH=OFF",
                     # f"-DRDK_BUILD_RPATH_SUPPORT=ON",
                 ]
 
