@@ -88,24 +88,18 @@ class BuildRDKit(build_ext_orig):
 
         # Compile Boost
         os.chdir(Path(ext.boost_download_url).with_suffix('').with_suffix('').name)
-        # Ok to fail
+
         cmds = [
+            # for linux
             'ln -fs /opt/python/cp36-cp36m/include/python3.6m /opt/python/cp36-cp36m/include/python3.6',
             'ln -fs /opt/python/cp37-cp37m/include/python3.7m /opt/python/cp37-cp37m/include/python3.7',
-            'ln -fs /opt/python/cp37-cp37m/include/python3.7m /opt/python/cp37-cp37m/include/python3.7',
+            # same for MacOS
+            'ln -fs /Library/Frameworks/Python.framework/Versions/3.7/include/python3.7m /Library/Frameworks/Python.framework/Versions/3.7/include/python3.7',
+            'ln -fs /Library/Frameworks/Python.framework/Versions/3.8/include/python3.8m /Library/Frameworks/Python.framework/Versions/3.8/include/python3.8',
             ]
-        [call(c.split()) for c in cmds]
-
-        # same for MacOS
-        cmds = [
-            'ls /Library/Frameworks/Python.framework/Versions/',
-            'ls /Library/Frameworks/Python.framework/Versions/3.7/include/',
-            'ls /Library/Frameworks/Python.framework/Versions/3.7/include/python3.7',
-            'ls /Library/Frameworks/Python.framework/Versions/3.7/include/python3.7m',
-
-        ]
         
-        print([run(c.split(), check=False, stdout=PIPE).stdout for c in cmds])
+        # Ok to fail
+        [call(c.split()) for c in cmds]
 
 
         cmds = [
