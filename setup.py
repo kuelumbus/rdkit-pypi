@@ -134,11 +134,12 @@ class BuildRDKit(build_ext_orig):
                     f"-DBoost_NO_SYSTEM_PATHS=ON",
                     f"-DBOOST_ROOT={boost_root}",
                     f"-DRDK_INSTALL_INTREE=OFF",
-                    f"-DRDK_BUILD_RPATH_SUPPORT=ON",
                     f"-DCMAKE_INSTALL_PREFIX={rdkit_root}",
                     f"-DCMAKE_C_FLAGS=-Wno-implicit-function-declaration",
                     f"-DCMAKE_CXX_FLAGS=-Wno-implicit-function-declaration",
-                    f"-DCMAKE_SKIP_RPATH=ON",
+                    # deactivate using @rpath
+                    f"-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE",
+                    # f"-DRDK_BUILD_RPATH_SUPPORT=ON",
                 ]
 
         cmds = [
