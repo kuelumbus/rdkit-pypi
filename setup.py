@@ -139,6 +139,7 @@ class BuildRDKit(build_ext_orig):
                     f"-DCMAKE_CXX_FLAGS=-Wno-implicit-function-declaration",
                     # deactivate using @rpath
                     f"-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE",
+                    f"-DMACOSX_RPATH=OFF",
                     # f"-DRDK_BUILD_RPATH_SUPPORT=ON",
                 ]
 
