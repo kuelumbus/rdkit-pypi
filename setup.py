@@ -94,8 +94,8 @@ class BuildRDKit(build_ext_orig):
             'ln -fs /opt/python/cp36-cp36m/include/python3.6m /opt/python/cp36-cp36m/include/python3.6',
             'ln -fs /opt/python/cp37-cp37m/include/python3.7m /opt/python/cp37-cp37m/include/python3.7',
             # same for MacOS
+            'ln -fs /Library/Frameworks/Python.framework/Versions/3.6/include/python3.6m /Library/Frameworks/Python.framework/Versions/3.6/include/python3.6',
             'ln -fs /Library/Frameworks/Python.framework/Versions/3.7/include/python3.7m /Library/Frameworks/Python.framework/Versions/3.7/include/python3.7',
-            'ln -fs /Library/Frameworks/Python.framework/Versions/3.8/include/python3.8m /Library/Frameworks/Python.framework/Versions/3.8/include/python3.8',
             ]
         
         # Ok to fail
