@@ -1,1 +1,1 @@
-brew install wget freetype zlib 
+brew install cairo 

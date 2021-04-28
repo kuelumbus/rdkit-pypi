@@ -136,20 +136,20 @@ class BuildRDKit(build_ext_orig):
         options = [
                     f'-DPYTHON_EXECUTABLE={sys.executable}',
                     f'-DPYTHON_INCLUDE_DIR={get_paths()["include"]}',
+
+                    # RDKIT build flags
                     f"-DRDK_BUILD_INCHI_SUPPORT=ON",
                     f"-DRDK_BUILD_AVALON_SUPPORT=ON",
                     f"-DRDK_BUILD_PYTHON_WRAPPERS=ON",
-                    # f"-DRDK_BUILD_CAIRO_SUPPORT=ON",
-                    f"-DBoost_NO_SYSTEM_PATHS=ON",
-                    f"-DBOOST_ROOT={boost_root}",
                     f"-DRDK_INSTALL_INTREE=OFF",
+                    f"-DRDK_BUILD_CAIRO_SUPPORT=ON",
+
+                    f"-DBOOST_ROOT={boost_root}",
+                    f"-DBoost_NO_SYSTEM_PATHS=ON",
+
                     f"-DCMAKE_INSTALL_PREFIX={rdkit_root}",
                     f"-DCMAKE_C_FLAGS=-Wno-implicit-function-declaration",
                     f"-DCMAKE_CXX_FLAGS=-Wno-implicit-function-declaration",
-                    # deactivate using @rpath
-                    # f"-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE",
-                    # f"-DMACOSX_RPATH=OFF",
-                    # f"-DRDK_BUILD_RPATH_SUPPORT=ON",
                 ]
 
         cmds = [
