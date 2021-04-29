@@ -81,7 +81,7 @@ class BuildRDKit(build_ext_orig):
         # Download Boost
         os.chdir(str(build_temp))
         cmds = [
-            f'wget {ext.boost_download_url}',
+            f'wget {ext.boost_download_url} --no-check-certificate',
             f'tar -xzf {Path(ext.boost_download_url).name}',]
 
         [check_call(c.split()) for c in cmds]
