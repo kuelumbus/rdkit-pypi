@@ -177,7 +177,7 @@ setup(
     ext_modules=[
         RDKit(
             'rdkit',
-            boost_download_url='https://dl.bintray.com/boostorg/release/1.73.0/source/boost_1_73_0.tar.gz',
+            boost_download_url='https://boostorg.jfrog.io/artifactory/main/release/1.73.0/source/boost_1_73_0.tar.gz',
             rdkit_tag='Release_2021_03_1'
             ),        
     ],
