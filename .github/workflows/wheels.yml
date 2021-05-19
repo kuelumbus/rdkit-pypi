@@ -1,0 +1,68 @@
+name: Build and upload to PyPI
+
+# Build on every branch push, tag push, and pull request change:
+on: [push]
+# Alternatively, to publish when a (published) GitHub Release is created, use the following:
+# on:
+#   push:
+#   pull_request:
+#   release:
+#     types:
+#       - published
+
+jobs:
+  build_wheels:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+      #, windows-2019, macos-10.15, ,
+      # ubuntu-20.04,
+        os: [ ubuntu-20.04, macos-10.15]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      # - uses: actions/setup-python@v2
+        # name: Install Python
+        # with:
+          # python-version: '3.8'
+
+      - name: Install Visual C++ for Python 2.7
+        if: runner.os == 'Windows'
+        run: choco install vcpython27 -f -y
+
+      - name: Build wheels
+        uses: joerick/cibuildwheel@v1.11.0
+        env:
+          CIBW_BUILD: cp36-* cp37-* cp38-* cp39-*
+          CIBW_SKIP: "*-win32 *-manylinux_i686"
+          CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
+          CIBW_BEFORE_BUILD_LINUX: "bash pre_linux.sh" 
+          CIBW_BEFORE_BUILD_MACOS: "bash pre_mac.sh" 
+          CIBW_ENVIRONMENT: "DYLD_LIBRARY_PATH='/usr/local/lib:/usr/lib'"
+          CIBW_REPAIR_WHEEL_COMMAND_MACOS: "export DYLD_LIBRARY_PATH='/usr/local/lib:/usr/lib' && delocate-listdeps {wheel} && delocate-wheel --require-archs {delocate_archs} -w {dest_dir} {wheel}"
+          # CIBW_BUILD_VERBOSITY: 1
+
+      - uses: actions/upload-artifact@v2
+        with:
+          path: ./wheelhouse/*.whl
+
+  # upload_pypi:
+  #   needs: [build_wheels, build_sdist]
+  #   runs-on: ubuntu-latest
+  #   # upload to PyPI on every tag starting with 'v'
+  #   if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/v')
+  #   # alternatively, to publish when a GitHub Release is created, use the following rule:
+  #   # if: github.event_name == 'release' && github.event.action == 'published'
+  #   steps:
+  #     - uses: actions/download-artifact@v2
+  #       with:
+  #         name: artifact
+  #         path: dist
+
+  #     - uses: pypa/gh-action-pypi-publish@master
+  #       with:
+  #         user: __token__
+  #         password: ${{ secrets.pypi_password }}
+  #         # To test: repository_url: https://test.pypi.org/legacy/

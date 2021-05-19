@@ -1,11 +1,11 @@
 # RDKit Python platform wheels
 
-Dockerfile and script to build [RDKit](https://github.com/rdkit/rdkit) Python wheels for Linux using [manylinux](https://github.com/pypa/manylinux). 
+Use [cibuildwheel](https://github.com/joerick/cibuildwheel) and Github Actions to build [RDKit](https://github.com/rdkit/rdkit) wheels for Linux and MacOS. Wheels are available on PyPi.
 
 Versions:
 
-- Linux: Python >= 3.6 and glibc >= 2.17 (e.g., Ubuntu 16.04+, CentOS 6+, ...)
-
+- Linux: 3.6 >= Python <= 3.9 and glibc >= 2.17 (e.g., Ubuntu 16.04+, CentOS 6+, ...)
+- MacOS 10.9: 3.6 >= Python <= 3.9 
 
 ## Install RDKit using pip
 
@@ -14,32 +14,20 @@ pip install rdkit-pypi
 python -c "from rdkit import Chem"
 ```
 
-## Build wheels 
+## Install RDKit using poetry
+```bash
+peotry add rdkit-pypi
+```
 
-Clone the repository
+## Build wheels locally (Linux only)
+
+cibuildwheel uses `patchelf` (`apt install patchelf`) 
+
 ```bash
 git clone https://github.com/kuelumbus/rdkit_platform_wheels.git
 cd rdkit_platform_wheels
+
+python3.8 -m pip install cibuildwheel
+
+CIBW_BUILD_VERBOSITY=1 CIBW_MANYLINUX_X86_64_IMAGE=manylinux2014 CIBW_BEFORE_BUILD_LINUX="bash pre_linux.sh" cibuildwheel --platform linux --output-dir wheelhouse
 ```
-
-- RDKIT_RELEASE (tag from [RDKit](https://github.com/rdkit/rdkit))
-- RDKIT_VERSION (format must be yyyy.m.d)
-
-### `Dockerfile.manylinux2014_x86_64` 
-Wheels for glibc >= 2.17 (Ubuntu 16.04 +)
-
-```bash
-docker build -f "Dockerfile.manylinux2014_x86_64" -t rdkitdocker:latest .
-docker run --rm -e PLAT=manylinux2014_x86_64 -e RDKIT_RELEASE=Release_2021_03_1 -e RDKIT_VERSION=2021.03.1 -v `pwd`:/io rdkitdocker bash /io/wheeling.sh
-```
-
-### `Dockerfile.manylinux_2_24_x86_64`
-Wheels for glibc >= 2.24  (Ubuntu 18.04 +)
-
-```bash
-docker build -f "Dockerfile.manylinux_2_24_x86_64" -t rdkitdocker:latest .
-docker run --rm -e PLAT=manylinux_2_24_x86_64 -e RDKIT_RELEASE=Release_2020_09_5 -e RDKIT_VERSION=2020.9.5 -v `pwd`:/io rdkitdocker bash /io/wheeling.sh
-```
-
-Afterward, you should see a `wheelhouse` directory with the wheels.
-
