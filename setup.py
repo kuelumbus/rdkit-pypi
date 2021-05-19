@@ -12,6 +12,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 
 
+<<<<<<< HEAD
 class RDKit(Extension):
 
     def __init__(self, name, **kwargs):
@@ -161,6 +162,8 @@ class BuildRDKit(build_ext_orig):
         os.chdir(str(cwd))
 
 
+=======
+>>>>>>> 6722637f123d34574cb136099da4771e15150735
 setup(
     name="rdkit-pypi",
     version=f"2021.3.1.5",
@@ -171,6 +174,7 @@ setup(
         "RDKit Github": "https://github.com/rdkit/rdkit",
     },
     license="BSD-3-Clause",
+<<<<<<< HEAD
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=find_packages(),
@@ -180,6 +184,28 @@ setup(
             boost_download_url='https://boostorg.jfrog.io/artifactory/main/release/1.73.0/source/boost_1_73_0.tar.gz',
             rdkit_tag='Release_2021_03_1'
             ),        
+=======
+    packages=find_packages("."),
+    # install_requires=["numpy"],
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    python_requires=">=3.6",
+    # Include all libs and files in /rdkit/rdkit/* 
+    package_data={'': [str(i) for i in Path('/rdkit/rdkit').absolute().rglob('*')] },
+    ext_modules=[
+        CMakeExtension(name="RdkitCompile",
+                       install_prefix="rdkit",
+                       cmake_configure_options=[
+                            f'-DPYTHON_EXECUTABLE={os.environ["PYBIN"]}/python',
+                            f'-DPYTHON_INCLUDE_DIR={os.environ["PYINC"]}',
+                            f"-DRDK_BUILD_INCHI_SUPPORT=ON",
+                            f"-DRDK_BUILD_AVALON_SUPPORT=ON",
+                            f"-DRDK_BUILD_PYTHON_WRAPPERS=ON",
+                            f"-DBOOST_ROOT={os.environ['BOOST_ROOT']}",
+                            f"-DPYTHON_NUMPY_INCLUDE_PATH={os.environ['NUMPY_INC']}",
+                            f"-DRDK_BUILD_CAIRO_SUPPORT=ON",
+                       ]),
+>>>>>>> 6722637f123d34574cb136099da4771e15150735
     ],
     cmdclass=dict(build_ext=BuildRDKit),
 
