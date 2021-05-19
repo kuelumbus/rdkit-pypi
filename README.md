@@ -1,11 +1,11 @@
 # RDKit Python platform wheels
 
-Dockerfile and script to build [RDKit](https://github.com/rdkit/rdkit) Python wheels for Linux using [manylinux](https://github.com/pypa/manylinux). 
+Use [cibuildwheel](https://github.com/joerick/cibuildwheel) and Github Actions to build [RDKit](https://github.com/rdkit/rdkit) wheels for Linux and MacOS. Wheels are available on PyPi.
 
 Versions:
 
-- Linux: Python >= 3.6 and glibc >= 2.17 (e.g., Ubuntu 16.04+, CentOS 6+, ...)
-
+- Linux: 3.6 >= Python <= 3.9 and glibc >= 2.17 (e.g., Ubuntu 16.04+, CentOS 6+, ...)
+- MacOS 10.9: 3.6 >= Python <= 3.9 
 
 ## Install RDKit using pip
 
@@ -14,7 +14,12 @@ pip install rdkit-pypi
 python -c "from rdkit import Chem"
 ```
 
-## Build wheels locally (works only for Linux) 
+## Install RDKit using poetry
+```bash
+peotry add rdkit-pypi
+```
+
+## Build wheels locally (Linux only)
 
 cibuildwheel uses `patchelf` (`apt install patchelf`) 
 
