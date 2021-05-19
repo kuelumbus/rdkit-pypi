@@ -4,8 +4,8 @@ Use [cibuildwheel](https://github.com/joerick/cibuildwheel) and Github Actions t
 
 Versions:
 
-- Linux: 3.6 >= Python <= 3.9 and glibc >= 2.17 (e.g., Ubuntu 16.04+, CentOS 6+, ...)
-- MacOS 10.9: 3.6 >= Python <= 3.9 
+- Linux: 3.6 <= Python <= 3.9 and glibc >= 2.17 (e.g., Ubuntu 16.04+, CentOS 6+, ...)
+- MacOS 10.9: 3.6 <= Python <= 3.9 
 
 ## Install RDKit using pip
 
@@ -16,7 +16,7 @@ python -c "from rdkit import Chem"
 
 ## Install RDKit using poetry
 ```bash
-peotry add rdkit-pypi
+poetry add rdkit-pypi
 ```
 
 ## Build wheels locally (Linux only)
