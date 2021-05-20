@@ -71,10 +71,10 @@ class BuildRDKit(build_ext_orig):
         """Build the Boost libraries"""
         
         cwd = Path().absolute()
-        boost_build_path = Path(self.boost_build_path).absolute() / 'boost'
+        boost_build_path = Path(self.build_temp).absolute() / 'boost'
         boost_build_path.mkdir(parents=True, exist_ok=True)
 
-        boost_install_path = Path(self.boost_build_path).absolute() / 'boost_install'
+        boost_install_path = Path(self.build_temp).absolute() / 'boost_install'
         boost_install_path.mkdir(parents=True, exist_ok=True)
 
         # Download and unpack Boost
