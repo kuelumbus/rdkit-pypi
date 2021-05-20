@@ -11,7 +11,6 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 
-
 class RDKit(Extension):
 
     def __init__(self, name, **kwargs):
@@ -69,26 +68,26 @@ class BuildRDKit(build_ext_orig):
         [copy_file(i, '/usr/local/lib' ) for i in libs_boost]
     
     def build_boost(self, ext):
-        # Build boost libraries
+        """Build the Boost libraries"""
+        
         cwd = Path().absolute()
+        boost_build_path = Path(self.boost_build_path).absolute() / 'boost'
+        boost_build_path.mkdir(parents=True, exist_ok=True)
 
-        build_temp = Path(self.build_temp).absolute() / 'boost'
-        build_temp.mkdir(parents=True, exist_ok=True)
+        boost_install_path = Path(self.boost_build_path).absolute() / 'boost_install'
+        boost_install_path.mkdir(parents=True, exist_ok=True)
 
-        boost_root = Path(self.build_temp).absolute() / 'boost_install'
-        boost_root.mkdir(parents=True, exist_ok=True)
-
-        # Download Boost
-        os.chdir(str(build_temp))
+        # Download and unpack Boost
+        os.chdir(str(boost_build_path))
         cmds = [
             f'wget {ext.boost_download_url} --no-check-certificate',
             f'tar -xzf {Path(ext.boost_download_url).name}',]
-
         [check_call(c.split()) for c in cmds]
 
         # Compile Boost
         os.chdir(Path(ext.boost_download_url).with_suffix('').with_suffix('').name)
 
+        # This fixes a bug in the boost configuration. Boost expects python include paths without "m"
         cmds = [
             # for linux
             'ln -fs /opt/python/cp36-cp36m/include/python3.6m /opt/python/cp36-cp36m/include/python3.6',
@@ -97,39 +96,36 @@ class BuildRDKit(build_ext_orig):
             'ln -fs /Library/Frameworks/Python.framework/Versions/3.6/include/python3.6m /Library/Frameworks/Python.framework/Versions/3.6/include/python3.6',
             'ln -fs /Library/Frameworks/Python.framework/Versions/3.7/include/python3.7m /Library/Frameworks/Python.framework/Versions/3.7/include/python3.7',
             ]
-        
         # Ok to fail
         [call(c.split()) for c in cmds]
 
-
         cmds = [
             f'./bootstrap.sh --with-libraries=python,serialization,iostreams,system,regex --with-python={sys.executable} --with-python-root={Path(sys.executable).parent}/..',
-            f'./b2 install --prefix={boost_root} -j 20',
+            f'./b2 install --prefix={boost_install_path} -j 20',
         ]
         [check_call(c.split()) for c in cmds]
 
         os.chdir(str(cwd))
 
-        libs_boost = Path(self.build_temp).absolute() / 'boost_install' / 'lib'
-        libs_boost_mac = libs_boost.glob('*dylib')
-
     def build_rdkit(self, ext):
-        # Build RDKit
+        """ Build RDKit """
+
         cwd = Path().absolute()
-        build_temp = Path(self.build_temp).absolute() / 'rdkit'
-        build_temp.mkdir(parents=True, exist_ok=True) 
+        rdkit_build_path = Path(self.build_temp).absolute() / 'rdkit'
+        rdkit_build_path.mkdir(parents=True, exist_ok=True) 
 
-        boost_root = Path(self.build_temp).absolute() / 'boost_install'
+        boost_install_path = Path(self.build_temp).absolute() / 'boost_install'
 
-        rdkit_root = Path(self.build_temp).absolute() / 'rdkit_install'
-        rdkit_root.mkdir(parents=True, exist_ok=True)
+        rdkit_install_path = Path(self.build_temp).absolute() / 'rdkit_install'
+        rdkit_install_path.mkdir(parents=True, exist_ok=True)
 
-        # Clone from GIT
-        os.chdir(str(build_temp))
+        # Clone RDKit from git at rdkit_tag
+        os.chdir(str(rdkit_build_path))
         cmds = [
             f'git clone -b {ext.rdkit_tag} https://github.com/rdkit/rdkit'
             ]
         [check_call(c.split()) for c in cmds]
+        
         os.chdir(str('rdkit'))
 
         # Invoke cmake and compile RDKit
@@ -144,10 +140,10 @@ class BuildRDKit(build_ext_orig):
                     f"-DRDK_INSTALL_INTREE=OFF",
                     f"-DRDK_BUILD_CAIRO_SUPPORT=ON",
 
-                    f"-DBOOST_ROOT={boost_root}",
+                    f"-DBOOST_ROOT={boost_install_path}",
                     f"-DBoost_NO_SYSTEM_PATHS=ON",
 
-                    f"-DCMAKE_INSTALL_PREFIX={rdkit_root}",
+                    f"-DCMAKE_INSTALL_PREFIX={rdkit_install_path}",
                     f"-DCMAKE_C_FLAGS=-Wno-implicit-function-declaration",
                     f"-DCMAKE_CXX_FLAGS=-Wno-implicit-function-declaration",
                 ]
