@@ -35,7 +35,7 @@ jobs:
           # Linux stuff
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
           CIBW_BEFORE_BUILD_LINUX: "bash pre_linux.sh" 
-          CIBW_ARCHS_LINUX: "x86_64 aarch64"
+          CIBW_ARCHS_LINUX: "x86_64"
           
           # Mac stuff
           CIBW_ARCHS_MACOS: "x86_64 arm64"  # enable arm64/aarch63 builds for MacOS 
