@@ -1,13 +1,14 @@
 # RDKit Python platform wheels for pip
 
-Use [cibuildwheel](https://github.com/joerick/cibuildwheel) and Github Actions to build [RDKit](https://github.com/rdkit/rdkit) wheels for Linux and Mac OS. Wheels are available on PyPi using `pip`.
+This repo contains the code to build [RDKit](https://github.com/rdkit/rdkit) platform wheels for Linux and Mac OS. The wheels are available on [PyPi](https://pypi.org/project/rdkit-pypi/) and can be installed using `pip`.
 
 Available for
 
 | OS | Version | Python |
 | ----------- | ----------- | ----------- |
-| Linux  | glibc >= 2.17 (e.g., Ubuntu 16.04+, CentOS 6+, ...) | 3.6, 3.7, 3.8, 3.9 |
-| Mac OS | >= 10.9 (Mavericks)  | 3.6, 3.7, 3.8, 3.9 |
+| Linux (intel) | glibc >= 2.17 (e.g., Ubuntu 16.04+, CentOS 6+, ...) | 3.6, 3.7, 3.8, 3.9 |
+| Mac OS (intel) | >= 10.9  | 3.6, 3.7, 3.8, 3.9 |
+| Mac OS (arm64) | >= 11.0  | 3.9 |
 
 ## Install RDKit 
 
