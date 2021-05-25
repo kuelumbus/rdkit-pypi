@@ -1,1 +1,1 @@
-brew install cairo 
+brew install cairo eigen
