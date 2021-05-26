@@ -1,14 +1,15 @@
-# RDKit Python platform wheels for pip
+# RDKit Python platform wheels
 
-This repo contains the code to build [RDKit](https://github.com/rdkit/rdkit) platform wheels for Linux and Mac OS. The wheels are available on [PyPi](https://pypi.org/project/rdkit-pypi/) and can be installed using `pip`.
+This repository contains the code to build [RDKit](https://github.com/rdkit/rdkit) platform wheels for Linux and macOS. The wheels are available at [PyPi](https://pypi.org/project/rdkit-pypi/). Use `pip` to install them.
+
+Please open an issue if you find something missing or not working as expected. 
 
 Available for
 
 | OS | Version | Python |
 | ----------- | ----------- | ----------- |
-| Linux (intel) | glibc >= 2.17 (e.g., Ubuntu 16.04+, CentOS 6+, ...) | 3.6, 3.7, 3.8, 3.9 |
-| Mac OS (intel) | >= 10.9  | 3.6, 3.7, 3.8, 3.9 |
-| Mac OS (arm64) | >= 11.0  | 3.9 |
+| Linux (x86_64) | glibc >= 2.17 (e.g., Ubuntu 16.04+, CentOS 6+, ...) | 3.6, 3.7, 3.8, 3.9 |
+| macOS (x86_64) | >= 10.9  | 3.6, 3.7, 3.8, 3.9 |
 
 ## Install RDKit 
 
