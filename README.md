@@ -1,10 +1,10 @@
 # RDKit Python platform wheels
 
-This repository contains the code to build [RDKit](https://github.com/rdkit/rdkit) platform wheels for Linux and macOS. The wheels are available at [PyPi](https://pypi.org/project/rdkit-pypi/). Use `pip` to install them.
+This repository contains the code to build [RDKit](https://github.com/rdkit/rdkit) platform wheels for Linux and macOS. The wheels are available at [PyPi](https://pypi.org/project/rdkit-pypi/) and may be installed using `pip`.
 
 Please open an issue if you find something missing or not working as expected. 
 
-Available for
+## Availability
 
 | OS | Version | Python |
 | ----------- | ----------- | ----------- |
@@ -13,14 +13,14 @@ Available for
 
 ## Install RDKit 
 
-### PIP
+#### PIP
 
 ```bash
 pip install rdkit-pypi
 python -c "from rdkit import Chem; print(Chem.MolToMolBlock(Chem.MolFromSmiles('C1CCC1')))"
 ```
 
-### Poetry
+#### Poetry
 ```bash
 poetry add rdkit-pypi
 poetry run python -c "from rdkit import Chem; print(Chem.MolToMolBlock(Chem.MolFromSmiles('C1CCC1')))"
