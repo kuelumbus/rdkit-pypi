@@ -4,6 +4,7 @@ from sysconfig import get_paths
 import os
 from subprocess import check_call, call, run, PIPE
 import sys
+from sys import platform
 
 from pathlib import Path
 
@@ -52,9 +53,12 @@ class BuildRDKit(build_ext_orig):
         rdpaths = rdkit_pyfiles / 'RDPaths.py'
 
         # For linux
-        call(["sed", "-i", "/_share =/c\_share = os.path.dirname(__file__)", str(rdpaths)])
-        # For macOS
-        call(["gsed", "-i", "/_share =/c\_share = os.path.dirname(__file__)", str(rdpaths)])
+        if platform == "linux" or platform == "linux2":
+            # linux
+            call(["sed", "-i", "/_share =/c\_share = os.path.dirname(__file__)", str(rdpaths)])
+        elif platform == "darwin":
+            # OS X
+            call(["gsed", "-i", "/_share =/c\_share = os.path.dirname(__file__)", str(rdpaths)])
 
         wheel_path = Path(self.get_ext_fullpath(ext.name)).absolute()
         # remove if exists
