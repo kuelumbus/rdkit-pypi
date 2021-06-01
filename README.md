@@ -4,6 +4,12 @@ RDKit on PyPi 🔥 (`pip install rdkit-pypi`). This repository contains the code
 
 Please open an issue if you find something missing or not working as expected. 
 
+[![PyPI version shields.io](https://img.shields.io/pypi/v/rdkit-pypi.svg?style=for-the-badge&logo=PyPI&logoColor=blue)](https://pypi.python.org/pypi/rdkit-pypi/)
+[![PyPI download month](https://img.shields.io/pypi/dm/rdkit-pypi.svg?style=for-the-badge&logo=PyPI)](https://pypi.python.org/pypi/rdkit-pypi/)
+[![PyPI download day](https://img.shields.io/pypi/dd/rdkit-pypi.svg?style=for-the-badge&logo=PyPI)](https://pypi.python.org/pypi/rdkit-pypi/)
+
+[![GitHub stars](https://img.shields.io/github/stars/kuelumbus/rdkit_platform_wheels.svg?style=social&label=Star&maxAge=2592000)](https://github.com/kuelumbus/rdkit_platform_wheels)
+
 ## Availability
 
 | OS | Version | Python |
