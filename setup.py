@@ -50,7 +50,11 @@ class BuildRDKit(build_ext_orig):
 
         # replace line with _share=... with _share = os.path.dirname(__file__) in RDPaths.py
         rdpaths = rdkit_pyfiles / 'RDPaths.py'
-        check_call(["sed", "-i", "/_share =/c\_share = os.path.dirname(__file__)", str(rdpaths)])
+
+        # For linux
+        call(["sed", "-i", "/_share =/c\_share = os.path.dirname(__file__)", str(rdpaths)])
+        # For macOS
+        call(["gsed", "-i", "/_share =/c\_share = os.path.dirname(__file__)", str(rdpaths)])
 
         wheel_path = Path(self.get_ext_fullpath(ext.name)).absolute()
         # remove if exists

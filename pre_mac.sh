@@ -1,1 +1,1 @@
-brew install cairo eigen
+brew install cairo eigen gnu-sed
