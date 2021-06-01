@@ -46,14 +46,11 @@ class BuildRDKit(build_ext_orig):
         rdkit_pyfiles = list(rdkit_root.glob('python*'))[0] / 'site-packages' / 'rdkit' 
 
         # rdkit needs some files from the Data directory to run correctly 
-        rdkit_data_path = Path(self.build_temp).absolute() / 'rdkit' / 'Data'
-        
+        rdkit_data_path = Path(self.build_temp).absolute() / 'rdkit' / 'rdkit' / 'Data'
+
         # replace line with _share=... with _share = os.path.dirname(__file__) in RDPaths.py
         rdpaths = rdkit_pyfiles / 'RDPaths.py'
-        cmds = [
-            f"sed -i '/_share =/c\_share = os.path.dirname(__file__)' {rdpaths}"
-        ]
-        [check_call(c.split()) for c in cmds]
+        check_call(["sed", "-i", "/_share =/c\_share = os.path.dirname(__file__)", str(rdpaths)])
 
         wheel_path = Path(self.get_ext_fullpath(ext.name)).absolute()
         # remove if exists
@@ -64,7 +61,7 @@ class BuildRDKit(build_ext_orig):
         copytree(str(rdkit_pyfiles), str(wheel_path))
 
         # copy the Data directory to the wheel path
-        copytree(str(rdkit_data_path), str(wheel_path / 'rdkit'))
+        copytree(str(rdkit_data_path), str(wheel_path / 'Data'))
 
         # Copy *.so files to /usr/local/lib
         # auditwheel finds the libs at /usr/local/lib
