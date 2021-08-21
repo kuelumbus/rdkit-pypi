@@ -165,9 +165,7 @@ class BuildRDKit(build_ext_orig):
                     f"-DCMAKE_INSTALL_PREFIX={rdkit_install_path}",
                     f"-DCMAKE_C_FLAGS=-Wno-implicit-function-declaration",
                     f"-DCMAKE_CXX_FLAGS=-Wno-implicit-function-declaration",
-            
-                    # https://gitlab.kitware.com/cmake/cmake/-/issues/21854
-                    f'-DCMAKE_XCODE_ATTRIBUTE_OTHER_CODE_SIGN_FLAGS="-olinker-signed"',
+        
                 ]
         
         cmds = [
