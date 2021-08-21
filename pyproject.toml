@@ -21,7 +21,7 @@ before-build = "bash pre_linux.sh"
 [tool.cibuildwheel.macos]
 before-build = "bash pre_mac.sh"
 repair-wheel-command = [
-    "export DYLD_LIBRARY_PATH='/usr/local/lib:/usr/lib",
+    "export DYLD_LIBRARY_PATH='/usr/local/lib:/usr/lib'",
     "delocate-listdeps {wheel}",
     "delocate-wheel --require-archs {delocate_archs} -w {dest_dir} {wheel}",
 ]
