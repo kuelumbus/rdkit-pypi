@@ -167,9 +167,9 @@ class BuildRDKit(build_ext_orig):
                     f"-DCMAKE_CXX_FLAGS=-Wno-implicit-function-declaration",
             
                     # https://gitlab.kitware.com/cmake/cmake/-/issues/21854
-                    f"-DCMAKE_XCODE_ATTRIBUTE_OTHER_CODE_SIGN_FLAGS=-o linker-signed",
+                    f'-DCMAKE_XCODE_ATTRIBUTE_OTHER_CODE_SIGN_FLAGS="-olinker-signed"',
                 ]
-
+        
         cmds = [
             f"cmake -S . -B build {' '.join(options)} ",
             f"cmake --build build --verbose -j 5 --config Release",
