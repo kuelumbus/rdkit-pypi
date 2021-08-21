@@ -180,17 +180,16 @@ class BuildRDKit(build_ext_orig):
 
 
 
-
-
-
 setup(
     name="rdkit-pypi",
     version=f"2021.3.4",
     description="A collection of chemoinformatics and machine-learning software written in C++ and Python",
+    author='Christopher Kuenneth',
+    author_email='chris@kuenneth.dev',
     url="https://github.com/kuelumbus/rdkit_platform_wheels",
     project_urls={
         "RDKit": "http://rdkit.org/",
-        "RDKit Github": "https://github.com/rdkit/rdkit",
+        "RDKit on Github": "https://github.com/rdkit/rdkit",
     },
     license="BSD-3-Clause",
     long_description=long_description,
@@ -207,6 +206,4 @@ setup(
             ),        
     ],
     cmdclass=dict(build_ext=BuildRDKit),
-
-    
 )
