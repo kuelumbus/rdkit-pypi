@@ -7,3 +7,25 @@ numpy = "^1.19"
 [build-system]
 requires = ["setuptools>=42", "wheel", "cmake==3.21.1", "numpy==1.19.4"]
 build-backend = "setuptools.build_meta"
+
+[tool.cibuildwheel]
+build = "cp36-* cp37-* cp38-* cp39-*"
+skip = "*-win32 *-manylinux_i686"
+
+manylinux-x86_64-image = "manylinux2014"
+archs = "auto64"
+
+[tool.cibuildwheel.linux]
+before-build = "bash pre_linux.sh"
+
+[tool.cibuildwheel.macos]
+before-build = "bash pre_mac.sh"
+repair-wheel-command = [
+    "export DYLD_LIBRARY_PATH='/usr/local/lib:/usr/lib'",
+    "delocate-listdeps {wheel}",
+    "delocate-wheel --require-archs {delocate_archs} -w {dest_dir} {wheel}",
+]
+
+[tool.cibuildwheel.windows]
+
+          
