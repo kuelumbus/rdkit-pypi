@@ -180,7 +180,7 @@ class BuildRDKit(build_ext_orig):
 
 setup(
     name="rdkit-pypi",
-    version=f"2021.3.4",
+    version=f"2021.3.5",
     description="A collection of chemoinformatics and machine-learning software written in C++ and Python",
     author='Christopher Kuenneth',
     author_email='chris@kuenneth.dev',
@@ -200,7 +200,7 @@ setup(
         RDKit(
             'rdkit',
             boost_download_url='https://boostorg.jfrog.io/artifactory/main/release/1.73.0/source/boost_1_73_0.tar.gz',
-            rdkit_tag='Release_2021_03_4'
+            rdkit_tag='Release_2021_03_5'
             ),        
     ],
     cmdclass=dict(build_ext=BuildRDKit),
