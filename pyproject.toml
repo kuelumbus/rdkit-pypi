@@ -16,7 +16,8 @@ manylinux-x86_64-image = "manylinux2014"
 archs = "auto64"
 
 [tool.cibuildwheel.linux]
-before-build = [
+
+before-all = [
     "yum install -y wget freetype-devel zlib-devel libpng12-devel pixman-devel eigen3-devel",
 
     # compile cairo (RDKit needs older/other version than in centOS7 repo)
@@ -31,7 +32,7 @@ before-build = [
 
 [tool.cibuildwheel.macos]
 
-before-build = [
+before-all = [
     "brew install cairo eigen gnu-sed",
     "pip install delocate==0.8.2",
     ]
