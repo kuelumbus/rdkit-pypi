@@ -34,7 +34,10 @@ before-all = [
 
 before-all = [
     "brew install cairo eigen gnu-sed",
-    "pip install delocate==0.8.2",
+    ]
+
+before-build = [
+    "pip install delocate==0.8.2"
     ]
 
 repair-wheel-command = [
