@@ -1,6 +1,7 @@
-# RDKit Python platform wheels
 
-RDKit on PyPi 🔥 (`pip install rdkit-pypi`). This repository contains the code to build [RDKit](https://github.com/rdkit/rdkit) platform wheels for Linux and macOS. The wheels are available at the [PyPi](https://pypi.org/project/rdkit-pypi/) repository and may be installed with `pip`.
+# RDKit wheels 🔥🔥 `pip install rdkit-pypi` 🔥🔥
+
+This repository holds the code to build [RDKit](https://github.com/rdkit/rdkit) platform wheels for Linux, macOS, and Windows. The wheels are available at the [PyPi](https://pypi.org/project/rdkit-pypi/) repository.
 
 Please open an issue if you find something missing or not working as expected. 
 
@@ -12,27 +13,28 @@ Please open an issue if you find something missing or not working as expected.
 
 ## Availability
 
-| OS | Version | Python |
+| OS | Version/Conditions | Python |
 | ----------- | ----------- | ----------- |
 | Linux (x86_64) | glibc >= 2.17 (e.g., Ubuntu 16.04+, CentOS 6+, ...) | 3.6, 3.7, 3.8, 3.9 |
 | macOS (x86_64) | >= 10.9  | 3.6, 3.7, 3.8, 3.9 |
+| Windows (x86_64) | ? | 3.6, 3.7, 3.8, 3.9 |
 
 ## Install RDKit 
 
-#### PIP
+### PIP
 
 ```bash
-pip install rdkit-pypi
+python -m pip install rdkit-pypi
 python -c "from rdkit import Chem; print(Chem.MolToMolBlock(Chem.MolFromSmiles('C1CCC1')))"
 ```
 
-#### Poetry
+### [Poetry](https://python-poetry.org/)
 ```bash
 poetry add rdkit-pypi
 poetry run python -c "from rdkit import Chem; print(Chem.MolToMolBlock(Chem.MolFromSmiles('C1CCC1')))"
 ```
 
-## Testing: Build wheels locally (Linux only)
+## Build wheels locally (Linux only)
 
 cibuildwheel uses `patchelf` (`apt install patchelf`) 
 
@@ -42,5 +44,5 @@ cd rdkit_platform_wheels
 
 python3.8 -m pip install cibuildwheel
 
-CIBW_BUILD_VERBOSITY=1 CIBW_MANYLINUX_X86_64_IMAGE=manylinux2014 CIBW_BEFORE_BUILD_LINUX="bash pre_linux.sh" cibuildwheel --platform linux --output-dir wheelhouse
+CIBW_BUILD_VERBOSITY=1 CIBW_MANYLINUX_X86_64_IMAGE=manylinux2014 cibuildwheel --platform linux --output-dir wheelhouse
 ```
