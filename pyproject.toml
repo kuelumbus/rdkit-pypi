@@ -9,6 +9,9 @@ requires = ["setuptools>=42", "wheel", "cmake==3.21.1", "numpy==1.19.4"]
 build-backend = "setuptools.build_meta"
 
 [tool.cibuildwheel]
+
+build-verbosity = "3"
+
 build = "cp36-* cp37-* cp38-* cp39-*"
 skip = "*-win32 *-manylinux_i686"
 
@@ -47,5 +50,14 @@ repair-wheel-command = [
 ]
 
 [tool.cibuildwheel.windows]
+before-all = ["mkdir C:\\libs"]
 
-          
+before-build = [
+    "pip install delvewheel",
+    "choco install tartool wget sed pkgconfiglite",
+    "vcpkg install zlib:x64-windows freetype:x64-windows bzip2:x64-windows cairo:x64-windows eigen3:x64-windows" ,
+    "vcpkg integrate install",
+]
+
+environment = { TMP='C:\\temp', TEMP='C:\\temp', RUNNER_TEMP='C:\\temp'}
+repair-wheel-command = ["delvewheel show -v --add-path C:\\libs {wheel}", "delvewheel repair -v  --add-path C:\\libs -w {dest_dir} {wheel}"]
