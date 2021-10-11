@@ -269,7 +269,7 @@ class BuildRDKit(build_ext_orig):
         
         cmds = [
             f"cmake -S . -B build {' '.join(options)} ",
-            f"cmake --build build --verbose -j 10 --config Release",
+            f"cmake --build build -j 10 --config Release",
             f"cmake --install build"
         ]    
         [check_call(c.split()) for c in cmds]
