@@ -279,7 +279,7 @@ class BuildRDKit(build_ext_orig):
 
 setup(
     name="rdkit-pypi",
-    version=f"2021.3.5.1",
+    version=f"2021.9.1b1",
     description="A collection of chemoinformatics and machine-learning software written in C++ and Python",
     author='Christopher Kuenneth',
     author_email='chris@kuenneth.dev',
@@ -298,9 +298,9 @@ setup(
     ext_modules=[
         RDKit(
             'rdkit',
-            # 1.73 does now compile on win for some reason
+            # 1.73 does not compile on win for some reason
             boost_download_url='https://boostorg.jfrog.io/artifactory/main/release/1.73.0/source/boost_1_73_0.tar.gz' if sys.platform != 'win32' else 'https://boostorg.jfrog.io/artifactory/main/release/1.67.0/source/boost_1_67_0.tar.gz',
-            rdkit_tag='Release_2021_03_5'
+            rdkit_tag='Release_2021_09_1b1'
             ),        
     ],
     cmdclass=dict(build_ext=BuildRDKit),

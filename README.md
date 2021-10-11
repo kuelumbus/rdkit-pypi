@@ -1,7 +1,7 @@
 
-# RDKit wheels 🔥🔥 `pip install rdkit-pypi` 🔥🔥
+# RDKit python wheels 🔥🔥 `pip install rdkit-pypi` 🔥🔥
 
-This repository holds the code to build [RDKit](https://github.com/rdkit/rdkit) platform wheels for Linux, macOS, and Windows. The wheels are available at the [PyPi](https://pypi.org/project/rdkit-pypi/) repository.
+This repository holds the code to build [RDKit](https://github.com/rdkit/rdkit) platform wheels for Linux, macOS, and Windows. The wheels are available at the [PyPi](https://pypi.org/project/rdkit-pypi/) repository and can be installed using pip (`pip install rdkit-pypi`).
 
 Please open an issue if you find something missing or not working as expected. 
 
