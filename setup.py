@@ -120,15 +120,22 @@ class BuildRDKit(build_ext_orig):
         # Download and unpack Boost
         os.chdir(str(boost_build_path))
 
+        if platform == "linux" or platform == "linux2":
+            boost_download_url = ext.boost_download_url['linux']
+        elif platform == 'win32':
+            boost_download_url = ext.boost_download_url['win']
+        elif platform == 'darwin':
+            boost_download_url = ext.boost_download_url['mac']
+
         cmds = [
-            f'wget {ext.boost_download_url} --no-check-certificate -q',
-            f'tar -xzf {Path(ext.boost_download_url).name}',
+            f'wget {boost_download_url} --no-check-certificate -q',
+            f'tar -xzf {Path(boost_download_url).name}',
             ]
 
         [check_call(c.split()) for c in cmds]
 
         # Compile Boost
-        os.chdir(Path(ext.boost_download_url).with_suffix('').with_suffix('').name)
+        os.chdir(Path(boost_download_url).with_suffix('').with_suffix('').name)
 
         # This fixes a bug in the boost configuration. Boost expects python include paths without "m"
         cmds = [
@@ -277,6 +284,9 @@ class BuildRDKit(build_ext_orig):
 
 
 
+
+
+
 setup(
     name="rdkit-pypi",
     version=f"2021.3.5.1",
@@ -299,7 +309,11 @@ setup(
         RDKit(
             'rdkit',
             # 1.73 does now compile on win for some reason
-            boost_download_url='https://boostorg.jfrog.io/artifactory/main/release/1.73.0/source/boost_1_73_0.tar.gz' if sys.platform != 'win32' else 'https://boostorg.jfrog.io/artifactory/main/release/1.69.0/source/boost_1_69_0.tar.gz',
+            boost_download_urls = {
+                'win': 'https://boostorg.jfrog.io/artifactory/main/release/1.69.0/source/boost_1_69_0.tar.gz',
+                'mac': 'https://boostorg.jfrog.io/artifactory/main/release/1.73.0/source/boost_1_73_0.tar.gz',
+                'linux': 'https://boostorg.jfrog.io/artifactory/main/release/1.73.0/source/boost_1_73_0.tar.gz',
+            },
             rdkit_tag='Release_2021_03_5'
             ),        
     ],
