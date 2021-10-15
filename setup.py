@@ -121,11 +121,11 @@ class BuildRDKit(build_ext_orig):
         os.chdir(str(boost_build_path))
 
         if platform == "linux" or platform == "linux2":
-            boost_download_url = ext.boost_download_url['linux']
+            boost_download_url = ext.boost_download_urls['linux']
         elif platform == 'win32':
-            boost_download_url = ext.boost_download_url['win']
+            boost_download_url = ext.boost_download_urls['win']
         elif platform == 'darwin':
-            boost_download_url = ext.boost_download_url['mac']
+            boost_download_url = ext.boost_download_urls['mac']
 
         cmds = [
             f'wget {boost_download_url} --no-check-certificate -q',
