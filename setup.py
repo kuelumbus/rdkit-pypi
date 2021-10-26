@@ -283,7 +283,7 @@ setup(
     description="A collection of chemoinformatics and machine-learning software written in C++ and Python",
     author='Christopher Kuenneth',
     author_email='chris@kuenneth.dev',
-    url="https://github.com/kuelumbus/rdkit_platform_wheels",
+    url="https://github.com/kuelumbus/rdkit-pypi",
     project_urls={
         "RDKit": "http://rdkit.org/",
         "RDKit on Github": "https://github.com/rdkit/rdkit",
