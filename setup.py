@@ -120,15 +120,22 @@ class BuildRDKit(build_ext_orig):
         # Download and unpack Boost
         os.chdir(str(boost_build_path))
 
+        if platform == "linux" or platform == "linux2":
+            boost_download_url = ext.boost_download_urls['linux']
+        elif platform == 'win32':
+            boost_download_url = ext.boost_download_urls['win']
+        elif platform == 'darwin':
+            boost_download_url = ext.boost_download_urls['mac']
+
         cmds = [
-            f'wget {ext.boost_download_url} --no-check-certificate -q',
-            f'tar -xzf {Path(ext.boost_download_url).name}',
+            f'wget {boost_download_url} --no-check-certificate -q',
+            f'tar -xzf {Path(boost_download_url).name}',
             ]
 
         [check_call(c.split()) for c in cmds]
 
         # Compile Boost
-        os.chdir(Path(ext.boost_download_url).with_suffix('').with_suffix('').name)
+        os.chdir(Path(boost_download_url).with_suffix('').with_suffix('').name)
 
         # This fixes a bug in the boost configuration. Boost expects python include paths without "m"
         cmds = [
@@ -269,11 +276,14 @@ class BuildRDKit(build_ext_orig):
         
         cmds = [
             f"cmake -S . -B build {' '.join(options)} ",
-            f"cmake --build build --verbose -j 10 --config Release",
+            f"cmake --build build -j 10 --config Release",
             f"cmake --install build"
         ]    
         [check_call(c.split()) for c in cmds]
         os.chdir(str(cwd))
+
+
+
 
 
 
@@ -298,8 +308,12 @@ setup(
     ext_modules=[
         RDKit(
             'rdkit',
-            # 1.73 does not compile on win for some reason
-            boost_download_url='https://boostorg.jfrog.io/artifactory/main/release/1.73.0/source/boost_1_73_0.tar.gz' if sys.platform != 'win32' else 'https://boostorg.jfrog.io/artifactory/main/release/1.67.0/source/boost_1_67_0.tar.gz',
+            # 1.73 does now compile on win for some reason
+            boost_download_urls = {
+                'win': 'https://boostorg.jfrog.io/artifactory/main/release/1.69.0/source/boost_1_69_0.tar.gz',
+                'mac': 'https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.gz',
+                'linux': 'https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.gz',
+            },
             rdkit_tag='Release_2021_09_2'
             ),        
     ],
