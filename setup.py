@@ -314,7 +314,7 @@ setup(
                 'mac': 'https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.gz',
                 'linux': 'https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.gz',
             },
-            rdkit_tag='Release_2021_03_5'
+            rdkit_tag='Release_2021_09_2'
             ),        
     ],
     cmdclass=dict(build_ext=BuildRDKit),
