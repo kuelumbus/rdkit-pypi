@@ -293,7 +293,7 @@ class BuildRDKit(build_ext_orig):
 
 setup(
     name="rdkit-pypi",
-    version=f"2021.9.2",
+    version=f"2021.9.2.1",
     description="A collection of chemoinformatics and machine-learning software written in C++ and Python",
     author='Christopher Kuenneth',
     author_email='chris@kuenneth.dev',
