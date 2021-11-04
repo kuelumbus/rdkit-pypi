@@ -59,7 +59,10 @@ class BuildRDKit(build_ext_orig):
             rdkit_pyfiles = list(rdkit_root.glob('python*'))[0] / 'site-packages' / 'rdkit' 
 
         # rdkit needs some files from the Data directory to run correctly 
-        rdkit_data_path = Path(self.build_temp).absolute() / 'rdkit' / 'Data'
+        # rdkit_data_path = Path(self.build_temp).absolute() / 'rdkit' / 'Data'
+        # Copy the installed Data directory. Some modules copy files to that directory during bulding rdkit
+        rdkit_data_path = Path(self.build_temp).absolute() / 'rdkit_install/' / 'shared' / 'Data'
+
 
         # replace line with _share=... with _share = os.path.dirname(__file__) in RDPaths.py
         rdpaths = rdkit_pyfiles / 'RDPaths.py'
