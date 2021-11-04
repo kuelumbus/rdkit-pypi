@@ -236,6 +236,7 @@ class BuildRDKit(build_ext_orig):
             f"-DRDK_BUILD_INCHI_SUPPORT=ON",
             f"-DRDK_BUILD_AVALON_SUPPORT=ON",
             f"-DRDK_BUILD_PYTHON_WRAPPERS=ON",
+            f"-DRDK_BUILD_YAEHMOP_SUPPORT=ON",
             f"-DRDK_INSTALL_INTREE=OFF",
 
             # Boost              
