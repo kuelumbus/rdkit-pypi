@@ -20,7 +20,7 @@ build-backend = "setuptools.build_meta"
 build-verbosity = "0"
 
 build = "cp36-* cp37-* cp38-* cp39-* cp310-*"
-skip = "*-win32 *-manylinux_i686 cp310-win*"
+skip = "*-win32 *-manylinux_i686 cp310-win* *-musllinux*"
 
 manylinux-x86_64-image = "manylinux2014"
 archs = "auto64"

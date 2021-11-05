@@ -59,7 +59,9 @@ class BuildRDKit(build_ext_orig):
             rdkit_pyfiles = list(rdkit_root.glob('python*'))[0] / 'site-packages' / 'rdkit' 
 
         # rdkit needs some files from the Data directory to run correctly 
-        rdkit_data_path = Path(self.build_temp).absolute() / 'rdkit' / 'Data'
+        # rdkit_data_path = Path(self.build_temp).absolute() / 'rdkit' / 'Data'
+        # Copy the installed Data directory. Some modules copy files to that directory during bulding rdkit
+        rdkit_data_path = Path(self.build_temp).absolute() / 'rdkit_install/' / 'share' / 'RDKit' /'Data'
 
         # replace line with _share=... with _share = os.path.dirname(__file__) in RDPaths.py
         rdpaths = rdkit_pyfiles / 'RDPaths.py'
@@ -236,6 +238,7 @@ class BuildRDKit(build_ext_orig):
             f"-DRDK_BUILD_INCHI_SUPPORT=ON",
             f"-DRDK_BUILD_AVALON_SUPPORT=ON",
             f"-DRDK_BUILD_PYTHON_WRAPPERS=ON",
+            f"-DRDK_BUILD_YAEHMOP_SUPPORT=ON",
             f"-DRDK_INSTALL_INTREE=OFF",
 
             # Boost              
@@ -289,7 +292,7 @@ class BuildRDKit(build_ext_orig):
 
 setup(
     name="rdkit-pypi",
-    version=f"2021.9.2",
+    version=f"2021.9.2.1",
     description="A collection of chemoinformatics and machine-learning software written in C++ and Python",
     author='Christopher Kuenneth',
     author_email='chris@kuenneth.dev',
