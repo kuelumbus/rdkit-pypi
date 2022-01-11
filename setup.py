@@ -307,6 +307,7 @@ setup(
     packages=find_packages(),
     install_requires=[
           'numpy>=1.19',
+          'Pillow',
       ],
     ext_modules=[
         RDKit(
