@@ -1,4 +1,5 @@
-# Test rdkit-pypi from pypi
+
+name: Test rdkit-pypi from PyPi
 
 on: 
   workflow_dispatch:
@@ -18,10 +19,15 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
-      - name: Install from pypi
+      - name: Install from PyPi
         run: |
           python --version
           python -m ensurepip --upgrade
           python -m pip install rdkit-pypi
+
+      - name: Run tests
+        run: |
+          python -m pip install pytest
+          pytest --exitfirst --verbose --failed-first
 
 
