@@ -1,7 +1,7 @@
 
 name: Test rdkit-pypi from PyPi
 
-on: 
+on:
   workflow_dispatch:
 
 jobs:
@@ -29,5 +29,3 @@ jobs:
         run: |
           python -m pip install pytest
           pytest --exitfirst --verbose --failed-first
-
-

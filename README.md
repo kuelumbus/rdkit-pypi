@@ -3,7 +3,7 @@
 
 This repository holds the code to build [RDKit](https://github.com/rdkit/rdkit) platform wheels for Linux, macOS, and Windows. The wheels are available at the [PyPi](https://pypi.org/project/rdkit-pypi/) repository and can be installed using pip (`pip install rdkit-pypi`).
 
-Please open an issue if you find something missing or not working as expected. 
+Please open an issue if you find something missing or not working as expected.
 
 [![PyPI version shields.io](https://img.shields.io/pypi/v/rdkit-pypi.svg?style=for-the-badge&logo=PyPI&logoColor=blue)](https://pypi.python.org/pypi/rdkit-pypi/)
 [![PyPI download month](https://img.shields.io/pypi/dm/rdkit-pypi.svg?style=for-the-badge&logo=PyPI)](https://pypi.python.org/pypi/rdkit-pypi/)
@@ -19,7 +19,7 @@ Please open an issue if you find something missing or not working as expected.
 | macOS (x86_64) | >= 10.9  | 3.6, 3.7, 3.8, 3.9, 3.10 |
 | Windows (x86_64) |   | 3.6, 3.7, 3.8, 3.9 |
 
-## Install RDKit 
+## Install RDKit
 
 ### PIP
 
@@ -36,7 +36,7 @@ poetry run python -c "from rdkit import Chem; print(Chem.MolToMolBlock(Chem.MolF
 
 ## Build wheels locally (Linux only)
 
-cibuildwheel uses `patchelf` (`apt install patchelf`) 
+cibuildwheel uses `patchelf` (`apt install patchelf`)
 
 ```bash
 git clone https://github.com/kuelumbus/rdkit_platform_wheels.git
