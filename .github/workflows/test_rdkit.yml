@@ -1,0 +1,27 @@
+# Test rdkit-pypi from pypi
+
+on: 
+  workflow_dispatch:
+
+jobs:
+  build_wheels:
+    name: Test rdkit-pypi from pypi
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-2019, ubuntu-20.04, macos-10.15]
+        python: ['3.7', '3.8', '3.9']
+
+    steps:
+      - uses: actions/setup-python@v2
+        name: Install Python
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install from pypi
+        run: |
+          python --version
+          python -m ensurepip --upgrade
+          python -m pip install rdkit-pypi
+
+

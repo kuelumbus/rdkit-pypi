@@ -2,7 +2,8 @@
 name: Build RDKit platform wheels
 
 # Build on every branch push, tag push, and pull request change:
-on: [push]
+on: 
+  workflow_dispatch:
 
 jobs:
   build_wheels:
