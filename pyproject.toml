@@ -41,7 +41,7 @@ before-all = [
 ]
 
 [tool.cibuildwheel.macos]
-archs = ["x86_64", "universal2", "arm64"]
+archs = ["x86_64", "arm64"]
 before-all = [
     "brew install cairo eigen gnu-sed",
     ]
