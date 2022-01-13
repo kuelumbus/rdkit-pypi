@@ -21,12 +21,12 @@ build-backend = "setuptools.build_meta"
 build-verbosity = "0"
 
 build = "cp37-* cp38-* cp39-* cp310-*"
-skip = "*-win32 cp310-win* *-musllinux* *_ppc64le *_s390x *_i686"
+skip = "cp310-win* *-musllinux*"
 
 manylinux-x86_64-image = "manylinux2014"
 
 [tool.cibuildwheel.linux]
-
+archs = ["x86_64", "i686", "aarch64"]
 before-all = [
     "yum install -y wget freetype-devel zlib-devel libpng12-devel pixman-devel eigen3-devel",
 
@@ -41,7 +41,7 @@ before-all = [
 ]
 
 [tool.cibuildwheel.macos]
-
+archs = ["x86_64", "universal2", "arm64"]
 before-all = [
     "brew install cairo eigen gnu-sed",
     ]
@@ -57,6 +57,8 @@ repair-wheel-command = [
 ]
 
 [tool.cibuildwheel.windows]
+archs = ["AMD64"]
+
 before-all = ["mkdir C:\\libs"]
 
 before-build = [
