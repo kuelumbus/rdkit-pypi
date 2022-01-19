@@ -27,7 +27,7 @@ manylinux-x86_64-image = "manylinux2014"
 
 [tool.cibuildwheel.linux]
 # archs = ["x86_64", "aarch64"]
-archs = ["aarch64"]
+archs = ["x86_64"]
 before-all = [
     "yum install -y wget freetype-devel zlib-devel libpng12-devel pixman-devel eigen3-devel",
 
@@ -43,7 +43,7 @@ before-all = [
 
 [tool.cibuildwheel.macos]
 # archs = ["x86_64", "arm64"]
-archs = ["arm64"]
+archs = ["x86_64"]
 before-all = [
     "brew install cairo eigen gnu-sed",
     ]
