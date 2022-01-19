@@ -227,11 +227,47 @@ class BuildRDKit(build_ext_orig):
     #     check_call(["ls", towin(boost_install_path / "lib")])
 
     #     os.chdir(str(cwd))
+    #     using python : 3.8 : "/opt/python/cp38-cp38/" ;
+
+    def run_conan(self, toolchain_file_path):
+        """Run the Conan build"""
+        boost_version = "1.75.0"
+        # This version does not link libpython*.so
+        # libpythons not available on manylinux images
+        mod_conan_path = "conan_boost_mod"
+        check_call(
+            [
+                "conan",
+                "export",
+                f"{mod_conan_path}/all/",
+                f"{boost_version}@chris/mod_boost",
+            ]
+        )
+
+        check_call(
+            [
+                "conan",
+                "install",
+                f"boost/{boost_version}@chris/mod_boost",
+                "-g",
+                "cmake_paths",
+                f"--build=boost",
+                "-if",
+                f"{toolchain_file_path}",
+                "-o",
+                "boost:shared=True",
+                "-o",
+                "boost:without_python=False",
+                "-o",
+                f"boost:python_executable={sys.executable}",
+            ]
+        )
 
     def build_rdkit(self, ext):
         """Build RDKit"""
 
         cwd = Path().absolute()
+
         build_path = Path(self.build_temp).absolute()
         build_path.mkdir(parents=True, exist_ok=True)
         os.chdir(str(build_path))
@@ -240,24 +276,7 @@ class BuildRDKit(build_ext_orig):
         conan_path.mkdir(parents=True, exist_ok=True)
 
         # Install boost via conan
-        cmd = [
-            "conan",
-            "install",
-            "boost/1.75.0@",
-            "-g",
-            "cmake_paths",
-            f"--build=boost",
-            "-if",
-            f"{conan_path}",
-            "-o",
-            "boost:shared=True",
-            "-o",
-            "boost:without_python=False",
-            "-o",
-            f"boost:python_executable={sys.executable}",
-        ]
-
-        check_call(cmd)
+        self.run_conan(conan_path)
 
         # boost_install_path = Path(self.build_temp).absolute() / "boost_install"
         rdkit_install_path = Path(self.build_temp).absolute() / "rdkit_install"
