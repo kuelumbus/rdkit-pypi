@@ -229,9 +229,9 @@ class BuildRDKit(build_ext_orig):
     #     os.chdir(str(cwd))
     #     using python : 3.8 : "/opt/python/cp38-cp38/" ;
 
-    def run_conan(self, toolchain_file_path):
+    def run_conan(self, conan_toolchain_path):
         """Run the Conan build"""
-        boost_version = "1.75.0"
+        boost_version = "1.72.0"
         # This version does not link libpython*.so
         # libpythons not available on manylinux images
         mod_conan_path = "conan_boost_mod"
@@ -253,7 +253,7 @@ class BuildRDKit(build_ext_orig):
                 "cmake_paths",
                 f"--build=boost",
                 "-if",
-                f"{toolchain_file_path}",
+                f"{conan_toolchain_path}",
                 "-o",
                 "boost:shared=True",
                 "-o",
@@ -268,11 +268,11 @@ class BuildRDKit(build_ext_orig):
 
         cwd = Path().absolute()
 
-        conan_path = Path(self.build_temp).absolute() / "conan"
-        conan_path.mkdir(parents=True, exist_ok=True)
+        conan_toolchain_path = Path(self.build_temp).absolute() / "conan"
+        conan_toolchain_path.mkdir(parents=True, exist_ok=True)
 
         # Install boost via conan
-        self.run_conan(conan_path)
+        self.run_conan(conan_toolchain_path)
 
         build_path = Path(self.build_temp).absolute()
         build_path.mkdir(parents=True, exist_ok=True)
@@ -297,7 +297,7 @@ class BuildRDKit(build_ext_orig):
         options = [
             # Defines the paths to many include and libaray paths for windows
             # Does not work for some reason??
-            f"-DCMAKE_TOOLCHAIN_FILE={conan_path / 'conan_paths.cmake'}",
+            f"-DCMAKE_TOOLCHAIN_FILE={conan_toolchain_path / 'conan_paths.cmake'}",
             # f"-DVCPKG_TARGET_TRIPLET=x64-windows-static" if sys.platform == 'win32' else "",
             f"-DPYTHON_EXECUTABLE={sys.executable}",
             f'-DPYTHON_INCLUDE_DIR={get_paths()["include"]}',
