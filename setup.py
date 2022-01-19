@@ -33,7 +33,7 @@ class BuildRDKit(build_ext_orig):
     def run(self):
         for ext in self.extensions:
             # Build boot
-            self.build_boost(ext)
+            # self.build_boost(ext)
             # Then RDKit
             self.build_rdkit(ext)
             # Copy files so that a wheels package can be created
@@ -132,117 +132,139 @@ class BuildRDKit(build_ext_orig):
             [copy_file(i, "C://libs") for i in libs_boost_win]
             [copy_file(i, "C://libs") for i in libs_vcpkg]
 
-    def build_boost(self, ext):
-        """Build the Boost libraries"""
+    # def build_boost(self, ext):
+    #     """Build the Boost libraries"""
 
-        cwd = Path().absolute()
-        boost_build_path = Path(self.build_temp).absolute() / "boost"
-        boost_build_path.mkdir(parents=True, exist_ok=True)
+    #     cwd = Path().absolute()
+    #     boost_build_path = Path(self.build_temp).absolute() / "boost"
+    #     boost_build_path.mkdir(parents=True, exist_ok=True)
 
-        boost_install_path = Path(self.build_temp).absolute() / "boost_install"
-        boost_install_path.mkdir(parents=True, exist_ok=True)
+    #     boost_install_path = Path(self.build_temp).absolute() / "boost_install"
+    #     boost_install_path.mkdir(parents=True, exist_ok=True)
 
-        # Download and unpack Boost
-        os.chdir(str(boost_build_path))
+    #     # Download and unpack Boost
+    #     os.chdir(str(boost_build_path))
 
-        if platform == "linux" or platform == "linux2":
-            boost_download_url = ext.boost_download_urls["linux"]
-        elif platform == "win32":
-            boost_download_url = ext.boost_download_urls["win"]
-        elif platform == "darwin":
-            boost_download_url = ext.boost_download_urls["mac"]
+    #     if platform == "linux" or platform == "linux2":
+    #         boost_download_url = ext.boost_download_urls["linux"]
+    #     elif platform == "win32":
+    #         boost_download_url = ext.boost_download_urls["win"]
+    #     elif platform == "darwin":
+    #         boost_download_url = ext.boost_download_urls["mac"]
 
-        cmds = [
-            f"wget {boost_download_url} --no-check-certificate -q",
-            f"tar -xzf {Path(boost_download_url).name}",
-        ]
+    #     cmds = [
+    #         f"wget {boost_download_url} --no-check-certificate -q",
+    #         f"tar -xzf {Path(boost_download_url).name}",
+    #     ]
 
-        [check_call(c.split()) for c in cmds]
+    #     [check_call(c.split()) for c in cmds]
 
-        # Compile Boost
-        os.chdir(Path(boost_download_url).with_suffix("").with_suffix("").name)
+    #     # Compile Boost
+    #     os.chdir(Path(boost_download_url).with_suffix("").with_suffix("").name)
 
-        # This fixes a bug in the boost configuration. Boost expects python include paths without "m"
-        cmds = [
-            # for linux
-            "ln -fs /opt/python/cp36-cp36m/include/python3.6m /opt/python/cp36-cp36m/include/python3.6",
-            "ln -fs /opt/python/cp37-cp37m/include/python3.7m /opt/python/cp37-cp37m/include/python3.7",
-            # same for MacOS
-            "ln -fs /Library/Frameworks/Python.framework/Versions/3.6/include/python3.6m /Library/Frameworks/Python.framework/Versions/3.6/include/python3.6",
-            "ln -fs /Library/Frameworks/Python.framework/Versions/3.7/include/python3.7m /Library/Frameworks/Python.framework/Versions/3.7/include/python3.7",
-        ]
-        # Ok to fail
-        [call(c.split()) for c in cmds]
+    #     # This fixes a bug in the boost configuration. Boost expects python include paths without "m"
+    #     cmds = [
+    #         # for linux
+    #         "ln -fs /opt/python/cp36-cp36m/include/python3.6m /opt/python/cp36-cp36m/include/python3.6",
+    #         "ln -fs /opt/python/cp37-cp37m/include/python3.7m /opt/python/cp37-cp37m/include/python3.7",
+    #         # same for MacOS
+    #         "ln -fs /Library/Frameworks/Python.framework/Versions/3.6/include/python3.6m /Library/Frameworks/Python.framework/Versions/3.6/include/python3.6",
+    #         "ln -fs /Library/Frameworks/Python.framework/Versions/3.7/include/python3.7m /Library/Frameworks/Python.framework/Versions/3.7/include/python3.7",
+    #     ]
+    #     # Ok to fail
+    #     [call(c.split()) for c in cmds]
 
-        # Change commands for windows
-        if sys.platform == "win32":
+    #     # Change commands for windows
+    #     if sys.platform == "win32":
 
-            cmds = [
-                f"bootstrap.bat",
-            ]
-            [check_call(c.split()) for c in cmds]
+    #         cmds = [
+    #             f"bootstrap.bat",
+    #         ]
+    #         [check_call(c.split()) for c in cmds]
 
-            # Compile for many python versions at the same time?
-            python_inc = Path(get_paths()["include"])
-            python_libs = Path(get_paths()["data"]) / "libs"
-            python_exe = Path(get_paths()["data"]) / "python.exe"
+    #         # Compile for many python versions at the same time?
+    #         python_inc = Path(get_paths()["include"])
+    #         python_libs = Path(get_paths()["data"]) / "libs"
+    #         python_exe = Path(get_paths()["data"]) / "python.exe"
 
-            zlib_include = vcpkg_path / "packages/zlib_x64-windows/include"
-            zlib_lib = vcpkg_path / "packages/zlib_x64-windows/lib"
+    #         zlib_include = vcpkg_path / "packages/zlib_x64-windows/include"
+    #         zlib_lib = vcpkg_path / "packages/zlib_x64-windows/lib"
 
-            bzip2_include = vcpkg_path / "packages/bzip2_x64-windows/include"
-            bzip2_lib = vcpkg_path / "packages/bzip2_x64-windows/lib"
-            with open("project-config.jam", "a") as fl:
-                print(
-                    f"using python : {sys.version_info[0]}.{sys.version_info[1]} : {towin(python_exe)} : {towin(python_inc)} : {towin(python_libs)} ;",
-                    file=fl,
-                )
-                print(f" ", file=fl)
-                print(
-                    f"using zlib : 2 : <include>{towin(zlib_include)} <search>{towin(zlib_lib)} ;",
-                    file=fl,
-                )
-                print(f" ", file=fl)
-                print(
-                    f"using bzip2 : 1 : <include>{towin(bzip2_include)} <search>{towin(bzip2_lib)} ;",
-                    file=fl,
-                )
-                print(f" ", file=fl)
+    #         bzip2_include = vcpkg_path / "packages/bzip2_x64-windows/include"
+    #         bzip2_lib = vcpkg_path / "packages/bzip2_x64-windows/lib"
+    #         with open("project-config.jam", "a") as fl:
+    #             print(
+    #                 f"using python : {sys.version_info[0]}.{sys.version_info[1]} : {towin(python_exe)} : {towin(python_inc)} : {towin(python_libs)} ;",
+    #                 file=fl,
+    #             )
+    #             print(f" ", file=fl)
+    #             print(
+    #                 f"using zlib : 2 : <include>{towin(zlib_include)} <search>{towin(zlib_lib)} ;",
+    #                 file=fl,
+    #             )
+    #             print(f" ", file=fl)
+    #             print(
+    #                 f"using bzip2 : 1 : <include>{towin(bzip2_include)} <search>{towin(bzip2_lib)} ;",
+    #                 file=fl,
+    #             )
+    #             print(f" ", file=fl)
 
-            cmds = [
-                f"./b2 address-model=64 architecture=x86 link=static link=shared threading=single threading=multi "
-                f"variant=release -d0 --abbreviate-paths "
-                f"--with-python --with-serialization --with-iostreams --with-system --with-regex --with-program_options "
-                f"--prefix={boost_install_path} -j 20 install",
-            ]
-            [check_call(c.split()) for c in cmds]
+    #         cmds = [
+    #             f"./b2 address-model=64 architecture=x86 link=static link=shared threading=single threading=multi "
+    #             f"variant=release -d0 --abbreviate-paths "
+    #             f"--with-python --with-serialization --with-iostreams --with-system --with-regex --with-program_options "
+    #             f"--prefix={boost_install_path} -j 20 install",
+    #         ]
+    #         [check_call(c.split()) for c in cmds]
 
-        else:
-            cmds = [
-                f"./bootstrap.sh --with-libraries=python,serialization,iostreams,system,regex --with-python={sys.executable} --with-python-root={Path(sys.executable).parent}/..",
-                f"./b2 install --prefix={boost_install_path} -j 20",
-            ]
-            [check_call(c.split()) for c in cmds]
+    #     else:
+    #         cmds = [
+    #             f"./bootstrap.sh --with-libraries=python,serialization,iostreams,system,regex --with-python={sys.executable} --with-python-root={Path(sys.executable).parent}/..",
+    #             f"./b2 install --prefix={boost_install_path} -j 20",
+    #         ]
+    #         [check_call(c.split()) for c in cmds]
 
-        check_call(["ls", towin(boost_install_path / "lib")])
+    #     check_call(["ls", towin(boost_install_path / "lib")])
 
-        os.chdir(str(cwd))
+    #     os.chdir(str(cwd))
 
     def build_rdkit(self, ext):
         """Build RDKit"""
 
         cwd = Path().absolute()
-        rdkit_build_path = Path(self.build_temp).absolute()
-        rdkit_build_path.mkdir(parents=True, exist_ok=True)
+        build_path = Path(self.build_temp).absolute()
+        build_path.mkdir(parents=True, exist_ok=True)
+        os.chdir(str(build_path))
 
-        boost_install_path = Path(self.build_temp).absolute() / "boost_install"
+        conan_path = Path(self.build_temp).absolute() / "conan"
+        conan_path.mkdir(parents=True, exist_ok=True)
 
+        # Install boost via conan
+        cmd = [
+            "conan",
+            "install",
+            "boost/1.75.0@",
+            "-g",
+            "cmake_paths",
+            f"--build={conan_path}",
+            "-if",
+            "boost",
+            "-o",
+            "boost:shared=True",
+            "-o",
+            "boost:without_python=False",
+            "-o",
+            f"boost:python_executable={sys.executable}",
+        ]
+
+        check_call(cmd)
+
+        # boost_install_path = Path(self.build_temp).absolute() / "boost_install"
         rdkit_install_path = Path(self.build_temp).absolute() / "rdkit_install"
         rdkit_install_path.mkdir(parents=True, exist_ok=True)
 
         # Clone RDKit from git at rdkit_tag
-        os.chdir(str(rdkit_build_path))
-        cmds = [f"git clone -b {ext.rdkit_tag} https://github.com/rdkit/rdkit"]
+        cmds = [f"git clone https://github.com/rdkit/rdkit"]
         [check_call(c.split()) for c in cmds]
 
         os.chdir(str("rdkit"))
@@ -256,7 +278,7 @@ class BuildRDKit(build_ext_orig):
         options = [
             # Defines the paths to many include and libaray paths for windows
             # Does not work for some reason??
-            # f"-DCMAKE_TOOLCHAIN_FILE=C:\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake" if sys.platform == 'win32' else "",
+            f"-DCMAKE_TOOLCHAIN_FILE={conan_path / 'conan_paths.cmake'}",
             # f"-DVCPKG_TARGET_TRIPLET=x64-windows-static" if sys.platform == 'win32' else "",
             f"-DPYTHON_EXECUTABLE={sys.executable}",
             f'-DPYTHON_INCLUDE_DIR={get_paths()["include"]}',
@@ -267,7 +289,7 @@ class BuildRDKit(build_ext_orig):
             f"-DRDK_BUILD_YAEHMOP_SUPPORT=ON",
             f"-DRDK_INSTALL_INTREE=OFF",
             # Boost
-            f"-DBOOST_ROOT={boost_install_path}",
+            # f"-DBOOST_ROOT={boost_install_path}",
             f"-DBoost_NO_SYSTEM_PATHS=ON",
             f"-DBoost_DEBUG=OFF",
             # Does not work (this is fixed in future rdkit versions I believe)
