@@ -18,7 +18,7 @@ index e0d7c90f51d..4e913c2b3f3 100644
 -import tools/boost_install/boost-install ;
 +# Backslash because of `bcp --namespace`
 +import tools/boost\_install/boost-install ;
-
+ 
  path-constant BOOST_ROOT : . ;
  constant BOOST_VERSION : 1.71.0 ;
 @@ -311,8 +312,8 @@ rule boost-install ( libraries * )

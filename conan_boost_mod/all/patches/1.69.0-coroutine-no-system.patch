@@ -18,3 +18,4 @@ This library links to boost_system, even though that library is header-only.
 +
        <link>shared:<library>../../thread/build//boost_thread
      ;
+ 

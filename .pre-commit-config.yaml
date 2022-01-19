@@ -3,9 +3,13 @@ repos:
     rev: v2.3.0
     hooks:
     -   id: check-yaml
+        exclude: conan_boost_mod
     -   id: end-of-file-fixer
+        exclude: conan_boost_mod
     -   id: trailing-whitespace
+        exclude: conan_boost_mod
 -   repo: https://github.com/psf/black
     rev: 21.12b0
     hooks:
     -   id: black
+        exclude: conan_boost_mod/

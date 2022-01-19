@@ -23,7 +23,7 @@ diff -Naur a/libs/beast/CHANGELOG.md b/libs/beast/CHANGELOG.md
 +--------------------------------------------------------------------------------
 +
  Version 248:
-
+ 
  * Don't use a moved-from handler
 diff -Naur a/libs/beast/test/beast/websocket/ping.cpp b/libs/beast/test/beast/websocket/ping.cpp
 --- a/libs/beast/test/beast/websocket/ping.cpp	2019-05-06 22:02:54.342528673 -0400
@@ -31,19 +31,19 @@ diff -Naur a/libs/beast/test/beast/websocket/ping.cpp b/libs/beast/test/beast/we
 @@ -10,8 +10,11 @@
  // Test that header file is self-contained.
  #include <boost/beast/websocket/stream.hpp>
-
+ 
 +#include <boost/beast/_experimental/test/tcp.hpp>
 +
  #include "test.hpp"
-
+ 
 +#include <boost/asio/ip/tcp.hpp>
  #include <boost/asio/io_context.hpp>
  #include <boost/asio/strand.hpp>
-
+ 
 @@ -366,6 +369,46 @@
              BEAST_EXPECT(count == 3);
          });
-
+ 
 +        // suspend idle ping
 +        {
 +            using socket_type =

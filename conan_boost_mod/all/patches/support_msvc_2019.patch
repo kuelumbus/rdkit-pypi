@@ -32,7 +32,7 @@ index eb7c537bc3..5f68b60730 100644
  :: See accompanying file LICENSE at https://github.com/node4good/windows-autoconf
 -:: version: 1.15.4
 +:: Forked from version: 1.15.4
-
+ 
  @if not defined DEBUG_HELPER @ECHO OFF
  setlocal
 @@ -14,19 +15,44 @@ where vswhere 2> nul > nul
@@ -54,7 +54,7 @@ index eb7c537bc3..5f68b60730 100644
      set "VS150COMNTOOLS=%%i\Common7\Tools\"
      exit /B 0
  )
-
+ 
 +REM Visual Studio 2019 (16.X, toolset 14.2)
 +set VSWHERE_LMT=-version "[16.0,17.0)"
 +SET VSWHERE_ARGS=-latest -products * %VSWHERE_REQ% %VSWHERE_PRP% %VSWHERE_LMT%
@@ -91,7 +91,7 @@ index 5f68b60730..d642a578ef 100644
 @@ -40,8 +40,8 @@ for /f "usebackq tokens=*" %%i in (`vswhere %VSWHERE_ARGS%`) do (
      exit /B 0
  )
-
+ 
 -REM Visual Studio Next (17.X, toolset 14.3???)
 -set VSWHERE_LMT=-version "[17.0,18.0)"
 +REM Visual Studio Unknown Version, Beyond 2019
@@ -190,19 +190,19 @@ index e6c0b60358..cbde9eb136 100644
 @@ -21,6 +21,7 @@ http://msdn.microsoft.com/visualc/[Microsoft Visual C++] command-line
  tools on Microsoft Windows. The supported products and versions of
  command line tools are listed below:
-
+ 
 +* Visual Studio 2019-14.2
  * Visual Studio 2017—14.1
  * Visual Studio 2015—14.0
  * Visual Studio 2013—12.0
 @@ -37,7 +38,7 @@ equal to `msvc-[version number]` for example to build with Visual Studio
  2017 one could run:
-
+ 
  ----
 -.\b2 toolset=msvc-14.1 target
 +.\b2 toolset=msvc-14.2 target
  ----
-
+ 
  The `msvc` module is initialized using the following syntax:
 @@ -1015,7 +1016,15 @@ local rule generate-setup-cmd ( version : command : parent : options * : cpu : g
          }
@@ -222,15 +222,15 @@ index e6c0b60358..cbde9eb136 100644
                  if $(.debug-configuration)
                  {
 @@ -1173,9 +1182,9 @@ local rule configure-really ( version ? : options * )
-
+ 
          local command = [ feature.get-values <command> : $(options) ] ;
-
+ 
 -        # For 14.1 we need the exact version as MS is planning rolling updates
 +        # For 14.1+ we need the exact version as MS is planning rolling updates
          # that will cause our `setup-cmd` to become invalid
 -        exact-version = [ MATCH "(14\.10\.[0-9\.]+)" : $(command) ] ;
 +        exact-version = [ MATCH "(14\.[1-9][0-9]\.[0-9\.]+)" : $(command) ] ;
-
+ 
          # If version is specified, we try to search first in default paths, and
          # only then in PATH.
 @@ -1204,7 +1213,11 @@ local rule configure-really ( version ? : options * )
@@ -283,7 +283,7 @@ index e6c0b60358..cbde9eb136 100644
 +                pseudo_env_VSCOMNTOOLS = [ path.native [ path.join $(shell_ret) "\\Common7\\Tools" ] ] ;
              }
          }
-
+ 
 @@ -1557,9 +1588,9 @@ local rule default-path ( version )
          for local env in $(.version-$(version)-env)
          {
@@ -298,19 +298,19 @@ index e6c0b60358..cbde9eb136 100644
              {
 @@ -1956,7 +1987,7 @@ if [ MATCH (--debug-configuration) : [ modules.peek : ARGV ] ]
                       armv7 armv7s ;
-
+ 
  # Known toolset versions, in order of preference.
 -.known-versions = 14.1 14.0 12.0 11.0 10.0 10.0express 9.0 9.0express 8.0 8.0express 7.1
 +.known-versions = 14.2 14.1 14.0 12.0 11.0 10.0 10.0express 9.0 9.0express 8.0 8.0express 7.1
      7.1toolkit 7.0 6.0 ;
-
+ 
  # Version aliases.
 @@ -1970,6 +2001,7 @@ if [ MATCH (--debug-configuration) : [ modules.peek : ARGV ] ]
  .version-alias-12 = 12.0 ;
  .version-alias-14 = 14.0 ;
  .version-alias-14.1 = 14.1 ;
 +.version-alias-14.2 = 14.2 ;
-
+ 
  # Names of registry keys containing the Visual C++ installation path (relative
  # to "HKEY_LOCAL_MACHINE\SOFTWARE\\Microsoft").
 @@ -1999,6 +2031,11 @@ if [ MATCH (--debug-configuration) : [ modules.peek : ARGV ] ]
@@ -322,7 +322,7 @@ index e6c0b60358..cbde9eb136 100644
 +    "Microsoft Visual Studio/2017/*/VC/Tools/MSVC/*/bin/Host*/*"
 +    ;
 +.version-14.2-env = VS150COMNTOOLS ProgramFiles ProgramFiles(x86) ;
-
+ 
  # Auto-detect all the available msvc installations on the system.
  auto-detect-toolset-versions ;
 
@@ -404,7 +404,7 @@ index cbde9eb136..185f5f2a1b 100644
 +            all-env-paths = [ sequence.transform os.environ
 +                : $(.version-$(version)-env) ] ;
          }
-
+ 
          # Check environment or previous path_VS150
 -        for local env in $(.version-$(version)-env)
 +        for local env-path in $(all-env-paths)
@@ -430,7 +430,7 @@ index cbde9eb136..185f5f2a1b 100644
      ;
 -.version-14.2-env = VS150COMNTOOLS ProgramFiles ProgramFiles(x86) ;
 +.version-14.2-env = VS160COMNTOOLS ProgramFiles ProgramFiles(x86) ;
-
+ 
  # Auto-detect all the available msvc installations on the system.
  auto-detect-toolset-versions ;
 
@@ -479,7 +479,7 @@ index 185f5f2a1b..dda22b4c5f 100644
  {
 -    local v = $(version) ;
 +    local command = [ feature.get-values <command> : $(options) ] ;
-
+ 
 -    # Decide what the 'default' version is.
 -    if ! $(v)
 +    if ! $(version) && ! $(command)
@@ -506,7 +506,7 @@ index 185f5f2a1b..dda22b4c5f 100644
 -        # been auto-detected.
 -        version ?= "default" ;
      }
-
+ 
 -    # Version alias -> real version number.
 -    version = [ resolve-possible-msvc-version-alias $(version) ] ;
 -
@@ -576,7 +576,7 @@ index 185f5f2a1b..dda22b4c5f 100644
              ECHO ;
 +            command ?= cl.exe ;
          }
-
+ 
 -        common.handle-options msvc : $(conditions) : $(command) : $(options) ;
 -
          if ! $(version)
@@ -637,9 +637,9 @@ index 185f5f2a1b..dda22b4c5f 100644
 +        exact-version = [ MATCH "(14\.[1-9][0-9]\.[0-9\.]+)" : $(command) ] ;
 +
 +        common.handle-options msvc : $(conditions) : $(command) : $(options) ;
-
+ 
          # Generate and register setup command.
-
+ 
 @@ -1458,7 +1470,7 @@ local rule configure-really ( version ? : options * )
              {
                  for local cpu-condition in $(cpu-conditions)
@@ -648,7 +648,7 @@ index 185f5f2a1b..dda22b4c5f 100644
 +                    ECHO "notice: [msvc-cfg] condition: '$(cpu-condition)', setup: '$(setup-$(c):J= )'" ;
                  }
              }
-
+ 
 @@ -1536,15 +1548,7 @@ local rule configure-really ( version ? : options * )
  #
  local rule default-path ( version )
@@ -668,8 +668,8 @@ index 185f5f2a1b..dda22b4c5f 100644
          local pseudo_env_VSCOMNTOOLS ;
 @@ -1611,28 +1615,6 @@ local rule default-path ( version )
  }
-
-
+ 
+ 
 -# Returns either the default installation path (if 'version' is not empty) or
 -# list of all known default paths (if no version is given)
 -#
@@ -692,12 +692,12 @@ index 185f5f2a1b..dda22b4c5f 100644
 -    return $(possible-paths) ;
 -}
 -
-
+ 
  rule get-rspline ( target : lang-opt )
  {
 @@ -1908,7 +1890,7 @@ local rule register-configuration ( version : path ? )
              }
-
+ 
              $(.versions).register $(version) ;
 -            $(.versions).set $(version) : options : <command>$(command) ;
 +            $(.versions).set $(version) : default-command : $(command) ;
@@ -710,6 +710,6 @@ index 185f5f2a1b..dda22b4c5f 100644
  .version-alias-14 = 14.0 ;
 -.version-alias-14.1 = 14.1 ;
 -.version-alias-14.2 = 14.2 ;
-
+ 
  # Names of registry keys containing the Visual C++ installation path (relative
  # to "HKEY_LOCAL_MACHINE\SOFTWARE\\Microsoft").

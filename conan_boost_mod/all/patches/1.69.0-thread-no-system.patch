@@ -4,7 +4,7 @@ This library links to boost_system, even though that library is header-only.
 @@ -54,7 +54,7 @@
        #<define>BOOST_SYSTEM_NO_DEPRECATED
        #<define>BOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS
-
+ 
 -      <library>/boost/system//boost_system
 +
         #-pedantic -ansi -std=gnu++0x -Wextra -fpermissive
@@ -17,5 +17,5 @@ This library links to boost_system, even though that library is header-only.
 -      <library>/boost/system//boost_system
 +
      ;
-
+ 
  rule tag ( name : type ? : property-set )

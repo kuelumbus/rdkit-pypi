@@ -4,7 +4,7 @@ index 578e722..b715f59 100644
 +++ b/libs/locale/build/Jamfile.v2
 @@ -17,6 +17,7 @@ import feature ;
  # Features
-
+ 
  feature.feature boost.locale.iconv : on off : optional propagated ;
 +feature.feature boost.locale.iconv.lib : libc libiconv : optional propagated ;
  feature.feature boost.locale.icu : on off :  optional propagated ;
@@ -30,7 +30,7 @@ index 578e722..b715f59 100644
 +        {
 +            EXIT "- Boost.Locale failed to find iconv (libc) library to be built." ;
          }
-         else
+         else 
          {
 @@ -225,6 +234,14 @@ rule configure-full ( properties * : flags-only )
                  found-iconv = true ;
@@ -45,15 +45,16 @@ index 578e722..b715f59 100644
 +        {
 +            EXIT "- Boost.Locale failed to find iconv library to be built." ;
          }
-     }
-     if $(found-iconv)
+     }        
+     if $(found-iconv) 
 @@ -265,6 +282,10 @@ rule configure-full ( properties * : flags-only )
-                       <library>../../thread/build//boost_thread
+                       <library>../../thread/build//boost_thread 
                        ;
          }
 +        else
 +        {
 +            EXIT "- Boost.Locale failed to find ICU library to be built." ;
 +        }
-
+ 
      }
+         

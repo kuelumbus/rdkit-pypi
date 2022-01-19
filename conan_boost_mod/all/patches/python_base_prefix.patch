@@ -13,13 +13,13 @@ diff -ru a/tools/build/src/tools/python.jam b/tools/build/src/tools/python.jam
 @@ -786,10 +786,10 @@ local rule configure ( version ? : cmd-or-prefix ? : includes * : libraries ? :
                  {
                      debug-message ...requested configuration matched! ;
-
+ 
 -                    exec-prefix = $(sys.exec_prefix) ;
 +                    exec-prefix = $(sys.base_exec_prefix) ;
-
+ 
                      compute-default-paths $(target-os) : $(sys.version) :
 -                        $(sys.prefix) : $(sys.exec_prefix) ;
 +                        $(sys.base_prefix) : $(sys.base_exec_prefix) ;
-
+ 
                      version = $(sys.version) ;
                      interpreter-cmd ?= $(cmd) ;

@@ -13,13 +13,13 @@ index 19eaca51c9..5b9b350854 100644
 @@ -454,6 +455,9 @@ rule handle-options ( toolset : condition * : command * : options * )
      toolset.flags $(toolset).compile.c++     OPTIONS $(condition) :
          [ feature.get-values <cxxflags>     : $(options) ] : unchecked ;
-
+ 
 +    toolset.flags $(toolset).compile.asm     OPTIONS $(condition) :
 +        [ feature.get-values <asmflags>     : $(options) ] : unchecked ;
 +
      toolset.flags $(toolset).compile.fortran OPTIONS $(condition) :
          [ feature.get-values <fflags>       : $(options) ] : unchecked ;
-
+ 
 diff --git a/tools/build/src/tools/common.py b/tools/build/src/tools/common.py
 index d0e2a387e0..8f6cbfff1a 100644
 --- a/tools/build/src/tools/common.py
@@ -39,3 +39,4 @@ index d0e2a387e0..8f6cbfff1a 100644
 +    toolset.flags(tool + '.compile.asm', 'OPTIONS', condition, feature.get_values('<asmflags>', options))
      toolset.flags(tool + '.compile.fortran', 'OPTIONS', condition, feature.get_values('<fflags>', options))
      toolset.flags(tool + '.link', 'OPTIONS', condition, feature.get_values('<linkflags>', options))
+ 

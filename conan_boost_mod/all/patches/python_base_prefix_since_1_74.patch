@@ -9,18 +9,18 @@ index cf8c379..3e3f095 100644
 -        local sys-elements = version platform prefix exec_prefix executable ;
 +        local sys-elements = version platform base_prefix base_exec_prefix executable ;
          local sys.$(sys-elements) ;
-
+ 
          # Compute the string Python's sys.platform needs to match. If not
 @@ -789,10 +789,10 @@ local rule configure ( version ? : cmd-or-prefix ? : includes * : libraries ? :
                  {
                      debug-message ...requested configuration matched! ;
-
+ 
 -                    exec-prefix = $(sys.exec_prefix) ;
 +                    exec-prefix = $(sys.base_exec_prefix) ;
-
+ 
                      compute-default-paths $(target-os) : $(sys.version) :
 -                        $(sys.prefix) : $(sys.exec_prefix) ;
 +                        $(sys.base_prefix) : $(sys.base_exec_prefix) ;
-
+ 
                      version = $(sys.version) ;
                      interpreter-cmd ?= $(cmd) ;

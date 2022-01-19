@@ -4,7 +4,7 @@ diff -ru a/tools/build/src/tools/mpi.jam b/tools/build/src/tools/mpi.jam
 @@ -66,6 +66,8 @@
  import type ;
  import path ;
-
+ 
 +import errors ;
 +
  # Make this module a project
@@ -18,7 +18,7 @@ diff -ru a/tools/build/src/tools/mpi.jam b/tools/build/src/tools/mpi.jam
 +  if ! $(.configured)
 +  {
 +	 errors.user-error "MPI not configured" ;
-+  }
++  }     
  }
-
+ 
  # States whether MPI has bee configured

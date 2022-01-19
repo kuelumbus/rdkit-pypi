@@ -4,8 +4,8 @@ This library links to boost_system, even though that library is header-only.
 @@ -13,6 +13,6 @@
    : usage-requirements <link>shared:<define>BOOST_RANDOM_DYN_LINK
  ;
-
+ 
 -lib boost_random : [ glob *.cpp ] /boost//system ;
 +lib boost_random : [ glob *.cpp ] ;
-
+ 
  boost-install boost_random ;
