@@ -268,15 +268,15 @@ class BuildRDKit(build_ext_orig):
 
         cwd = Path().absolute()
 
-        build_path = Path(self.build_temp).absolute()
-        build_path.mkdir(parents=True, exist_ok=True)
-        os.chdir(str(build_path))
-
         conan_path = Path(self.build_temp).absolute() / "conan"
         conan_path.mkdir(parents=True, exist_ok=True)
 
         # Install boost via conan
         self.run_conan(conan_path)
+
+        build_path = Path(self.build_temp).absolute()
+        build_path.mkdir(parents=True, exist_ok=True)
+        os.chdir(str(build_path))
 
         # boost_install_path = Path(self.build_temp).absolute() / "boost_install"
         rdkit_install_path = Path(self.build_temp).absolute() / "rdkit_install"
