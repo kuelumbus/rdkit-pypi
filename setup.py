@@ -242,7 +242,8 @@ class BuildRDKit(build_ext_orig):
 
         # Clone RDKit from git at rdkit_tag
         os.chdir(str(rdkit_build_path))
-        cmds = [f"git clone -b {ext.rdkit_tag} https://github.com/rdkit/rdkit"]
+        # cmds = [f"git clone -b {ext.rdkit_tag} https://github.com/rdkit/rdkit"]
+        cmds = [f"git clone https://github.com/rdkit/rdkit"]
         [check_call(c.split()) for c in cmds]
 
         os.chdir(str("rdkit"))
