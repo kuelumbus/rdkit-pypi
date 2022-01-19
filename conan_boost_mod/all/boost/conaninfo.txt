@@ -1,0 +1,161 @@
+[settings]
+    arch=x86_64
+    build_type=Release
+    compiler=gcc
+    compiler.libcxx=libstdc++
+    compiler.version=7
+    os=Linux
+
+[requires]
+    bzip2/1.Y.Z
+    libbacktrace/cci.20210118
+    zlib/1.Y.Z
+
+[options]
+    addr2line_location=/usr/bin/addr2line
+    asio_no_deprecated=False
+    buildid=None
+    bzip2=True
+    diagnostic_definitions=False
+    error_code_header_only=False
+    extra_b2_flags=None
+    filesystem_no_deprecated=False
+    header_only=False
+    i18n_backend_iconv=libc
+    i18n_backend_icu=False
+    layout=system
+    lzma=False
+    magic_autolink=False
+    multithreading=True
+    namespace=boost
+    namespace_alias=False
+    numa=True
+    python_buildid=None
+    python_version=3.7
+    segmented_stacks=False
+    shared=True
+    system_no_deprecated=False
+    visibility=hidden
+    with_stacktrace_backtrace=True
+    without_atomic=False
+    without_chrono=False
+    without_container=False
+    without_context=False
+    without_contract=False
+    without_coroutine=False
+    without_date_time=False
+    without_exception=False
+    without_fiber=False
+    without_filesystem=False
+    without_graph=False
+    without_graph_parallel=True
+    without_iostreams=False
+    without_json=False
+    without_locale=False
+    without_log=False
+    without_math=False
+    without_mpi=True
+    without_nowide=False
+    without_program_options=False
+    without_python=False
+    without_random=False
+    without_regex=False
+    without_serialization=False
+    without_stacktrace=False
+    without_system=False
+    without_test=False
+    without_thread=False
+    without_timer=False
+    without_type_erasure=False
+    without_wave=False
+    zlib=True
+    zstd=False
+
+[full_settings]
+    arch=x86_64
+    build_type=Release
+    compiler=gcc
+    compiler.libcxx=libstdc++
+    compiler.version=7
+    os=Linux
+
+[full_requires]
+    bzip2/1.0.8:b27e2b40bcb70be2e7d6f0e0c6e43e35c530f8d3
+    libbacktrace/cci.20210118:d50a0d523d98c15bb147b18fa7d203887c38be8b
+    zlib/1.2.11:d50a0d523d98c15bb147b18fa7d203887c38be8b
+
+[full_options]
+    addr2line_location=/usr/bin/addr2line
+    asio_no_deprecated=False
+    buildid=None
+    bzip2=True
+    debug_level=0
+    diagnostic_definitions=False
+    error_code_header_only=False
+    extra_b2_flags=None
+    filesystem_no_deprecated=False
+    header_only=False
+    i18n_backend=deprecated
+    i18n_backend_iconv=libc
+    i18n_backend_icu=False
+    layout=system
+    lzma=False
+    magic_autolink=False
+    multithreading=True
+    namespace=boost
+    namespace_alias=False
+    numa=True
+    pch=True
+    python_buildid=None
+    python_executable=/usr/bin/python3.7
+    python_version=3.7
+    segmented_stacks=False
+    shared=True
+    system_no_deprecated=False
+    visibility=hidden
+    with_stacktrace_backtrace=True
+    without_atomic=False
+    without_chrono=False
+    without_container=False
+    without_context=False
+    without_contract=False
+    without_coroutine=False
+    without_date_time=False
+    without_exception=False
+    without_fiber=False
+    without_filesystem=False
+    without_graph=False
+    without_graph_parallel=True
+    without_iostreams=False
+    without_json=False
+    without_locale=False
+    without_log=False
+    without_math=False
+    without_mpi=True
+    without_nowide=False
+    without_program_options=False
+    without_python=False
+    without_random=False
+    without_regex=False
+    without_serialization=False
+    without_stacktrace=False
+    without_system=False
+    without_test=False
+    without_thread=False
+    without_timer=False
+    without_type_erasure=False
+    without_wave=False
+    zlib=True
+    zstd=False
+    bzip2:build_executable=True
+    bzip2:fPIC=True
+    bzip2:shared=False
+    libbacktrace:fPIC=True
+    libbacktrace:shared=False
+    zlib:fPIC=True
+    zlib:shared=False
+
+[recipe_hash]
+
+
+[env]
