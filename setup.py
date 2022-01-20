@@ -237,8 +237,8 @@ class BuildRDKit(build_ext_orig):
         mod_conan_path = "conan_boost_mod"
         check_call(
             [
-                "conan",
-                "export",
+                f"conan",
+                f"export",
                 f"{mod_conan_path}/all/",
                 f"{boost_version}@chris/mod_boost",
             ]
@@ -246,19 +246,22 @@ class BuildRDKit(build_ext_orig):
 
         check_call(
             [
-                "conan",
-                "install",
+                f"conan",
+                f"install",
                 f"boost/{boost_version}@chris/mod_boost",
-                "-g",
-                "cmake_paths",
-                f"--build=boost",
-                "-if",
+                f"-g",
+                f"cmake_paths",
+                f"--build",
+                f"boost",
+                f"--build",
+                f"boost_build",
+                f"-if",
                 f"{conan_toolchain_path}",
-                "-o",
-                "boost:shared=True",
-                "-o",
-                "boost:without_python=False",
-                "-o",
+                f"-o",
+                f"boost:shared=True",
+                f"-o",
+                f"boost:without_python=False",
+                f"-o",
                 f"boost:python_executable={sys.executable}",
             ]
         )
