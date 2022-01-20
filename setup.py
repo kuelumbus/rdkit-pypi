@@ -92,11 +92,14 @@ class BuildRDKit(build_ext_orig):
             f"conanfile.txt",
             # build all missing
             f"--build=missing",
-            # but force build b2 on linux
-            f"--build=b2" if "linux" in sys.platform else "",
             f"-if",
             f"{conan_toolchain_path}",
         ]
+
+        # but force build b2 on linux
+        if "linux" in sys.platform:
+            cmd += [f"--build=b2"]
+
         check_call(cmd)
 
     def build_rdkit(self, ext):
