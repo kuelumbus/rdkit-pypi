@@ -37,86 +37,13 @@ class BuildRDKit(build_ext_orig):
             # Then RDKit
             self.build_rdkit(ext)
             # Copy files so that a wheels package can be created
-            self.create_package(ext)
+            # self.create_package(ext)
         # invoke the creation of the wheels package
         super().run()
 
     def get_ext_filename(self, ext_name):
         ext_path = ext_name.split(".")
         return os.path.join(*ext_path)
-
-    def create_package(self, ext):
-
-        # copy RDKit
-        if platform == "win32":
-            rdkit_root = Path(self.build_temp).absolute() / "rdkit_install/" / "Lib"
-            rdkit_pyfiles = rdkit_root / "site-packages" / "rdkit"
-        else:
-            rdkit_root = Path(self.build_temp).absolute() / "rdkit_install/" / "lib"
-            rdkit_pyfiles = (
-                list(rdkit_root.glob("python*"))[0] / "site-packages" / "rdkit"
-            )
-
-        # rdkit needs some files from the Data directory to run correctly
-        # rdkit_data_path = Path(self.build_temp).absolute() / 'rdkit' / 'Data'
-        # Copy the installed Data directory. Some modules copy files to that directory during bulding rdkit
-        rdkit_data_path = (
-            Path(self.build_temp).absolute()
-            / "rdkit_install/"
-            / "share"
-            / "RDKit"
-            / "Data"
-        )
-
-        # replace line with _share=... with _share = os.path.dirname(__file__) in RDPaths.py
-        rdpaths = rdkit_pyfiles / "RDPaths.py"
-
-        sed = "gsed" if platform == "darwin" else "sed"
-        call(
-            [
-                sed,
-                "-i",
-                "/_share =/c\_share = os.path.dirname(__file__)",
-                str(rdpaths),
-            ]
-        )
-
-        wheel_path = Path(self.get_ext_fullpath(ext.name)).absolute()
-        # remove if exists
-        if wheel_path.exists():
-            rmtree(str(wheel_path))
-
-        # copy rdkit files
-        copytree(str(rdkit_pyfiles), str(wheel_path))
-
-        # copy the Data directory to the wheel path
-        copytree(str(rdkit_data_path), str(wheel_path / "Data"))
-
-        # Copy *.so files to /usr/local/lib
-        # auditwheel finds the libs at /usr/local/lib
-        libs_rdkit_linux = Path(rdkit_root).glob("*.so*")
-        libs_rdkit_macos = Path(rdkit_root).glob("*dylib")
-        libs_rdkit = list(libs_rdkit_linux) + list(libs_rdkit_macos)
-
-        libs_boost = Path(self.build_temp).absolute() / "boost_install" / "lib"
-        libs_boost_linux = libs_boost.glob("*.so*")
-        libs_boost_mac = libs_boost.glob("*dylib")
-        libs_boost_tmp = list(libs_boost_linux) + list(libs_boost_mac)
-
-        if platform != "win32":
-            [copy_file(i, "/usr/local/lib") for i in libs_rdkit]
-            [copy_file(i, "/usr/local/lib") for i in libs_boost_tmp]
-        else:
-            libs_rdkit_win = Path(rdkit_root).glob("*.dll")
-            libs_boost_win = libs_boost.glob("*.dll")
-
-            libs_vcpkg = list(
-                (vcpkg_path / "installed" / "x64-windows" / "bin").glob("*.dll")
-            )
-
-            [copy_file(i, "C://libs") for i in libs_rdkit_win]
-            [copy_file(i, "C://libs") for i in libs_boost_win]
-            [copy_file(i, "C://libs") for i in libs_vcpkg]
 
     # def build_boost(self, ext):
     #     """Build the Boost libraries"""
@@ -241,6 +168,8 @@ class BuildRDKit(build_ext_orig):
                 f"boost/{boost_version}@chris/mod_boost",
                 f"-g",
                 f"cmake_paths",
+                f"-g",
+                f"virtualrunenv",
                 f"--build",
                 f"boost",
                 f"--build",
@@ -261,7 +190,7 @@ class BuildRDKit(build_ext_orig):
 
         cwd = Path().absolute()
 
-        conan_toolchain_path = Path(self.build_temp).absolute() / "conan"
+        conan_toolchain_path = Path("/") / "conan"
         conan_toolchain_path.mkdir(parents=True, exist_ok=True)
 
         # Install boost via conan
@@ -353,6 +282,58 @@ class BuildRDKit(build_ext_orig):
         [check_call(c.split()) for c in cmds]
 
         os.chdir(str(cwd))
+
+        # ### copy files
+        # rdkit_install_path = Path(self.build_temp).absolute() / "rdkit_install"
+        py_name = "python" + ".".join(map(str, sys.version_info[:2]))
+        rdkit_files = rdkit_install_path / "lib" / py_name / "site-packages" / "rdkit"
+
+        if sys.platform == "win32":
+            rdkit_files = rdkit_install_path / "Lib" / "site-packages" / "rdkit"
+
+        rdpaths_file = rdkit_files / "RDPaths.py"
+        rdkit_data_path = rdkit_install_path / "share" / "RDKit" / "Data"
+
+        # copy rdkit files here
+        wheel_path = Path(self.get_ext_fullpath(ext.name)).absolute()
+        if wheel_path.exists():
+            rmtree(str(wheel_path))
+
+        # Modify RDPaths.py
+        sed = "gsed" if platform == "darwin" else "sed"
+        call(
+            [
+                sed,
+                "-i",
+                "/_share =/c\_share = os.path.dirname(__file__)",
+                str(rdpaths_file),
+            ]
+        )
+
+        # Normal files
+        copytree(str(rdkit_files), str(wheel_path))
+        # copy the Data directory to the wheel path
+        copytree(str(rdkit_data_path), str(wheel_path / "Data"))
+
+        # Copy so and dylib files to /usr/local/lib
+        rdkit_root = rdkit_install_path / "lib"
+
+        libs_rdkit_linux = Path(rdkit_root).glob("*.so*")
+        libs_rdkit_macos = Path(rdkit_root).glob("*dylib")
+        libs_rdkit = list(libs_rdkit_linux) + list(libs_rdkit_macos)
+
+        if platform != "win32":
+            [copy_file(i, "/usr/local/lib") for i in libs_rdkit]
+        else:
+            # windows is Lib or libs?
+            rdkit_root = rdkit_install_path / "Lib"
+            libs_rdkit_win = Path(rdkit_root).glob("*.dll")
+
+            libs_vcpkg = list(
+                (vcpkg_path / "installed" / "x64-windows" / "bin").glob("*.dll")
+            )
+            [copy_file(i, "C://libs") for i in libs_rdkit_win]
+            [copy_file(i, "C://libs") for i in libs_vcpkg]
 
 
 setup(

@@ -54,10 +54,10 @@ jobs:
           #   manylinux_image: manylinux2014
 
           # MacOS x86_64
-          # - os: macos-latest
-          #   bitness: 64
-          #   python: 37
-          #   platform_id: macosx_x86_64
+          - os: macos-latest
+            bitness: 64
+            python: 37
+            platform_id: macosx_x86_64
           # - os: macos-latest
           #   bitness: 64
           #   python: 38
@@ -108,9 +108,9 @@ jobs:
         with:
           path: ./wheelhouse/*.whl
 
-      - name: Start SSH session
-        uses: luchihoratiu/debug-via-ssh@main
-        if: ${{ failure() }}
-        with:
-          NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
-          SSH_PASS: ${{ secrets.SSH_PASS }}
+      # - name: Start SSH session
+      #   uses: luchihoratiu/debug-via-ssh@main
+      #   if: ${{ failure() }}
+      #   with:
+      #     NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
+      #     SSH_PASS: ${{ secrets.SSH_PASS }}

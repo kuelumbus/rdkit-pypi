@@ -25,15 +25,12 @@ build-verbosity = "1"
 [tool.cibuildwheel.linux]
 before-all = [
     "yum install -y wget freetype-devel zlib-devel libpng12-devel pixman-devel eigen3-devel cairo-devel",
+]
 
-    # compile cairo (RDKit needs older/other version than in centOS7 repo)
-    # "wget https://www.cairographics.org/releases/cairo-1.10.0.tar.gz --no-check-certificate",
-    # "tar xvf cairo-*",
-    # "cd cairo-*",
-    # "./configure",
-    # "make -j 20",
-    # "make install",
-    # "cd ..",
+repair-wheel-command = [
+    # for boost libs
+    'source /conan/activate_run.sh',
+    'auditwheel repair -w {dest_dir} {wheel}'
 ]
 
 [tool.cibuildwheel.macos]
@@ -44,6 +41,7 @@ before-all = [
 
 repair-wheel-command = [
     "export DYLD_LIBRARY_PATH='/usr/local/lib:/usr/lib'",
+    "source /conan/activate_run.sh",
     "delocate-listdeps {wheel}",
     "delocate-wheel --require-archs {delocate_archs} -w {dest_dir} {wheel}",
 ]
@@ -60,4 +58,4 @@ before-build = [
 ]
 
 environment = { TMP='C:\\temp', TEMP='C:\\temp', RUNNER_TEMP='C:\\temp'}
-repair-wheel-command = ["delvewheel show -v --add-path C:\\libs {wheel}", "delvewheel repair -v  --add-path C:\\libs -w {dest_dir} {wheel}"]
+repair-wheel-command = ["delvewheel show -v --add-path C:\\libs {wheel}", "delvewheel repair -v --add-path C:\\libs -w {dest_dir} {wheel}"]
