@@ -5,8 +5,8 @@ import os
 from subprocess import check_call, call, run, PIPE
 import sys
 from sys import platform
-import shutil
-
+from distutils.file_util import copy_file
+from shutil import copytree, rmtree
 from pathlib import Path
 
 # get vcpkg path on Github
@@ -46,8 +46,6 @@ class BuildRDKit(build_ext_orig):
         return os.path.join(*ext_path)
 
     def create_package(self, ext):
-        from distutils.file_util import copy_file
-        from shutil import copytree, rmtree
 
         # copy RDKit
         if platform == "win32":
@@ -73,27 +71,15 @@ class BuildRDKit(build_ext_orig):
         # replace line with _share=... with _share = os.path.dirname(__file__) in RDPaths.py
         rdpaths = rdkit_pyfiles / "RDPaths.py"
 
-        # For linux
-        if platform == "linux" or platform == "linux2" or platform == "win32":
-            # linux
-            call(
-                [
-                    "sed",
-                    "-i",
-                    "/_share =/c\_share = os.path.dirname(__file__)",
-                    str(rdpaths),
-                ]
-            )
-        elif platform == "darwin":
-            # OS X
-            call(
-                [
-                    "gsed",
-                    "-i",
-                    "/_share =/c\_share = os.path.dirname(__file__)",
-                    str(rdpaths),
-                ]
-            )
+        sed = "gsed" if platform == "darwin" else "sed"
+        call(
+            [
+                sed,
+                "-i",
+                "/_share =/c\_share = os.path.dirname(__file__)",
+                str(rdpaths),
+            ]
+        )
 
         wheel_path = Path(self.get_ext_fullpath(ext.name)).absolute()
         # remove if exists
@@ -231,10 +217,13 @@ class BuildRDKit(build_ext_orig):
 
     def run_conan(self, conan_toolchain_path):
         """Run the Conan build"""
-        boost_version = "1.72.0"
-        # This version does not link libpython*.so
-        # libpythons not available on manylinux images
+        boost_version = "1.75.0"
+
+        # The modified conanfile.py from boost does not link libpython*.so
+        # When building a platform wheel, we don't want to link libpython*.so.
         mod_conan_path = "conan_boost_mod"
+
+        # Export the modified boost version
         check_call(
             [
                 f"conan",
@@ -244,6 +233,7 @@ class BuildRDKit(build_ext_orig):
             ]
         )
 
+        # Install it
         check_call(
             [
                 f"conan",
@@ -298,7 +288,7 @@ class BuildRDKit(build_ext_orig):
 
         # Invoke cmake and compile RDKit
         options = [
-            # Defines the paths to many include and libaray paths for windows
+            # Defines the paths to many include and library paths for windows
             # Does not work for some reason??
             f"-DCMAKE_TOOLCHAIN_FILE={conan_toolchain_path / 'conan_paths.cmake'}",
             # f"-DVCPKG_TARGET_TRIPLET=x64-windows-static" if sys.platform == 'win32' else "",
@@ -352,14 +342,16 @@ class BuildRDKit(build_ext_orig):
             # build stuff
             f"-DCMAKE_INSTALL_PREFIX={rdkit_install_path}",
             f"-DCMAKE_BUILD_TYPE=Release",
+            f"-GNinja",
         ]
 
         cmds = [
             f"cmake -S . -B build {' '.join(options)} ",
-            f"cmake --build build -j 10 --config Release",
+            f"cmake --build build --config Release",
             f"cmake --install build",
         ]
         [check_call(c.split()) for c in cmds]
+
         os.chdir(str(cwd))
 
 

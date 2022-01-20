@@ -14,6 +14,7 @@ requires = [
     "numpy == 1.19.4; python_version < '3.10'",
     "numpy == 1.21.3; python_version >= '3.10'",
     "conan",
+    "ninja",
     ]
 build-backend = "setuptools.build_meta"
 
