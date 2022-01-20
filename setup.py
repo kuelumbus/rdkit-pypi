@@ -254,7 +254,7 @@ class BuildRDKit(build_ext_orig):
                 f"--build",
                 f"boost",
                 f"--build",
-                f"boost_build",
+                f"b2",
                 f"-if",
                 f"{conan_toolchain_path}",
                 f"-o",
