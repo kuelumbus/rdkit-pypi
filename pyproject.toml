@@ -29,7 +29,7 @@ before-all = [
 
 repair-wheel-command = [
     # for boost libs
-    'source /conan/activate_run.sh',
+    'source conan/activate_run.sh',
     'auditwheel repair -w {dest_dir} {wheel}'
 ]
 
@@ -41,7 +41,7 @@ before-all = [
 
 repair-wheel-command = [
     "export DYLD_LIBRARY_PATH='/usr/local/lib:/usr/lib'",
-    "source /conan/activate_run.sh",
+    "source conan/activate_run.sh",
     "delocate-listdeps {wheel}",
     "delocate-wheel --require-archs {delocate_archs} -w {dest_dir} {wheel}",
 ]
