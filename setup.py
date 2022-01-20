@@ -44,7 +44,7 @@ class BuildRDKit(build_ext_orig):
 
     def conan_install(self, conan_toolchain_path):
         """Run the Conan build"""
-        boost_version = "1.76.0"
+        boost_version = "1.75.0"
 
         # The modified conanfile.py from boost does not link libpython*.so
         # When building a platform wheel, we don't want to link libpython*.so.
