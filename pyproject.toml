@@ -19,7 +19,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.cibuildwheel]
 
-build-verbosity = "0"
+build-verbosity = "1"
 
 [tool.cibuildwheel.linux]
 before-all = [
