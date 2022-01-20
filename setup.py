@@ -8,6 +8,7 @@ from sys import platform
 from distutils.file_util import copy_file
 from shutil import copytree, rmtree
 from pathlib import Path
+from textwrap import dedent
 
 # get vcpkg path on Github
 vcpkg_path = Path("C:/vcpkg")
@@ -41,7 +42,7 @@ class BuildRDKit(build_ext_orig):
         ext_path = ext_name.split(".")
         return os.path.join(*ext_path)
 
-    def run_conan(self, conan_toolchain_path):
+    def conan_install(self, conan_toolchain_path):
         """Run the Conan build"""
         boost_version = "1.75.0"
 
@@ -59,33 +60,43 @@ class BuildRDKit(build_ext_orig):
             ]
         )
 
+        # needed for windows builds
+        win = """cairo/1.17.4
+            freetype/2.11.1
+            eigen/3.4.0
+        """
+        if platform != "win32":
+            win = ""
+
+        conanfile = f"""\
+            [requires]
+            boost/{boost_version}@chris/mod_boost
+            {win}
+
+            [generators]
+            cmake_paths
+            virtualrunenv
+
+            [options]
+            boost:shared=True
+            boost:without_python=False
+            boost:python_executable={sys.executable}
+        """
+
+        Path("conanfile.txt").write_text(dedent(conanfile))
+
+        # run conan install
         cmd = [
             f"conan",
             f"install",
-            f"boost/{boost_version}@chris/mod_boost",
-            f"-g",
-            f"cmake_paths",
-            f"-g",
-            f"virtualrunenv",
-            f"--build=boost",
+            f"conanfile.txt",
+            # build all missing
+            f"--build=missing",
+            # but force build b2
             f"--build=b2",
             f"-if",
             f"{conan_toolchain_path}",
-            f"-o",
-            f"boost:shared=True",
-            f"-o",
-            f"boost:without_python=False",
-            f"-o",
-            f"boost:python_executable={sys.executable}",
         ]
-        if platform == "darwin":
-            cmd += [
-                "--build=bzip2",
-                "--build=libbacktrace",
-                "--build=libiconv",
-                "--build=zlib",
-            ]
-
         check_call(cmd)
 
     def build_rdkit(self, ext):
@@ -97,13 +108,12 @@ class BuildRDKit(build_ext_orig):
         conan_toolchain_path.mkdir(parents=True, exist_ok=True)
 
         # Install boost via conan
-        self.run_conan(conan_toolchain_path)
+        self.conan_install(conan_toolchain_path)
 
         build_path = Path(self.build_temp).absolute()
         build_path.mkdir(parents=True, exist_ok=True)
         os.chdir(str(build_path))
 
-        # boost_install_path = Path(self.build_temp).absolute() / "boost_install"
         rdkit_install_path = Path(self.build_temp).absolute() / "rdkit_install"
         rdkit_install_path.mkdir(parents=True, exist_ok=True)
 
@@ -141,27 +151,27 @@ class BuildRDKit(build_ext_orig):
             # ##### for windows
             # cairo
             f"-DRDK_BUILD_CAIRO_SUPPORT=ON",
-            f"-DCAIRO_INCLUDE_DIR={towin(vcpkg_include_path)}"
-            if sys.platform == "win32"
-            else "",
-            f"-DCAIRO_LIBRARY_DIR={towin(vcpkg_lib_path)}"
-            if sys.platform == "win32"
-            else "",
+            # f"-DCAIRO_INCLUDE_DIR={towin(vcpkg_include_path)}"
+            # if sys.platform == "win32"
+            # else "",
+            # f"-DCAIRO_LIBRARY_DIR={towin(vcpkg_lib_path)}"
+            # if sys.platform == "win32"
+            # else "",
             # zlib
-            f"-DZLIB_ROOT={towin(vcpkg_install_path)}"
-            if sys.platform == "win32"
-            else "",
+            # f"-DZLIB_ROOT={towin(vcpkg_install_path)}"
+            # if sys.platform == "win32"
+            # else "",
             # freetype
-            f"-DFREETYPE_INCLUDE_DIRS={towin(vcpkg_include_path)}"
-            if sys.platform == "win32"
-            else "",
-            f"-DFREETYPE_LIBRARY={towin(vcpkg_lib_path / 'freetype.lib')}"
-            if sys.platform == "win32"
-            else "",
+            # f"-DFREETYPE_INCLUDE_DIRS={towin(vcpkg_include_path)}"
+            # if sys.platform == "win32"
+            # else "",
+            # f"-DFREETYPE_LIBRARY={towin(vcpkg_lib_path / 'freetype.lib')}"
+            # if sys.platform == "win32"
+            # else "",
             # eigen3
-            f"-DEIGEN3_INCLUDE_DIR={towin(vcpkg_include_path)}"
-            if sys.platform == "win32"
-            else "",
+            # f"-DEIGEN3_INCLUDE_DIR={towin(vcpkg_include_path)}"
+            # if sys.platform == "win32"
+            # else "",
             # instruct to build x64
             "-Ax64" if sys.platform == "win32" else "",
             # Mac needs these flags to compile
