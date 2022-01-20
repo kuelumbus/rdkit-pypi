@@ -3,7 +3,9 @@ name: Build RDKit platform wheels
 
 # Build on every branch push, tag push, and pull request change:
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - conan
 
 jobs:
   build_wheels:
@@ -32,11 +34,11 @@ jobs:
           #   platform_id: win_amd64
 
           # Linux 64 bit manylinux2014
-          - os: ubuntu-latest
-            python: 37
-            bitness: 64
-            platform_id: manylinux_x86_64
-            manylinux_image: manylinux2014
+          # - os: ubuntu-latest
+          #   python: 37
+          #   bitness: 64
+          #   platform_id: manylinux_x86_64
+          #   manylinux_image: manylinux2014
           # - os: ubuntu-latest
           #   python: 38
           #   bitness: 64

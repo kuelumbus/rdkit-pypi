@@ -59,30 +59,34 @@ class BuildRDKit(build_ext_orig):
             ]
         )
 
-        # Install it
-        check_call(
-            [
-                f"conan",
-                f"install",
-                f"boost/{boost_version}@chris/mod_boost",
-                f"-g",
-                f"cmake_paths",
-                f"-g",
-                f"virtualrunenv",
-                f"--build",
-                f"boost",
-                f"--build",
-                f"b2",
-                f"-if",
-                f"{conan_toolchain_path}",
-                f"-o",
-                f"boost:shared=True",
-                f"-o",
-                f"boost:without_python=False",
-                f"-o",
-                f"boost:python_executable={sys.executable}",
+        cmd = [
+            f"conan",
+            f"install",
+            f"boost/{boost_version}@chris/mod_boost",
+            f"-g",
+            f"cmake_paths",
+            f"-g",
+            f"virtualrunenv",
+            f"--build=boost",
+            f"--build=b2",
+            f"-if",
+            f"{conan_toolchain_path}",
+            f"-o",
+            f"boost:shared=True",
+            f"-o",
+            f"boost:without_python=False",
+            f"-o",
+            f"boost:python_executable={sys.executable}",
+        ]
+        if platform == "darwin":
+            cmd += [
+                "--build=bzip2",
+                "--build=libbacktrace",
+                "--build=libiconv",
+                "--build=zlib",
             ]
-        )
+
+        check_call(cmd)
 
     def build_rdkit(self, ext):
         """Build RDKit"""
