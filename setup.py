@@ -9,14 +9,6 @@ from shutil import copytree, rmtree
 from pathlib import Path
 from textwrap import dedent
 
-# get vcpkg path on Github
-vcpkg_path = Path("C:/vcpkg")
-
-
-def towin(pt: Path):
-    """Returns a windows path from a Path object"""
-    return str(pt).replace("\\", "/")
-
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -42,7 +34,7 @@ class BuildRDKit(build_ext_orig):
 
     def conan_install(self, conan_toolchain_path):
         """Run the Conan build"""
-        boost_version = "1.76.0"
+        boost_version = "1.75.0"
 
         # The modified conanfile.py from boost does not link libpython*.so
         # When building a platform wheel, we don't want to link libpython*.so.
@@ -165,7 +157,7 @@ class BuildRDKit(build_ext_orig):
 
         cmds = [
             f"cmake -S . -B build {' '.join(options)}",
-            f"cmake --build build --config Release",
+            f"cmake --build build",
             f"cmake --install build",
         ]
         [check_call(c.split()) for c in cmds]
