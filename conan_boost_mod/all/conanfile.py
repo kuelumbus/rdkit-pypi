@@ -103,6 +103,7 @@ class BoostConan(ConanFile):
         "with_stacktrace_backtrace": [True, False],
         "buildid": "ANY",
         "python_buildid": "ANY",
+        "without_python_lib": [True, False],
     }
     options.update(
         {"without_{}".format(_name): [True, False] for _name in CONFIGURE_OPTIONS}
@@ -141,6 +142,8 @@ class BoostConan(ConanFile):
         "with_stacktrace_backtrace": True,
         "buildid": None,
         "python_buildid": None,
+        "without_python_lib": False,
+
     }
     default_options.update(
         {"without_{}".format(_name): False for _name in CONFIGURE_OPTIONS}
@@ -1509,18 +1512,18 @@ class BoostConan(ConanFile):
 
         if not self.options.without_python:
             # https://www.boost.org/doc/libs/1_70_0/libs/python/doc/html/building/configuring_boost_build.html
-            if self._python_libraries is not None:
+            if self._python_libraries is None or self.options.without_python_lib:
+                contents += '\nusing python : {version} : "{executable}" : "{includes}" ;'.format(
+                    version=self._python_version,
+                    executable=self._python_executable,
+                    includes=self._python_includes,
+                )
+            else:
                 contents += '\nusing python : {version} : "{executable}" : "{includes}" : "{libraries}" ;'.format(
                     version=self._python_version,
                     executable=self._python_executable,
                     includes=self._python_includes,
                     libraries=self._python_libraries,
-                )
-            else:
-                contents += '\nusing python : {version} : "{executable}" : "{includes}" ;'.format(
-                    version=self._python_version,
-                    executable=self._python_executable,
-                    includes=self._python_includes,
                 )
 
         if not self.options.without_mpi:

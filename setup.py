@@ -80,6 +80,7 @@ class BuildRDKit(build_ext_orig):
             [options]
             boost:shared=True
             boost:without_python=False
+            boost:without_python_lib=True
             boost:python_executable={sys.executable}
         """
 
