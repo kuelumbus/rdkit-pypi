@@ -59,10 +59,10 @@ class BuildRDKit(build_ext_orig):
         )
 
         # needed for windows builds
-        win = """cairo/1.17.4
+        # cairo/1.16.0
+        win = """cairo/1.16.0
             freetype/2.11.1
             eigen/3.4.0
-            pthreads4w/3.0.0
         """
         if sys.platform != "win32":
             win = ""
