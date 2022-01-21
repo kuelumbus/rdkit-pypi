@@ -1531,7 +1531,7 @@ class BoostConan(ConanFile):
         contents += '\nusing "%s" : %s : ' % (self._toolset, self._toolset_version)
 
         if self._is_msvc:
-            contents += ' "{}"'.format(self._cxx.replace("\\", "/"))
+            contents += ' {}'.format(self._cxx.replace("\\", "/"))
         else:
             contents += " {}".format(self._cxx.replace("\\", "/"))
 
