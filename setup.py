@@ -100,7 +100,7 @@ class BuildRDKit(build_ext_orig):
         if "linux" in sys.platform:
             cmd += [f"--build=b2"]
         if "win" in sys.platform:
-            cmd += ["-s", "compiler.cppstd=17"]
+            cmd += ["-s", "compiler.cppstd=20"]
 
         check_call(cmd)
 
