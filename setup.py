@@ -34,7 +34,6 @@ class BuildRDKit(build_ext_orig):
     def run(self):
         for ext in self.extensions:
             self.build_rdkit(ext)
-
         # invoke the creation of the wheels package
         super().run()
 
@@ -44,7 +43,7 @@ class BuildRDKit(build_ext_orig):
 
     def conan_install(self, conan_toolchain_path):
         """Run the Conan build"""
-        boost_version = "1.77.0"
+        boost_version = "1.76.0"
 
         # The modified conanfile.py from boost does not link libpython*.so
         # When building a platform wheel, we don't want to link libpython*.so.
@@ -112,7 +111,6 @@ class BuildRDKit(build_ext_orig):
 
         conan_toolchain_path = cwd / "conan"
         conan_toolchain_path.mkdir(parents=True, exist_ok=True)
-
         # Install boost via conan
         self.conan_install(conan_toolchain_path)
 
