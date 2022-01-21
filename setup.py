@@ -99,6 +99,8 @@ class BuildRDKit(build_ext_orig):
         # but force build b2 on linux
         if "linux" in sys.platform:
             cmd += [f"--build=b2"]
+        if "win" in sys.platform:
+            cmd += ["-s", "compiler.cppstd=17"]
 
         check_call(cmd)
 
