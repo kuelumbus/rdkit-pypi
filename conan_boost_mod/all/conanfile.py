@@ -1530,8 +1530,8 @@ class BoostConan(ConanFile):
         # Specify here the toolset with the binary if present if don't empty parameter :
         contents += '\nusing "%s" : %s : ' % (self._toolset, self._toolset_version)
 
-        if self._is_msvc:
-            contents += ' {}'.format(self._cxx.replace("\\", "/"))
+        if self._is_msvc and self._cxx:
+            contents += ' "{}"'.format(self._cxx.replace("\\", "/"))
         else:
             contents += " {}".format(self._cxx.replace("\\", "/"))
 
