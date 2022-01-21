@@ -4,7 +4,6 @@ from sysconfig import get_paths
 import os
 from subprocess import check_call, call, run, PIPE
 import sys
-from sys import platform
 from distutils.file_util import copy_file
 from shutil import copytree, rmtree
 from pathlib import Path
@@ -63,8 +62,9 @@ class BuildRDKit(build_ext_orig):
         win = """cairo/1.17.4
             freetype/2.11.1
             eigen/3.4.0
+            pthreads4w/3.0.0
         """
-        if platform != "win32":
+        if sys.platform != "win32":
             win = ""
 
         conanfile = f"""\
@@ -99,100 +99,72 @@ class BuildRDKit(build_ext_orig):
         # but force build b2 on linux
         if "linux" in sys.platform:
             cmd += [f"--build=b2"]
-        # if "win" in sys.platform:
-        #     cmd += ["-s", "compiler.cppstd=20"]
 
         check_call(cmd)
 
     def build_rdkit(self, ext):
-        """Build RDKit"""
+        """Build RDKit
+        (1) Use Conan to install boost and other libs (for windows only)
+        (2) Build RDKit
+        (3) Copy the shared library to correct paths before start building the wheel
+        """
 
         cwd = Path().absolute()
 
+        # Install boost via conan
         conan_toolchain_path = cwd / "conan"
         conan_toolchain_path.mkdir(parents=True, exist_ok=True)
-        # Install boost via conan
         self.conan_install(conan_toolchain_path)
 
+        # Build path for everything
         build_path = Path(self.build_temp).absolute()
         build_path.mkdir(parents=True, exist_ok=True)
         os.chdir(str(build_path))
 
-        rdkit_install_path = Path(self.build_temp).absolute() / "rdkit_install"
+        # RDKit install path
+        rdkit_install_path = build_path / "rdkit_install"
         rdkit_install_path.mkdir(parents=True, exist_ok=True)
 
         # Clone RDKit from git at rdkit_tag
         cmds = [f"git clone https://github.com/rdkit/rdkit"]
         [check_call(c.split()) for c in cmds]
 
+        # Build path of rdkit
         os.chdir(str("rdkit"))
 
-        # all includes are here
-        vcpkg_install_path = vcpkg_path / "installed" / "x64-windows"
-        vcpkg_include_path = vcpkg_path / "installed" / "x64-windows" / "include"
-        vcpkg_lib_path = vcpkg_path / "installed" / "x64-windows" / "lib"
-
-        # Invoke cmake and compile RDKit
+        # CMake options
         options = [
-            # Defines the paths to many include and library paths for windows
-            # Does not work for some reason??
             f"-DCMAKE_TOOLCHAIN_FILE={conan_toolchain_path / 'conan_paths.cmake'}",
-            # f"-DVCPKG_TARGET_TRIPLET=x64-windows-static" if sys.platform == 'win32' else "",
+            # Select correct python interpreter
             f"-DPYTHON_EXECUTABLE={sys.executable}",
             f'-DPYTHON_INCLUDE_DIR={get_paths()["include"]}',
-            # RDKIT build flags
+            # RDKit build flags
             f"-DRDK_BUILD_INCHI_SUPPORT=ON",
             f"-DRDK_BUILD_AVALON_SUPPORT=ON",
             f"-DRDK_BUILD_PYTHON_WRAPPERS=ON",
             f"-DRDK_BUILD_YAEHMOP_SUPPORT=ON",
             f"-DRDK_INSTALL_INTREE=OFF",
-            # Boost
-            # f"-DBOOST_ROOT={boost_install_path}",
-            f"-DBoost_NO_SYSTEM_PATHS=ON",
-            f"-DBoost_DEBUG=OFF",
-            # Does not work (this is fixed in future rdkit versions I believe)
-            f"-DRDK_INSTALL_STATIC_LIBS=OFF" if sys.platform == "win32" else "",
-            # ##### for windows
-            # cairo
             f"-DRDK_BUILD_CAIRO_SUPPORT=ON",
-            # f"-DCAIRO_INCLUDE_DIR={towin(vcpkg_include_path)}"
-            # if sys.platform == "win32"
-            # else "",
-            # f"-DCAIRO_LIBRARY_DIR={towin(vcpkg_lib_path)}"
-            # if sys.platform == "win32"
-            # else "",
-            # zlib
-            # f"-DZLIB_ROOT={towin(vcpkg_install_path)}"
-            # if sys.platform == "win32"
-            # else "",
-            # freetype
-            # f"-DFREETYPE_INCLUDE_DIRS={towin(vcpkg_include_path)}"
-            # if sys.platform == "win32"
-            # else "",
-            # f"-DFREETYPE_LIBRARY={towin(vcpkg_lib_path / 'freetype.lib')}"
-            # if sys.platform == "win32"
-            # else "",
-            # eigen3
-            # f"-DEIGEN3_INCLUDE_DIR={towin(vcpkg_include_path)}"
-            # if sys.platform == "win32"
-            # else "",
-            # instruct to build x64
-            "-Ax64" if sys.platform == "win32" else "",
-            # Mac needs these flags to compile
-            f"-DCMAKE_C_FLAGS=-Wno-implicit-function-declaration"
-            if sys.platform == "darwin"
-            else "",
-            f"-DCMAKE_CXX_FLAGS=-Wno-implicit-function-declaration"
-            if sys.platform == "darwin"
-            else "",
+            # Disable system libs for finding boost
+            f"-DBoost_NO_SYSTEM_PATHS=ON",
             # build stuff
             f"-DCMAKE_INSTALL_PREFIX={rdkit_install_path}",
             f"-DCMAKE_BUILD_TYPE=Release",
             f"-GNinja" if sys.platform != "win32" else "",
         ]
 
+        if sys.platform == "win32":
+            # DRDK_INSTALL_STATIC_LIBS should be fixed in newer RDKit builds
+            options += ["-Ax64", "-DRDK_INSTALL_STATIC_LIBS=OFF"]
+
+        if sys.platform == "darwin":
+            options += [
+                "-DCMAKE_C_FLAGS=-Wno-implicit-function-declaration",
+                "-DCMAKE_CXX_FLAGS=-Wno-implicit-function-declaration",
+            ]
+
         cmds = [
-            f"cmake -S . -B build {' '.join(options)} ",
+            f"cmake -S . -B build {' '.join(options)}",
             f"cmake --build build --config Release",
             f"cmake --install build",
         ]
@@ -200,57 +172,51 @@ class BuildRDKit(build_ext_orig):
 
         os.chdir(str(cwd))
 
-        # ### copy files
-        # rdkit_install_path = Path(self.build_temp).absolute() / "rdkit_install"
+        # copy libs to make them finable by wheels creators
         py_name = "python" + ".".join(map(str, sys.version_info[:2]))
         rdkit_files = rdkit_install_path / "lib" / py_name / "site-packages" / "rdkit"
 
         if sys.platform == "win32":
             rdkit_files = rdkit_install_path / "Lib" / "site-packages" / "rdkit"
 
-        rdpaths_file = rdkit_files / "RDPaths.py"
-        rdkit_data_path = rdkit_install_path / "share" / "RDKit" / "Data"
-
-        # copy rdkit files here
-        wheel_path = Path(self.get_ext_fullpath(ext.name)).absolute()
-        if wheel_path.exists():
-            rmtree(str(wheel_path))
-
         # Modify RDPaths.py
-        sed = "gsed" if platform == "darwin" else "sed"
+        sed = "gsed" if sys.platform == "darwin" else "sed"
         call(
             [
                 sed,
                 "-i",
                 "/_share =/c\_share = os.path.dirname(__file__)",
-                str(rdpaths_file),
+                f"{rdkit_files / 'RDPaths.py'}",
             ]
         )
 
-        # Normal files
+        # Data dir needs to be present in wheel
+        rdkit_data_path = rdkit_install_path / "share" / "RDKit" / "Data"
+
+        # copy rdkit files here, make sure it's empty
+        wheel_path = Path(self.get_ext_fullpath(ext.name)).absolute()
+        if wheel_path.exists():
+            rmtree(str(wheel_path))
+
+        # Copy python files
         copytree(str(rdkit_files), str(wheel_path))
-        # copy the Data directory to the wheel path
+        # Copy the data directory
         copytree(str(rdkit_data_path), str(wheel_path / "Data"))
 
-        # Copy so and dylib files to /usr/local/lib
         rdkit_root = rdkit_install_path / "lib"
 
-        libs_rdkit_linux = Path(rdkit_root).glob("*.so*")
-        libs_rdkit_macos = Path(rdkit_root).glob("*dylib")
-        libs_rdkit = list(libs_rdkit_linux) + list(libs_rdkit_macos)
-
-        if platform != "win32":
-            [copy_file(i, "/usr/local/lib") for i in libs_rdkit]
-        else:
+        if "linux" in sys.platform:
+            to_path = Path("/usr/local/lib")
+            [copy_file(i, str(to_path)) for i in rdkit_root.glob("*.so*")]
+        elif "win32" in sys.platform:
             # windows is Lib or libs?
-            rdkit_root = rdkit_install_path / "Lib"
-            libs_rdkit_win = Path(rdkit_root).glob("*.dll")
+            to_path = Path("C://libs")
+            to_path.mkdir(parents=True, exist_ok=True)
+            [copy_file(i, str(to_path)) for i in rdkit_root.glob("*.dll")]
 
-            libs_vcpkg = list(
-                (vcpkg_path / "installed" / "x64-windows" / "bin").glob("*.dll")
-            )
-            [copy_file(i, "C://libs") for i in libs_rdkit_win]
-            [copy_file(i, "C://libs") for i in libs_vcpkg]
+        elif "darwin" in sys.platform:
+            to_path = Path("/usr/local/lib")
+            [copy_file(i, str(to_path)) for i in rdkit_root.glob("*dylib")]
 
 
 setup(

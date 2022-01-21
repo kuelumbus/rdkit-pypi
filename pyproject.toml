@@ -48,8 +48,6 @@ repair-wheel-command = [
 
 [tool.cibuildwheel.windows]
 
-before-all = ["mkdir C:\\libs"]
-
 before-build = [
     "pip install delvewheel",
     "choco install tartool wget sed pkgconfiglite",
