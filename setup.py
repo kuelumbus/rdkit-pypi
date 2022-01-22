@@ -119,13 +119,26 @@ class BuildRDKit(build_ext_orig):
         cmds = [f"git clone https://github.com/rdkit/rdkit"]
         [check_call(c.split()) for c in cmds]
 
+        # For windows
+        if sys.platform == "win32":
+            check_call(
+                [
+                    "wget",
+                    "https://github.com/preshing/cairo-windows/releases/download/1.15.12/cairo-windows-1.15.12.zip",
+                ]
+            )
+            check_call(["unzip", "cairo-windows-1.15.12.zip"])
+            cairo_lib = build_path / "cairo-windows-1.15.12" / "lib" / "x64"
+            cairo_inc = build_path / "cairo-windows-1.15.12" / "include"
+
         # Build path of rdkit
         os.chdir(str("rdkit"))
-        vcpkg_path = Path("C:/vcpkg")
-        vcpkg_include_path = vcpkg_path / "installed" / "x64-windows" / "include"
-        vcpkg_lib_path = vcpkg_path / "installed" / "x64-windows" / "lib"
 
-        def towin(pt: Path):
+        # vcpkg_path = Path("C:/vcpkg")
+        # vcpkg_include_path = vcpkg_path / "installed" / "x64-windows" / "include"
+        # vcpkg_lib_path = vcpkg_path / "installed" / "x64-windows" / "lib"
+
+        def path_to_win(pt: Path):
             return str(pt).replace("\\", "/")
 
         # CMake options
@@ -153,9 +166,10 @@ class BuildRDKit(build_ext_orig):
             # DRDK_INSTALL_STATIC_LIBS should be fixed in newer RDKit builds
             options += ["-Ax64", "-DRDK_INSTALL_STATIC_LIBS=OFF"]
 
+            # cairo-windows-1.15.12
             options += [
-                f"-DCAIRO_INCLUDE_DIR={towin(vcpkg_include_path)}"
-                f"-DCAIRO_LIBRARY_DIR={towin(vcpkg_lib_path)}"
+                f"-DCAIRO_INCLUDE_DIR={path_to_win(cairo_inc)}",
+                f"-DCAIRO_LIBRARY_DIR={path_to_win(cairo_lib)}",
             ]
 
         if sys.platform == "darwin":
