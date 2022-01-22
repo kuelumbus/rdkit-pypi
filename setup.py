@@ -52,7 +52,7 @@ class BuildRDKit(build_ext_orig):
 
         # needed for windows builds
         # cairo/1.16.0
-        win = """cairo/1.16.0
+        win = """cairo/1.17.2
             freetype/2.11.1
             eigen/3.4.0
         """
