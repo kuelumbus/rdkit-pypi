@@ -53,6 +53,7 @@ class BuildRDKit(build_ext_orig):
         # needed for windows builds
         # cairo/1.16.0
         win = """eigen/3.4.0
+            freetype/2.11.1
         """
         if sys.platform != "win32":
             win = ""
