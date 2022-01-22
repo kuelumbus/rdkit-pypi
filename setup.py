@@ -125,9 +125,11 @@ class BuildRDKit(build_ext_orig):
                 [
                     "wget",
                     "https://github.com/preshing/cairo-windows/releases/download/1.15.12/cairo-windows-1.15.12.zip",
+                    "--no-check-certificate",
+                    "-q",
                 ]
             )
-            check_call(["unzip", "cairo-windows-1.15.12.zip"])
+            check_call(["tar", "-xzf", "cairo-windows-1.15.12.zip"])
             cairo_lib = build_path / "cairo-windows-1.15.12" / "lib" / "x64"
             cairo_inc = build_path / "cairo-windows-1.15.12" / "include"
 
@@ -166,7 +168,7 @@ class BuildRDKit(build_ext_orig):
             # DRDK_INSTALL_STATIC_LIBS should be fixed in newer RDKit builds
             options += ["-Ax64", "-DRDK_INSTALL_STATIC_LIBS=OFF"]
 
-            # cairo-windows-1.15.12
+            # link cairo on windows
             options += [
                 f"-DCAIRO_INCLUDE_DIR={path_to_win(cairo_inc)}",
                 f"-DCAIRO_LIBRARY_DIR={path_to_win(cairo_lib)}",
