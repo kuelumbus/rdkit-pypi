@@ -54,6 +54,8 @@ class BuildRDKit(build_ext_orig):
         # cairo/1.16.0
         win = """eigen/3.4.0
             freetype/2.11.1
+            libpng/1.6.37
+            bzip2/1.0.8
         """
         if sys.platform != "win32":
             win = ""
