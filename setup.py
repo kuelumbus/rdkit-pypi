@@ -53,9 +53,6 @@ class BuildRDKit(build_ext_orig):
         # needed for windows builds
         # cairo/1.16.0
         win = """eigen/3.4.0
-            freetype/2.11.1
-            libpng/1.6.37
-            bzip2/1.0.8
         """
         if sys.platform != "win32":
             win = ""
@@ -122,28 +119,10 @@ class BuildRDKit(build_ext_orig):
         cmds = [f"git clone https://github.com/rdkit/rdkit"]
         [check_call(c.split()) for c in cmds]
 
-        # For windows
-        if sys.platform == "win32":
-            check_call(
-                [
-                    "wget",
-                    "https://github.com/preshing/cairo-windows/releases/download/1.15.12/cairo-windows-1.15.12.zip",
-                    "--no-check-certificate",
-                    "-q",
-                ]
-            )
-            check_call(["tar", "-xzf", "cairo-windows-1.15.12.zip"])
-            cairo_lib = build_path / "cairo-windows-1.15.12" / "lib" / "x64"
-            cairo_inc = build_path / "cairo-windows-1.15.12" / "include"
-
         # Build path of rdkit
         os.chdir(str("rdkit"))
 
-        # vcpkg_path = Path("C:/vcpkg")
-        # vcpkg_include_path = vcpkg_path / "installed" / "x64-windows" / "include"
-        # vcpkg_lib_path = vcpkg_path / "installed" / "x64-windows" / "lib"
-
-        def path_to_win(pt: Path):
+        def to_win_path(pt: Path):
             return str(pt).replace("\\", "/")
 
         # CMake options
@@ -172,9 +151,14 @@ class BuildRDKit(build_ext_orig):
             options += ["-Ax64", "-DRDK_INSTALL_STATIC_LIBS=OFF"]
 
             # link cairo on windows
+            vcpkg_path = Path("C:/vcpkg")
+            vcpkg_inc = vcpkg_path / "installed" / "x64-windows" / "include"
+            vcpkg_lib = vcpkg_path / "installed" / "x64-windows" / "lib"
             options += [
-                f"-DCAIRO_INCLUDE_DIR={path_to_win(cairo_inc)}",
-                f"-DCAIRO_LIBRARY_DIR={path_to_win(cairo_lib)}",
+                f"-DCAIRO_INCLUDE_DIR={to_win_path(vcpkg_inc)}",
+                f"-DCAIRO_LIBRARY_DIR={to_win_path(vcpkg_lib)}",
+                f"-DFREETYPE_INCLUDE_DIRS={to_win_path(vcpkg_inc)}",
+                f"-DFREETYPE_LIBRARY={to_win_path(vcpkg_lib / 'freetype.lib')}",
             ]
 
         if sys.platform == "darwin":

@@ -51,7 +51,7 @@ repair-wheel-command = [
 before-build = [
     "pip install delvewheel",
     "choco install tartool wget sed pkgconfiglite",
-    # "vcpkg install cairo:x64-windows" ,
+    "vcpkg install cairo:x64-windows freetype:x64-windows",
 
 ]
 
