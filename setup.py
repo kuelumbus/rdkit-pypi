@@ -121,9 +121,10 @@ class BuildRDKit(build_ext_orig):
 
         # Build path of rdkit
         os.chdir(str("rdkit"))
-
+        vcpkg_path = Path("C:/vcpkg")
         vcpkg_include_path = vcpkg_path / "installed" / "x64-windows" / "include"
         vcpkg_lib_path = vcpkg_path / "installed" / "x64-windows" / "lib"
+
         def towin(pt: Path):
             return str(pt).replace("\\", "/")
 
@@ -146,17 +147,16 @@ class BuildRDKit(build_ext_orig):
             f"-DCMAKE_INSTALL_PREFIX={rdkit_install_path}",
             f"-DCMAKE_BUILD_TYPE=Release",
             f"-GNinja" if sys.platform != "win32" else "",
-            f"-DCAIRO_INCLUDE_DIR={towin(vcpkg_include_path)}"
-            if sys.platform == "win32"
-            else "",
-            f"-DCAIRO_LIBRARY_DIR={towin(vcpkg_lib_path)}"
-            if sys.platform == "win32"
-            else "",
         ]
 
         if sys.platform == "win32":
             # DRDK_INSTALL_STATIC_LIBS should be fixed in newer RDKit builds
             options += ["-Ax64", "-DRDK_INSTALL_STATIC_LIBS=OFF"]
+
+            options += [
+                f"-DCAIRO_INCLUDE_DIR={towin(vcpkg_include_path)}"
+                f"-DCAIRO_LIBRARY_DIR={towin(vcpkg_lib_path)}"
+            ]
 
         if sys.platform == "darwin":
             options += [
