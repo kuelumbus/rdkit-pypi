@@ -52,9 +52,7 @@ class BuildRDKit(build_ext_orig):
 
         # needed for windows builds
         # cairo/1.16.0
-        win = """cairo/1.17.2
-            freetype/2.11.1
-            eigen/3.4.0
+        win = """eigen/3.4.0
         """
         if sys.platform != "win32":
             win = ""
@@ -124,6 +122,11 @@ class BuildRDKit(build_ext_orig):
         # Build path of rdkit
         os.chdir(str("rdkit"))
 
+        vcpkg_include_path = vcpkg_path / "installed" / "x64-windows" / "include"
+        vcpkg_lib_path = vcpkg_path / "installed" / "x64-windows" / "lib"
+        def towin(pt: Path):
+            return str(pt).replace("\\", "/")
+
         # CMake options
         options = [
             f"-DCMAKE_TOOLCHAIN_FILE={conan_toolchain_path / 'conan_paths.cmake'}",
@@ -143,6 +146,12 @@ class BuildRDKit(build_ext_orig):
             f"-DCMAKE_INSTALL_PREFIX={rdkit_install_path}",
             f"-DCMAKE_BUILD_TYPE=Release",
             f"-GNinja" if sys.platform != "win32" else "",
+            f"-DCAIRO_INCLUDE_DIR={towin(vcpkg_include_path)}"
+            if sys.platform == "win32"
+            else "",
+            f"-DCAIRO_LIBRARY_DIR={towin(vcpkg_lib_path)}"
+            if sys.platform == "win32"
+            else "",
         ]
 
         if sys.platform == "win32":
