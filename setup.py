@@ -91,6 +91,10 @@ class BuildRDKit(build_ext_orig):
             cmd += [f"--build=b2"]
 
         check_call(cmd)
+        
+        # Clean up after build
+        cmd = ['conan', 'remove', '"*"', '-s', '-b', '-f',]
+        check_call(cmd)
 
     def build_rdkit(self, ext):
         """Build RDKit
