@@ -16,7 +16,6 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 class RDKit(Extension):
     def __init__(self, name, **kwargs):
-        # don't invoke the original build_ext for this special extension
         super().__init__(name, sources=[])
         self.__dict__.update(kwargs)
 
@@ -25,7 +24,6 @@ class BuildRDKit(build_ext_orig):
     def run(self):
         for ext in self.extensions:
             self.build_rdkit(ext)
-        # invoke the creation of the wheels package
         super().run()
 
     def get_ext_filename(self, ext_name):
@@ -122,15 +120,12 @@ class BuildRDKit(build_ext_orig):
         # Build path of rdkit
         os.chdir(str("rdkit"))
 
-        def to_win_path(pt: Path):
-            return str(pt).replace("\\", "/")
-
         # CMake options
         options = [
             f"-DCMAKE_TOOLCHAIN_FILE={conan_toolchain_path / 'conan_paths.cmake'}",
             # Select correct python interpreter
             f"-DPYTHON_EXECUTABLE={sys.executable}",
-            f'-DPYTHON_INCLUDE_DIR={get_paths()["include"]}',
+            f"-DPYTHON_INCLUDE_DIR={get_paths()['include']}",
             # RDKit build flags
             f"-DRDK_BUILD_INCHI_SUPPORT=ON",
             f"-DRDK_BUILD_AVALON_SUPPORT=ON",
@@ -149,6 +144,9 @@ class BuildRDKit(build_ext_orig):
         if sys.platform == "win32":
             # DRDK_INSTALL_STATIC_LIBS should be fixed in newer RDKit builds
             options += ["-Ax64", "-DRDK_INSTALL_STATIC_LIBS=OFF"]
+
+            def to_win_path(pt: Path):
+                return str(pt).replace("\\", "/")
 
             # link cairo on windows
             vcpkg_path = Path("C:/vcpkg")
@@ -243,16 +241,7 @@ setup(
         "Pillow",
     ],
     ext_modules=[
-        RDKit(
-            "rdkit",
-            # 1.73 does now compile on win for some reason
-            boost_download_urls={
-                "win": "https://boostorg.jfrog.io/artifactory/main/release/1.69.0/source/boost_1_69_0.tar.gz",
-                "mac": "https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.gz",
-                "linux": "https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.gz",
-            },
-            rdkit_tag="Release_2021_09_4",
-        ),
+        RDKit("rdkit", rdkit_tag="Release_2021_09_4"),
     ],
     cmdclass=dict(build_ext=BuildRDKit),
 )
