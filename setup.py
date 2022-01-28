@@ -89,9 +89,16 @@ class BuildRDKit(build_ext_orig):
             cmd += [f"--build=b2"]
 
         check_call(cmd)
-        
+
         # Clean up after build
-        cmd = ['conan', 'remove', '"*"', '-s', '-b', '-f',]
+        cmd = [
+            "conan",
+            "remove",
+            "*",
+            "-s",
+            "-b",
+            "-f",
+        ]
         check_call(cmd)
 
     def build_rdkit(self, ext):
@@ -171,7 +178,9 @@ class BuildRDKit(build_ext_orig):
 
         cmds = [
             f"cmake -S . -B build {' '.join(options)}",
-            f"cmake --build build",
+            f"cmake --build build"
+            if sys.platform != "win32"
+            else f"cmake --build build -j 10",
             f"cmake --install build",
         ]
         [check_call(c.split()) for c in cmds]
