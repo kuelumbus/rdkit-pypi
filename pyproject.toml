@@ -52,7 +52,8 @@ before-build = [
     "pip install delvewheel",
     "choco install tartool wget sed pkgconfiglite",
     "vcpkg install --clean-after-build cairo:x64-windows freetype:x64-windows",
-
+    "mkdir C:\\a",
+    "cd C:\\a",
 ]
 
 environment = { TMP='C:\\temp', TEMP='C:\\temp', RUNNER_TEMP='C:\\temp'}
