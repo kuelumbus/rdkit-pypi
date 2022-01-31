@@ -132,9 +132,14 @@ jobs:
         with:
           path: ./wheelhouse/*.whl
 
-      # - name: Start SSH session
-      #   uses: luchihoratiu/debug-via-ssh@main
-      #   if: ${{ failure() }}
-      #   with:
-      #     NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
-      #     SSH_PASS: ${{ secrets.SSH_PASS }}
+      - name: Step To run on failure
+        if: ${{ failure() }}
+        run: |
+          Get-PSDrive
+
+      - name: Start SSH session
+        uses: luchihoratiu/debug-via-ssh@main
+        if: ${{ failure() }}
+        with:
+          NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
+          SSH_PASS: ${{ secrets.SSH_PASS }}
