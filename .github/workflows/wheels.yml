@@ -103,6 +103,7 @@ jobs:
           CIBW_MANYLINUX_I686_IMAGE: ${{ matrix.manylinux_image }}
 
         run: |
+          Get-PSDrive
           python -m pip install cibuildwheel
           python -m cibuildwheel --output-dir wheelhouse
 
