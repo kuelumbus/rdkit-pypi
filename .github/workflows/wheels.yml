@@ -95,7 +95,7 @@ jobs:
         with:
           python-version: '3.9'
 
-      - uses: actions/cache@v2
+      - uses: pat-s/always-upload-cache@v2
         if: ${{ runner.os == 'Windows' }}
         with:
           path: |
