@@ -95,6 +95,38 @@ jobs:
         with:
           python-version: '3.9'
 
+      - uses: actions/cache@v2
+        if: ${{ runner.os == 'Windows' }}
+        with:
+          path: C:\vcpkg\downloads
+          key: ${{ runner.os }}-vcpkg-download-${{ matrix.os }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-vcpkg-download-${{ matrix.os }}-
+            ${{ runner.os }}-vcpkg-download-
+
+      - name: Install libraries with vcpkg
+        if: ${{ runner.os == 'Windows' }}
+        run: |
+          vcpkg --triplet x64-windows install cairo freetype
+
+      - uses: actions/cache@v2
+        if: ${{ runner.os == 'Windows' }}
+        with:
+          path: C:\Users\runneradmin\AppData\Local\Temp\chocolatey
+          key: ${{ runner.os }}-chocolatey-${{ matrix.os }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-chocolatey-${{ matrix.os }}-
+            ${{ runner.os }}-chocolatey-
+
+      - name: Install libraries with chocolatey
+        if: ${{ runner.os == 'Windows' }}
+        run: |
+          Choco-Install -PackageName tartool
+          Choco-Install -PackageName wget
+          Choco-Install -PackageName sed
+          Choco-Install -PackageName pkgconfiglite
+        shell: pwsh
+
       - name: Build wheels
         env:
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
