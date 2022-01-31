@@ -98,25 +98,15 @@ jobs:
       - uses: actions/cache@v2
         if: ${{ runner.os == 'Windows' }}
         with:
-          path: C:\vcpkg\downloads
-          key: ${{ runner.os }}-vcpkg-download-${{ matrix.os }}-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-vcpkg-download-${{ matrix.os }}-
-            ${{ runner.os }}-vcpkg-download-
+          path: |
+            C:\vcpkg\downloads
+            C:\Users\runneradmin\AppData\Local\Temp\chocolatey
+          key: ${{ runner.os }}-vcpkg-and_choco
 
       - name: Install libraries with vcpkg
         if: ${{ runner.os == 'Windows' }}
         run: |
           vcpkg --triplet x64-windows install cairo freetype
-
-      - uses: actions/cache@v2
-        if: ${{ runner.os == 'Windows' }}
-        with:
-          path: C:\Users\runneradmin\AppData\Local\Temp\chocolatey
-          key: ${{ runner.os }}-chocolatey-${{ matrix.os }}-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-chocolatey-${{ matrix.os }}-
-            ${{ runner.os }}-chocolatey-
 
       - name: Install libraries with chocolatey
         if: ${{ runner.os == 'Windows' }}
