@@ -110,6 +110,7 @@ jobs:
       - name: Install libraries with vcpkg
         if: ${{ runner.os == 'Windows' }}
         run: |
+          mkdir C:\build\
           vcpkg --triplet x64-windows install cairo freetype
 
       - name: Install libraries with chocolatey
