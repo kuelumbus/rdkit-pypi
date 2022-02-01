@@ -7,9 +7,9 @@ on:
     branches:
       - conan
 
-defaults:
-  run:
-    working-directory: C:\
+# defaults:
+#   run:
+#     working-directory: C:\
 
 jobs:
   build_wheels:
@@ -93,6 +93,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Linking to C
+        if: ${{ runner.os == 'Windows' }}
+        run: |
+          New-Item -Path C:\rdkit -ItemType SymbolicLink -Value D:\a\rdkit-pypi\rdkit-pypi'
+          cd C:\rdkit
 
       - uses: actions/setup-python@v2
         name: Install Python
