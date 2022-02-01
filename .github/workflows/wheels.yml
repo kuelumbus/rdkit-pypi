@@ -7,6 +7,10 @@ on:
     branches:
       - conan
 
+defaults:
+  run:
+    working-directory: C:\build\
+
 jobs:
   build_wheels:
     name: Build for cp${{ matrix.python }}-${{ matrix.platform_id }}-${{ matrix.manylinux_image }}
