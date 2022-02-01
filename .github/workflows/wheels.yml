@@ -94,11 +94,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Linking to C
+      - name: Copy to C:\
         if: ${{ runner.os == 'Windows' }}
         run: |
-          New-Item -Path C:\rdkit -ItemType SymbolicLink -Value D:\a\rdkit-pypi\rdkit-pypi
-          cd C:\rdkit
+          Copy-Item -Path D:\a\rdkit-pypi\rdkit-pypi\* -Destination C:\rdkit -Recurse
 
       - uses: actions/setup-python@v2
         name: Install Python
@@ -111,7 +110,7 @@ jobs:
           path: |
             C:\vcpkg\downloads
             C:\Users\runneradmin\AppData\Local\Temp\chocolatey
-          key: ${{ runner.os }}-vcpkg-and_choco
+          key: ${{ runner.os }}-vcpkg-and_choco2
 
       - name: Install libraries with vcpkg
         if: ${{ runner.os == 'Windows' }}
@@ -128,6 +127,7 @@ jobs:
         shell: pwsh
 
       - name: Build wheels
+        working-directory: C:\rdkit
         env:
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           CIBW_ARCHS: all
