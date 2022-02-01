@@ -9,7 +9,7 @@ on:
 
 defaults:
   run:
-    working-directory: C:\build\
+    working-directory: C:\
 
 jobs:
   build_wheels:
@@ -110,7 +110,6 @@ jobs:
       - name: Install libraries with vcpkg
         if: ${{ runner.os == 'Windows' }}
         run: |
-          mkdir C:\build\
           vcpkg --triplet x64-windows install cairo freetype
 
       - name: Install libraries with chocolatey
