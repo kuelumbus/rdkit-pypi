@@ -97,7 +97,7 @@ jobs:
       - name: Linking to C
         if: ${{ runner.os == 'Windows' }}
         run: |
-          New-Item -Path C:\rdkit -ItemType SymbolicLink -Value D:\a\rdkit-pypi\rdkit-pypi'
+          New-Item -Path C:\rdkit -ItemType SymbolicLink -Value D:\a\rdkit-pypi\rdkit-pypi
           cd C:\rdkit
 
       - uses: actions/setup-python@v2
