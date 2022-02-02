@@ -129,7 +129,6 @@ jobs:
         shell: pwsh
 
       - name: Build wheels
-        working-directory: C:\rdkit
         env:
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           CIBW_ARCHS: all
@@ -137,10 +136,19 @@ jobs:
           CIBW_MANYLINUX_I686_IMAGE: ${{ matrix.manylinux_image }}
 
         run: |
+          if [ "$RUNNER_OS" == "Windows" ]; then
+            cd C:\rdkit
+          fi
           python -m pip install cibuildwheel
           python -m cibuildwheel --output-dir wheelhouse
 
       - uses: actions/upload-artifact@v2
+        if: ${{ runner.os == 'Windows' }}
+        with:
+          path: C:\rdkit\wheelhouse\*.whl
+
+      - uses: actions/upload-artifact@v2
+        if: ${{ runner.os == 'Windows' }}
         with:
           path: ./wheelhouse/*.whl
 
