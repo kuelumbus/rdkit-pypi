@@ -157,7 +157,7 @@ class BuildRDKit(build_ext_orig):
             options += [
                 "-Ax64",
                 "-DRDK_INSTALL_STATIC_LIBS=OFF",
-                "-DBUILD_SHARED_LIBS=ON",
+                "-DRDK_INSTALL_DLLS_MSVC=ON",
             ]
 
             def to_win_path(pt: Path):
