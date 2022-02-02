@@ -109,8 +109,10 @@ jobs:
         with:
           path: |
             C:\vcpkg\downloads
+            C:\vcpkg\buildtrees
+            C:\vcpkg\packages
             C:\Users\runneradmin\AppData\Local\Temp\chocolatey
-          key: ${{ runner.os }}-vcpkg-and_choco2
+          key: ${{ runner.os }}-vcpkg-and_choco3
 
       - name: Install libraries with vcpkg
         if: ${{ runner.os == 'Windows' }}
