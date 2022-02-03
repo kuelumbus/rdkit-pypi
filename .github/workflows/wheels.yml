@@ -7,10 +7,6 @@ on:
     branches:
       - conan
 
-# defaults:
-#   run:
-#     working-directory: C:\
-
 jobs:
   build_wheels:
     name: Build for cp${{ matrix.python }}-${{ matrix.platform_id }}-${{ matrix.manylinux_image }}
@@ -20,62 +16,62 @@ jobs:
       matrix:
         include:
           # Window 64 bit
-          # - os: windows-latest
-          #   python: 37
-          #   bitness: 64
-          #   platform_id: win_amd64
-          # - os: windows-latest
-          #   python: 38
-          #   bitness: 64
-          #   platform_id: win_amd64
-          # - os: windows-latest
-          #   python: 39
-          #   bitness: 64
-          #   platform_id: win_amd64
+          - os: windows-latest
+            python: 37
+            bitness: 64
+            platform_id: win_amd64
+          - os: windows-latest
+            python: 38
+            bitness: 64
+            platform_id: win_amd64
+          - os: windows-latest
+            python: 39
+            bitness: 64
+            platform_id: win_amd64
           - os: windows-latest
             python: 310
             bitness: 64
             platform_id: win_amd64
 
           # Linux 64 bit manylinux2014
-          # - os: ubuntu-latest
-          #   python: 37
-          #   bitness: 64
-          #   platform_id: manylinux_x86_64
-          #   manylinux_image: manylinux2014
-          # - os: ubuntu-latest
-          #   python: 38
-          #   bitness: 64
-          #   platform_id: manylinux_x86_64
-          #   manylinux_image: manylinux2014
-          # - os: ubuntu-latest
-          #   python: 39
-          #   bitness: 64
-          #   platform_id: manylinux_x86_64
-          #   manylinux_image: manylinux2014
-          # - os: ubuntu-latest
-          #   python: 310
-          #   bitness: 64
-          #   platform_id: manylinux_x86_64
-          #   manylinux_image: manylinux2014
+          - os: ubuntu-latest
+            python: 37
+            bitness: 64
+            platform_id: manylinux_x86_64
+            manylinux_image: manylinux2014
+          - os: ubuntu-latest
+            python: 38
+            bitness: 64
+            platform_id: manylinux_x86_64
+            manylinux_image: manylinux2014
+          - os: ubuntu-latest
+            python: 39
+            bitness: 64
+            platform_id: manylinux_x86_64
+            manylinux_image: manylinux2014
+          - os: ubuntu-latest
+            python: 310
+            bitness: 64
+            platform_id: manylinux_x86_64
+            manylinux_image: manylinux2014
 
           # MacOS x86_64
-          # - os: macos-latest
-          #   bitness: 64
-          #   python: 37
-          #   platform_id: macosx_x86_64
-          # - os: macos-latest
-          #   bitness: 64
-          #   python: 38
-          #   platform_id: macosx_x86_64
-          # - os: macos-latest
-          #   bitness: 64
-          #   python: 39
-          #   platform_id: macosx_x86_64
-          # - os: macos-latest
-          #   bitness: 64
-          #   python: 310
-          #   platform_id: macosx_x86_64
+          - os: macos-latest
+            bitness: 64
+            python: 37
+            platform_id: macosx_x86_64
+          - os: macos-latest
+            bitness: 64
+            python: 38
+            platform_id: macosx_x86_64
+          - os: macos-latest
+            bitness: 64
+            python: 39
+            platform_id: macosx_x86_64
+          - os: macos-latest
+            bitness: 64
+            python: 310
+            platform_id: macosx_x86_64
 
           # MacOS arm64
           # - os: macos-latest
