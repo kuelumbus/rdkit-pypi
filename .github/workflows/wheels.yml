@@ -1,5 +1,5 @@
 
-name: Build RDKit platform wheels
+name: Build wheels
 
 # Build on every branch push, tag push, and pull request change:
 on:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   build_wheels:
-    name: Build for cp${{ matrix.python }}-${{ matrix.platform_id }}-${{ matrix.manylinux_image }}
+    name: Build for cp${{ matrix.python }}-${{ matrix.platform_id }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -133,7 +133,7 @@ jobs:
           if [ "$RUNNER_OS" == "Windows" ]; then
             cd C:\\rdkit
           fi
-          python -m pip install cibuildwheel
+          python -m pip install cibuildwheel==2.3.1
           python -m cibuildwheel --output-dir wheelhouse
         shell: bash
 

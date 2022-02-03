@@ -1,14 +1,14 @@
-from setuptools import setup, find_packages, Extension
-from setuptools.command.build_ext import build_ext as build_ext_orig
-from sysconfig import get_paths
 import os
-from subprocess import check_call, call, run, PIPE
 import sys
 from distutils.file_util import copy_file
-from shutil import copytree, rmtree
 from pathlib import Path
+from shutil import copytree, rmtree
+from subprocess import call, check_call
+from sysconfig import get_paths
 from textwrap import dedent
 
+from setuptools import Extension, find_packages, setup
+from setuptools.command.build_ext import build_ext as build_ext_orig
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -31,10 +31,10 @@ class BuildRDKit(build_ext_orig):
         return os.path.join(*ext_path)
 
     def conan_install(self, conan_toolchain_path):
-        """Run the Conan build"""
+        """Run the Conan"""
         boost_version = "1.75.0"
 
-        # The modified conanfile.py from boost does not link libpython*.so
+        # This modified conanfile.py for boost does not link libpython*.so
         # When building a platform wheel, we don't want to link libpython*.so.
         mod_conan_path = "conan_boost_mod"
 
@@ -49,7 +49,6 @@ class BuildRDKit(build_ext_orig):
         )
 
         # needed for windows builds
-        # cairo/1.16.0
         win = """eigen/3.4.0
         """
         if sys.platform != "win32":
@@ -90,17 +89,6 @@ class BuildRDKit(build_ext_orig):
 
         check_call(cmd)
 
-        # Clean up after build
-        cmd = [
-            "conan",
-            "remove",
-            "*",
-            "-s",
-            "-b",
-            "-f",
-        ]
-        check_call(cmd)
-
     def build_rdkit(self, ext):
         """Build RDKit
         (1) Use Conan to install boost and other libs (for windows only)
@@ -110,7 +98,7 @@ class BuildRDKit(build_ext_orig):
 
         cwd = Path().absolute()
 
-        # Install boost via conan
+        # Install boost using Conan
         conan_toolchain_path = cwd / "conan"
         conan_toolchain_path.mkdir(parents=True, exist_ok=True)
         self.conan_install(conan_toolchain_path)
@@ -125,10 +113,10 @@ class BuildRDKit(build_ext_orig):
         rdkit_install_path.mkdir(parents=True, exist_ok=True)
 
         # Clone RDKit from git at rdkit_tag
-        cmds = [f"git clone https://github.com/rdkit/rdkit"]
-        [check_call(c.split()) for c in cmds]
+        # check_call(["git", "clone", "-b", f"{ext.rdkit_tag}", "https://github.com/rdkit/rdkit"])
+        check_call(["git", "clone", "https://github.com/rdkit/rdkit"])
 
-        # Build path of rdkit
+        # cd to rdkit
         os.chdir(str("rdkit"))
 
         # CMake options
