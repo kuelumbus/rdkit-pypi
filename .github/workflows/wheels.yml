@@ -141,6 +141,7 @@ jobs:
           fi
           python -m pip install cibuildwheel
           python -m cibuildwheel --output-dir wheelhouse
+        shell: bash
 
       - uses: actions/upload-artifact@v2
         if: ${{ runner.os == 'Windows' }}
