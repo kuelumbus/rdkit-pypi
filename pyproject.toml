@@ -22,6 +22,11 @@ build-backend = "setuptools.build_meta"
 
 build-verbosity = "1"
 
+# test
+test-requires = "pytest"
+test-command = "pytest --exitfirst --verbose --failed-first {package}/tests"
+
+
 [tool.cibuildwheel.linux]
 before-all = [
     "yum install -y wget freetype-devel zlib-devel libpng12-devel pixman-devel eigen3-devel cairo-devel",
