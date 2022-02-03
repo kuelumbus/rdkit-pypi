@@ -29,6 +29,8 @@ test-command = "pytest --exitfirst --verbose --failed-first {package}/tests"
 
 [tool.cibuildwheel.linux]
 before-all = [
+    # Has eigen3-devel.aarch64
+    "yum install -y epel-release",
     "yum install -y wget freetype-devel zlib-devel libpng12-devel pixman-devel eigen3-devel cairo-devel",
 ]
 
