@@ -122,8 +122,6 @@ jobs:
       - name: Install libraries with chocolatey
         if: ${{ runner.os == 'Windows' }}
         run: |
-          Choco-Install -PackageName tartool
-          Choco-Install -PackageName wget
           Choco-Install -PackageName sed
           Choco-Install -PackageName pkgconfiglite
         shell: pwsh
@@ -149,7 +147,7 @@ jobs:
           path: C:\rdkit\wheelhouse\*.whl
 
       - uses: actions/upload-artifact@v2
-        if: ${{ runner.os == 'Windows' }}
+        if: ${{ runner.os != 'Windows' }}
         with:
           path: ./wheelhouse/*.whl
 
