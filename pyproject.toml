@@ -13,25 +13,31 @@ requires = [
     "cmake == 3.21.1",
     "numpy == 1.19.4; python_version < '3.10'",
     "numpy == 1.21.3; python_version >= '3.10'",
+    "conan",
+    "ninja",
     ]
 build-backend = "setuptools.build_meta"
 
 [tool.cibuildwheel]
 
-build-verbosity = "0"
+build-verbosity = "1"
+
+# test
+test-requires = "pytest"
+test-command = "pytest --exitfirst --verbose --failed-first {package}/tests"
+
 
 [tool.cibuildwheel.linux]
 before-all = [
+    # Has eigen3-devel.aarch64
+    "yum install -y epel-release",
     "yum install -y wget freetype-devel zlib-devel libpng12-devel pixman-devel eigen3-devel cairo-devel",
+]
 
-    # compile cairo (RDKit needs older/other version than in centOS7 repo)
-    # "wget https://www.cairographics.org/releases/cairo-1.10.0.tar.gz --no-check-certificate",
-    # "tar xvf cairo-*",
-    # "cd cairo-*",
-    # "./configure",
-    # "make -j 20",
-    # "make install",
-    # "cd ..",
+repair-wheel-command = [
+    # for boost libs
+    'source conan/activate_run.sh',
+    'auditwheel repair -w {dest_dir} {wheel}'
 ]
 
 [tool.cibuildwheel.macos]
@@ -42,20 +48,20 @@ before-all = [
 
 repair-wheel-command = [
     "export DYLD_LIBRARY_PATH='/usr/local/lib:/usr/lib'",
+    "source conan/activate_run.sh",
     "delocate-listdeps {wheel}",
     "delocate-wheel --require-archs {delocate_archs} -w {dest_dir} {wheel}",
 ]
 
 [tool.cibuildwheel.windows]
 
-before-all = ["mkdir C:\\libs"]
-
 before-build = [
     "pip install delvewheel",
-    "choco install tartool wget sed pkgconfiglite",
-    "vcpkg install zlib:x64-windows freetype:x64-windows bzip2:x64-windows cairo:x64-windows eigen3:x64-windows" ,
-    "vcpkg integrate install",
 ]
 
 environment = { TMP='C:\\temp', TEMP='C:\\temp', RUNNER_TEMP='C:\\temp'}
-repair-wheel-command = ["delvewheel show -v --add-path C:\\libs {wheel}", "delvewheel repair -v  --add-path C:\\libs -w {dest_dir} {wheel}"]
+repair-wheel-command = [
+    "C:\\rdkit\\conan\\activate_run.bat",
+    "delvewheel show -v --add-path C:\\libs;C:\\vcpkg\\installed\\x64-windows\\bin {wheel}",
+    "delvewheel repair -v --add-path C:\\libs;C:\\vcpkg\\installed\\x64-windows\\bin -w {dest_dir} {wheel}"
+    ]
