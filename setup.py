@@ -174,6 +174,11 @@ class BuildRDKit(build_ext_orig):
                 "-DCMAKE_CXX_FLAGS=-Wno-implicit-function-declaration",
             ]
 
+        if "macosx_arm64" in os.environ["CIBW_BUILD"]:
+            options += [
+                "-DCMAKE_OSX_ARCHITECTURES=arm64",
+            ]
+
         cmds = [
             f"cmake -S . -B build {' '.join(options)}",
             f"cmake --build build"
