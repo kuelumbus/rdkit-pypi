@@ -91,7 +91,7 @@ class BuildRDKit(build_ext_orig):
         if "macosx_arm64" in os.environ["CIBW_BUILD"]:
             print("Arm64 MacOS build detected")
             # cmd += ["-pr:b", "default", "-pr:h", "m1"]
-            cmd += ["-s", "arch='armv8'", "-s", "arch_build=armv8"]
+            cmd += ["-s", "arch=armv8", "-s", "arch_build=armv8"]
 
         check_call(cmd)
 
