@@ -40,6 +40,8 @@ repair-wheel-command = [
     'auditwheel repair -w {dest_dir} {wheel}'
 ]
 
+environment-pass = ["CIBW_BUILD"]
+
 [tool.cibuildwheel.macos]
 before-all = [
     "brew install cairo eigen gnu-sed",
