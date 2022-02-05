@@ -44,7 +44,7 @@ environment-pass = ["CIBW_BUILD"]
 
 [tool.cibuildwheel.macos]
 before-all = [
-    "brew install cairo eigen gnu-sed",
+    "arch -arm64 brew install cairo eigen gnu-sed",
     ]
 
 
