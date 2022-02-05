@@ -87,7 +87,7 @@ class BuildRDKit(build_ext_orig):
         if "linux" in sys.platform:
             cmd += [f"--build=b2"]
 
-        # for amr64 on MacOS
+        # for arm 64 on MacOS
         if "macosx_arm64" in os.environ["CIBW_BUILD"]:
             cmd += ["-s", "arch=armv8", "-s", "arch_build=armv8"]
 
@@ -141,8 +141,17 @@ class BuildRDKit(build_ext_orig):
             # build stuff
             f"-DCMAKE_INSTALL_PREFIX={rdkit_install_path}",
             f"-DCMAKE_BUILD_TYPE=Release",
-            # f"-GNinja" if sys.platform != "win32" else "",
         ]
+
+        # Ninja (faster  builds) only works for
+        # if (
+        #     sys.platform != "win32"
+        #     and "macosx_arm64" not in os.environ["CIBW_BUILD"]
+        #     and "manylinux_aarch64" not in os.environ["CIBW_BUILD"]
+        # ):
+        #     options += [
+        #         "-GNinja",
+        #     ]
 
         if sys.platform == "win32":
             # DRDK_INSTALL_STATIC_LIBS should be fixed in newer RDKit builds
@@ -182,9 +191,9 @@ class BuildRDKit(build_ext_orig):
 
         cmds = [
             f"cmake -S . -B build {' '.join(options)}",
-            f"cmake --build build"
-            if sys.platform != "win32"
-            else f"cmake --build build -j 10 --config Release",
+            # f"cmake --build build"
+            # if sys.platform != "win32"
+            f"cmake --build build -j 4 --config Release",
             f"cmake --install build",
         ]
         [check_call(c.split(), env=dict(os.environ, **vars)) for c in cmds]
