@@ -82,10 +82,10 @@ jobs:
           #   bitness: 64
           #   python: 37
           #   platform_id: macosx_x86_64
-          - os: macos-latest
-            bitness: 64
-            python: 38
-            platform_id: macosx_x86_64
+          # - os: macos-latest
+          #   bitness: 64
+          #   python: 38
+          #   platform_id: macosx_x86_64
           # - os: macos-latest
           #   bitness: 64
           #   python: 39

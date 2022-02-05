@@ -141,7 +141,7 @@ class BuildRDKit(build_ext_orig):
             # build stuff
             f"-DCMAKE_INSTALL_PREFIX={rdkit_install_path}",
             f"-DCMAKE_BUILD_TYPE=Release",
-            f"-GNinja" if sys.platform != "win32" else "",
+            # f"-GNinja" if sys.platform != "win32" else "",
         ]
 
         if sys.platform == "win32":
