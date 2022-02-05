@@ -176,6 +176,8 @@ class BuildRDKit(build_ext_orig):
             options += [
                 "-DCMAKE_OSX_ARCHITECTURES=arm64",
             ]
+            # also export it
+            vars = {"CMAKE_OSX_ARCHITECTURES": "arm64"}
 
         cmds = [
             f"cmake -S . -B build {' '.join(options)}",
@@ -184,7 +186,7 @@ class BuildRDKit(build_ext_orig):
             else f"cmake --build build -j 10 --config Release",
             f"cmake --install build",
         ]
-        [check_call(c.split()) for c in cmds]
+        [check_call(c.split(), env=dict(os.environ, **vars)) for c in cmds]
 
         os.chdir(str(cwd))
 
