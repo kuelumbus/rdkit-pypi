@@ -87,6 +87,11 @@ class BuildRDKit(build_ext_orig):
         if "linux" in sys.platform:
             cmd += [f"--build=b2"]
 
+        # for amr64 on MacOS
+        if "macosx_arm64" in os.environ["CIBW_BUILD"]:
+            print("Arm64 MacOS build detected")
+            cmd += ["-pr:b", "default", "-pr:h", "m1"]
+
         check_call(cmd)
 
     def build_rdkit(self, ext):
