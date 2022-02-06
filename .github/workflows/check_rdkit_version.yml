@@ -34,7 +34,6 @@ jobs:
           fi
 
       - name: Create Pull Request
-        shell: bash
         if: ${{ steps.tags.outputs.changed }}
         uses: gr2m/create-or-update-pull-request-action@v1.x
         env:
