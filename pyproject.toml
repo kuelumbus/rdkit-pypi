@@ -44,7 +44,7 @@ environment-pass = ["CIBW_BUILD"]
 
 [tool.cibuildwheel.macos]
 before-all = [
-    "install_arm=( glib lzo pixman cairo eigen)",
+    "install_arm=( glib lzo pixman cairo eigen freetype )",
     "for i in ${install_arm[@]}; do response=$(brew fetch --force --bottle-tag=arm64_big_sur $i | grep Downloaded ); download_path=$(echo $response | xargs -n 1 | tail -1); brew install $download_path; done",
 
     "brew install gnu-sed",
