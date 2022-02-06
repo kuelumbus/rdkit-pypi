@@ -87,6 +87,10 @@ class BuildRDKit(build_ext_orig):
         if "linux" in sys.platform:
             cmd += [f"--build=b2"]
 
+        # for arm 64 on MacOS
+        if "macosx_arm64" in os.environ["CIBW_BUILD"]:
+            cmd += ["-s", "arch=armv8", "-s", "arch_build=armv8"]
+
         check_call(cmd)
 
     def build_rdkit(self, ext):
@@ -137,8 +141,19 @@ class BuildRDKit(build_ext_orig):
             # build stuff
             f"-DCMAKE_INSTALL_PREFIX={rdkit_install_path}",
             f"-DCMAKE_BUILD_TYPE=Release",
-            f"-GNinja" if sys.platform != "win32" else "",
+            # Speed up builds
+            f"-DRDK_BUILD_CPP_TESTS=OFF",
         ]
+
+        # Ninja (faster  builds) only works for
+        # if (
+        #     sys.platform != "win32"
+        #     and "macosx_arm64" not in os.environ["CIBW_BUILD"]
+        #     and "manylinux_aarch64" not in os.environ["CIBW_BUILD"]
+        # ):
+        #     options += [
+        #         "-GNinja",
+        #     ]
 
         if sys.platform == "win32":
             # DRDK_INSTALL_STATIC_LIBS should be fixed in newer RDKit builds
@@ -168,14 +183,23 @@ class BuildRDKit(build_ext_orig):
                 "-DCMAKE_CXX_FLAGS=-Wno-implicit-function-declaration",
             ]
 
+        vars = {}
+        if "macosx_arm64" in os.environ["CIBW_BUILD"]:
+            options += [
+                "-DCMAKE_OSX_ARCHITECTURES=arm64",
+                "-DRDK_OPTIMIZE_POPCNT=OFF",
+            ]
+            # also export it to compile yaehmop for arm64 too
+            vars["CMAKE_OSX_ARCHITECTURES"] = "arm64"
+
         cmds = [
             f"cmake -S . -B build {' '.join(options)}",
-            f"cmake --build build"
-            if sys.platform != "win32"
-            else f"cmake --build build -j 10 --config Release",
+            # f"cmake --build build"
+            # if sys.platform != "win32"
+            f"cmake --build build -j 4 --config Release",
             f"cmake --install build",
         ]
-        [check_call(c.split()) for c in cmds]
+        [check_call(c.split(), env=dict(os.environ, **vars)) for c in cmds]
 
         os.chdir(str(cwd))
 

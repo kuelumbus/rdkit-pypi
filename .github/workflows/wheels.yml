@@ -53,7 +53,7 @@ jobs:
             platform_id: manylinux_x86_64
             manylinux_image: manylinux2014
 
-        # Linux 64 bit ARM: aarch64 (needs QEMU)
+        # Linux 64 bit ARM: aarch64 (in Circle CI)
           # - os: ubuntu-latest
           #   python: 37
           #   bitness: 64
@@ -94,18 +94,18 @@ jobs:
             platform_id: macosx_x86_64
 
           # MacOS 64 bit ARM: arm64
-          # - os: macos-latest
-          #   bitness: 64
-          #   python: 38
-          #   platform_id: macosx_arm64
-          # - os: macos-latest
-          #   bitness: 64
-          #   python: 39
-          #   platform_id: macosx_arm64
-          # - os: macos-latest
-          #   bitness: 64
-          #   python: 310
-          #   platform_id: macosx_arm64
+          - os: macos-latest
+            bitness: 64
+            python: 38
+            platform_id: macosx_arm64
+          - os: macos-latest
+            bitness: 64
+            python: 39
+            platform_id: macosx_arm64
+          - os: macos-latest
+            bitness: 64
+            python: 310
+            platform_id: macosx_arm64
 
     steps:
       - uses: actions/checkout@v2
@@ -141,12 +141,6 @@ jobs:
           Choco-Install -PackageName sed
           Choco-Install -PackageName pkgconfiglite
         shell: pwsh
-
-      - name: Set up QEMU
-        if: runner.os == 'Linux'
-        uses: docker/setup-qemu-action@v1
-        with:
-          platforms: all
 
       - name: Build wheels
         env:
