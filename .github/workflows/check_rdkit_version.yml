@@ -9,12 +9,13 @@ jobs:
   update_tag:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
       - name: Check out RDKit repo
-        uses: actions/checkout@master
+        uses: actions/checkout@v2
         with:
           repository: rdkit/rdkit
           path: rdkit
+          fetch-depth: 0
 
       - name: Get most tags and compare
         id: tags
