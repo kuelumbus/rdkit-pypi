@@ -6,12 +6,15 @@ jobs:
     machine:
       image: ubuntu-2004:202101-01
       resource_class: arm.medium
+    parameters:
+      python-version:
+        type: string
     steps:
       - checkout
       - run:
           name: Build the ARM64 wheels on linux
           environment:
-            CIBW_BUILD: cp38-manylinux_aarch64
+            CIBW_BUILD: << parameters.node-version >>-manylinux_aarch64
             CIBW_ARCHS: aarch64
             CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
             CIBW_MANYLINUX_I686_IMAGE: manylinux2014
@@ -25,4 +28,7 @@ jobs:
 workflows:
   all-tests:
     jobs:
-      - linux-arm64-wheels
+      - linux-arm64-wheels:
+        matrix:
+          parameters:
+            python-version: ["3.7", "3.8", "3.9", "3.10"]
