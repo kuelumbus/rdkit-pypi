@@ -1,6 +1,6 @@
 # 🔥 RDKit Python Wheels
 
-This repository holds the code to build [RDKit](https://github.com/rdkit/rdkit) platform wheels for Linux, macOS, and Windows. The wheels contain the necessary dynamic libraries (`*.so`, `*.dylib`, and `*.dll`) and can be installed without any compilation. The wheels are available at the [PyPi](https://pypi.org/project/rdkit-pypi/) repository and can be installed using pip (`pip install rdkit-pypi`).
+This repository holds the code to build [RDKit](https://github.com/rdkit/rdkit) platform wheels for Linux, macOS, and Windows. The wheels contain the necessary dynamic libraries (`*.so`, `*.dylib`, and `*.dll`) of the platform and can be installed without any compilation. The wheels are available at the [PyPi](https://pypi.org/project/rdkit-pypi/) repository and can be installed using pip (`pip install rdkit-pypi`).
 
 Please open an issue if you find something missing or not working as expected.
 
@@ -11,14 +11,15 @@ Please open an issue if you find something missing or not working as expected.
 
 ## Available Builds
 
-| OS      | Arch  | Bit | Conditions                                          | 3.7 | 3.8 | 3.9 | 3.10 |
-| ------- | ----- | --- | --------------------------------------------------- | --- | --- | --- | ---- |
-| Linux   | intel | 64  | glibc >= 2.17 (e.g., Ubuntu 16.04+, CentOS 6+, ...) | ✔️  | ✔️  | ✔️  | ✔️   |
-| macOS   | intel | 64  | >= macOS-11                                         | ✔️  | ✔️  | ✔️  | ✔️   |
-| macOS   | armv8 | 64  | >= macOS-11 (M1 hardware)                           |     | ✔️  | ✔️  | ✔️   |
-| Windows | intel | 64  |                                                     | ✔️  | ✔️  | ✔️  | ✔️   |
+| OS      | Arch    | Bit | Conditions                                          | 3.7 | 3.8 | 3.9 | 3.10 | CI             |
+| ------- | ------- | --- | --------------------------------------------------- | --- | --- | --- | ---- | -------------- |
+| Linux   | intel   | 64  | glibc >= 2.17 (e.g., Ubuntu 16.04+, CentOS 6+, ...) | ✔️  | ✔️  | ✔️  | ✔️   | Github Actions |
+| Linux   | aarch64 | 64  | glibc >= 2.17 (e.g., Ubuntu 16.04+, CentOS 6+, ...) | ✔️  | ✔️  | ✔️  | ✔️   | Circle CI      |
+| macOS   | intel   | 64  | >= macOS-11                                         | ✔️  | ✔️  | ✔️  | ✔️   | Github Actions |
+| macOS   | armv8   | 64  | >= macOS-11 (M1 hardware)                           |     | ✔️  | ✔️  | ✔️   | Github Actions |
+| Windows | intel   | 64  |                                                     | ✔️  | ✔️  | ✔️  | ✔️   | Github Actions |
 
-## Install RDKit
+## Install RDKit from PyPi
 
 ### PIP
 
@@ -35,6 +36,7 @@ poetry run python -c "from rdkit import Chem; print(Chem.MolToMolBlock(Chem.MolF
 ```
 
 ## Build wheels locally
+
 cibuildwheel uses `patchelf` (`apt install patchelf`)
 
 ```bash
@@ -42,5 +44,5 @@ git clone https://github.com/kuelumbus/rdkit-pypi.git
 cd rdkit-pypi
 
 python3 -m pip install cibuildwheel
-cibuildwheel --platform linux --output-dir wheelhouse
+python3 -m cibuildwheel --platform linux --output-dir wheelhouse
 ```
