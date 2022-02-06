@@ -1,0 +1,34 @@
+version: 2.1
+
+jobs:
+  linux-arm64-wheels:
+    working_directory: ~/linux-wheels
+    machine:
+      image: ubuntu-2004:202101-01
+      resource_class: arm.medium
+    parameters:
+      python-version:
+        type: string
+    steps:
+      - checkout
+      - run:
+          name: Build the ARM64 wheels on linux
+          environment:
+            CIBW_BUILD: cp<< parameters.python-version >>-manylinux_aarch64
+            CIBW_ARCHS: aarch64
+            CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
+            CIBW_MANYLINUX_I686_IMAGE: manylinux2014
+
+          command: |
+            python3 -m pip install cibuildwheel==2.3.1
+            python3 -m cibuildwheel --output-dir wheelhouse
+      - store_artifacts:
+          path: wheelhouse/
+
+workflows:
+  all-tests:
+    jobs:
+      - linux-arm64-wheels:
+          matrix:
+            parameters:
+              python-version: ["37", "38", "39", "310"]

@@ -53,7 +53,7 @@ jobs:
             platform_id: manylinux_x86_64
             manylinux_image: manylinux2014
 
-        # Linux 64 bit ARM: aarch64 (in Circle CI)
+        # Linux 64 bit ARM: aarch64 (on Circle CI)
           # - os: ubuntu-latest
           #   python: 37
           #   bitness: 64

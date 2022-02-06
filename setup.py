@@ -117,11 +117,14 @@ class BuildRDKit(build_ext_orig):
         rdkit_install_path.mkdir(parents=True, exist_ok=True)
 
         # Clone RDKit from git at rdkit_tag
-        # check_call(["git", "clone", "-b", f"{ext.rdkit_tag}", "https://github.com/rdkit/rdkit"])
-        check_call(["git", "clone", "https://github.com/rdkit/rdkit"])
+        check_call(
+            ["git", "clone", "-b", f"{ext.rdkit_tag}", "https://github.com/rdkit/rdkit"]
+        )
 
-        # cd to rdkit
         os.chdir(str("rdkit"))
+
+        # Cherry picking the md5 for comicfont
+        check_call(["git", "cherry-pick", "d05501c", "--no-commit"])
 
         # CMake options
         options = [
