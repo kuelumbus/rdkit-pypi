@@ -56,8 +56,8 @@ before-all = [
 else
     brew install cairo
 fi
-''',
-"brew install gnu-sed eigen",
+brew install gnu-sed eigen
+'''
 ]
 
 repair-wheel-command = [
