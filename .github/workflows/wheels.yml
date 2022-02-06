@@ -4,8 +4,6 @@ name: Build wheels
 # Build on every branch push, tag push, and pull request change:
 on:
   push:
-    branches:
-      - arm64
 
 jobs:
   build_wheels:
@@ -16,46 +14,46 @@ jobs:
       matrix:
         include:
           # Window 64 bit
-          # - os: windows-latest
-          #   python: 37
-          #   bitness: 64
-          #   platform_id: win_amd64
-          # - os: windows-latest
-          #   python: 38
-          #   bitness: 64
-          #   platform_id: win_amd64
-          # - os: windows-latest
-          #   python: 39
-          #   bitness: 64
-          #   platform_id: win_amd64
-          # - os: windows-latest
-          #   python: 310
-          #   bitness: 64
-          #   platform_id: win_amd64
+          - os: windows-latest
+            python: 37
+            bitness: 64
+            platform_id: win_amd64
+          - os: windows-latest
+            python: 38
+            bitness: 64
+            platform_id: win_amd64
+          - os: windows-latest
+            python: 39
+            bitness: 64
+            platform_id: win_amd64
+          - os: windows-latest
+            python: 310
+            bitness: 64
+            platform_id: win_amd64
 
           # Linux 64 bit Intel: x86_64
-          # - os: ubuntu-latest
-          #   python: 37
-          #   bitness: 64
-          #   platform_id: manylinux_x86_64
-          #   manylinux_image: manylinux2014
-          # - os: ubuntu-latest
-          #   python: 38
-          #   bitness: 64
-          #   platform_id: manylinux_x86_64
-          #   manylinux_image: manylinux2014
-          # - os: ubuntu-latest
-          #   python: 39
-          #   bitness: 64
-          #   platform_id: manylinux_x86_64
-          #   manylinux_image: manylinux2014
-          # - os: ubuntu-latest
-          #   python: 310
-          #   bitness: 64
-          #   platform_id: manylinux_x86_64
-          #   manylinux_image: manylinux2014
+          - os: ubuntu-latest
+            python: 37
+            bitness: 64
+            platform_id: manylinux_x86_64
+            manylinux_image: manylinux2014
+          - os: ubuntu-latest
+            python: 38
+            bitness: 64
+            platform_id: manylinux_x86_64
+            manylinux_image: manylinux2014
+          - os: ubuntu-latest
+            python: 39
+            bitness: 64
+            platform_id: manylinux_x86_64
+            manylinux_image: manylinux2014
+          - os: ubuntu-latest
+            python: 310
+            bitness: 64
+            platform_id: manylinux_x86_64
+            manylinux_image: manylinux2014
 
-        # Linux 64 bit ARM: aarch64 (needs QEMU)
+        # Linux 64 bit ARM: aarch64 (in Circle CI)
           # - os: ubuntu-latest
           #   python: 37
           #   bitness: 64
@@ -78,22 +76,22 @@ jobs:
           #   manylinux_image: manylinux2014
 
           # MacOS 64 bit Intel: x86_64
-          # - os: macos-latest
-          #   bitness: 64
-          #   python: 37
-          #   platform_id: macosx_x86_64
-          # - os: macos-latest
-          #   bitness: 64
-          #   python: 38
-          #   platform_id: macosx_x86_64
-          # - os: macos-latest
-          #   bitness: 64
-          #   python: 39
-          #   platform_id: macosx_x86_64
-          # - os: macos-latest
-          #   bitness: 64
-          #   python: 310
-          #   platform_id: macosx_x86_64
+          - os: macos-latest
+            bitness: 64
+            python: 37
+            platform_id: macosx_x86_64
+          - os: macos-latest
+            bitness: 64
+            python: 38
+            platform_id: macosx_x86_64
+          - os: macos-latest
+            bitness: 64
+            python: 39
+            platform_id: macosx_x86_64
+          - os: macos-latest
+            bitness: 64
+            python: 310
+            platform_id: macosx_x86_64
 
           # MacOS 64 bit ARM: arm64
           - os: macos-latest
@@ -143,12 +141,6 @@ jobs:
           Choco-Install -PackageName sed
           Choco-Install -PackageName pkgconfiglite
         shell: pwsh
-
-      - name: Set up QEMU
-        if: runner.os == 'Linux'
-        uses: docker/setup-qemu-action@v1
-        with:
-          platforms: aarch64
 
       - name: Build wheels
         env:
