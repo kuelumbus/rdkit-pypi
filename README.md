@@ -36,7 +36,6 @@ poetry run python -c "from rdkit import Chem; print(Chem.MolToMolBlock(Chem.MolF
 ```
 
 ## Build wheels locally
-
 cibuildwheel uses `patchelf` (`apt install patchelf`)
 
 ```bash
