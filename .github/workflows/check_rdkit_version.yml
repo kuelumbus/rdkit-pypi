@@ -27,7 +27,7 @@ jobs:
           cd ..
           rm -fr rdkit
           echo ::set-output name=changed::false
-          if [[ "$new_tag" != "$current_tag ]]; then
+          if [[ "$new_tag" != "$current_tag" ]]; then
           sed -i "s/rdkit_tag =.*/rdkit_tag = \"$new_tag\"/g" setup.py
           echo ::set-output name=changed::true
           echo ::set-output name=new_tag::${new_tag}
