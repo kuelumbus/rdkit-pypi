@@ -2,8 +2,11 @@
 name: Build wheels
 
 # Build on every branch push, tag push, and pull request change:
+# on:
+  # push:
+
 on:
-  push:
+  workflow_dispatch:
 
 jobs:
   build_wheels:
