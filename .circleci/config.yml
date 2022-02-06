@@ -8,8 +8,6 @@ jobs:
       resource_class: arm.medium
     steps:
       - checkout
-      - setup_remote_docker:
-          version: 19.03.13
       - run:
           name: Build the ARM64 wheels on linux
           environment:
