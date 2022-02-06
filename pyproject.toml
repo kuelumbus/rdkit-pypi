@@ -49,7 +49,7 @@ before-all = [
     "do "
     "response=$(brew fetch --force --bottle-tag=arm64_big_sur $i | grep Downloaded ); "
     "download_path=$(echo $response | xargs -n 1 | tail -1); "
-    "brew install $download_path: "
+    "brew install $download_path; "
     "done",
 
     "brew install gnu-sed",
