@@ -61,11 +61,11 @@ jobs:
           #   bitness: 64
           #   platform_id: manylinux_aarch64
           #   manylinux_image: manylinux2014
-          - os: ubuntu-latest
-            python: 38
-            bitness: 64
-            platform_id: manylinux_aarch64
-            manylinux_image: manylinux2014
+          # - os: ubuntu-latest
+          #   python: 38
+          #   bitness: 64
+          #   platform_id: manylinux_aarch64
+          #   manylinux_image: manylinux2014
           # - os: ubuntu-latest
           #   python: 39
           #   bitness: 64
@@ -96,10 +96,10 @@ jobs:
           #   platform_id: macosx_x86_64
 
           # MacOS 64 bit ARM: arm64
-          # - os: macos-latest
-          #   bitness: 64
-          #   python: 38
-          #   platform_id: macosx_arm64
+          - os: macos-latest
+            bitness: 64
+            python: 38
+            platform_id: macosx_arm64
           # - os: macos-latest
           #   bitness: 64
           #   python: 39
