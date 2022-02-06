@@ -44,7 +44,22 @@ environment-pass = ["CIBW_BUILD"]
 
 [tool.cibuildwheel.macos]
 before-all = [
-    "arch -arm64 brew install cairo eigen gnu-sed",
+    "setopt sh_word_split",
+    "response=$(brew fetch --force --bottle-tag=arm64_big_sur cairo | grep Downloaded )",
+    "parsed=($response)",
+    "brew install $parsed[3]",
+
+    "setopt sh_word_split",
+    "response=$(brew fetch --force --bottle-tag=arm64_big_sur eigen | grep Downloaded )",
+    "parsed=($response)",
+    "brew install $parsed[3]",
+
+    "setopt sh_word_split",
+    "response=$(brew fetch --force --bottle-tag=arm64_big_sur gnu-sed | grep Downloaded )",
+    "parsed=($response)",
+    "brew install $parsed[3]",
+
+    # "brew install cairo eigen gnu-sed",
     ]
 
 
