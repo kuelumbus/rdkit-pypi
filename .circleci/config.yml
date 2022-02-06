@@ -3,10 +3,8 @@ version: 2.1
 jobs:
   linux-arm64-wheels:
     working_directory: ~/linux-wheels
-    docker:
-      - image: cimg/python:3.9
     machine:
-      image: ubuntu-2004:202101-01
+      image: cimg/python:3.9
       resource_class: arm.medium
     steps:
       - checkout
