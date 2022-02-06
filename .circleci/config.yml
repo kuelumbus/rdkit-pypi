@@ -25,10 +25,10 @@ jobs:
       - store_artifacts:
           path: wheelhouse/
 
-workflows:
-  all-tests:
-    jobs:
-      - linux-arm64-wheels:
-          matrix:
-            parameters:
-              python-version: ["37", "38", "39", "310"]
+# workflows:
+#   all-tests:
+#     jobs:
+#       - linux-arm64-wheels:
+#           matrix:
+#             parameters:
+#               python-version: ["37", "38", "39", "310"]
