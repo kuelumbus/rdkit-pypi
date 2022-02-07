@@ -2,7 +2,7 @@
 name: Test rdkit-pypi from PyPi
 
 on:
-  workflow_dispatch:
+  push:
 
 jobs:
   build_wheels:
