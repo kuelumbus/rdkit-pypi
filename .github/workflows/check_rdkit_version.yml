@@ -1,9 +1,8 @@
-name: Nightly check for new RDKit tags
+name: Check for new RDKit tags
 on:
-  push:
-  # schedule:
+  schedule:
     # https://crontab.guru/every-night-at-midnight
-    # - cron: "0 0 * * *"
+    - cron: "0 0 * * *"
 
 jobs:
   update_tag:
@@ -39,7 +38,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          title: "Bump RDKit to ${{ steps.tags.outputs.new_tag }}"
+          title: "🤖 Bump RDKit version to ${{ steps.tags.outputs.new_tag }}"
           branch: "bump-rdkit-${{ steps.tags.outputs.new_tag }}"
           path: "./"
-          commit-message: "Bump RDKit to ${{ steps.tags.outputs.new_tag }}"
+          commit-message: "Set RDKit version to ${{ steps.tags.outputs.new_tag }}"
+          body: |
+            New RDKit version tag detected in https://github.com/rdkit/rdkit.
+          reviewers: kuelumbus

@@ -11,7 +11,7 @@ from setuptools import Extension, find_packages, setup
 from setuptools.command.build_ext import build_ext as build_ext_orig
 
 # RDKit version to build (tag from rdkit github repository)
-rdkit_tag = "Release_2021_09_3"
+rdkit_tag = "Release_2021_09_4"
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
