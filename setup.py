@@ -10,6 +10,9 @@ from textwrap import dedent
 from setuptools import Extension, find_packages, setup
 from setuptools.command.build_ext import build_ext as build_ext_orig
 
+# RDKit version to build (tag from github repository)
+rdkit_tag = "Release_2021_09_4"
+
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
@@ -255,7 +258,7 @@ class BuildRDKit(build_ext_orig):
 
 setup(
     name="rdkit-pypi",
-    version=f"2021.9.4",
+    version=rdkit_tag.replace("Release_", "").replace("_", "."),
     description="A collection of chemoinformatics and machine-learning software written in C++ and Python",
     author="Christopher Kuenneth",
     author_email="chris@kuenneth.dev",
@@ -273,7 +276,7 @@ setup(
         "Pillow",
     ],
     ext_modules=[
-        RDKit("rdkit", rdkit_tag="Release_2021_09_4"),
+        RDKit("rdkit", rdkit_tag=rdkit_tag),
     ],
     cmdclass=dict(build_ext=BuildRDKit),
 )
