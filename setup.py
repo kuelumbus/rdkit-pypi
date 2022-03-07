@@ -126,9 +126,6 @@ class BuildRDKit(build_ext_orig):
 
         os.chdir(str("rdkit"))
 
-        # Cherry picking the md5 for comicfont
-        check_call(["git", "cherry-pick", "d05501c", "--no-commit"])
-
         # CMake options
         options = [
             f"-DCMAKE_TOOLCHAIN_FILE={conan_toolchain_path / 'conan_paths.cmake'}",
