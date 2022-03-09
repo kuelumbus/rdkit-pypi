@@ -32,4 +32,3 @@ def test_data_dir_and_chemical_features():
 def test_rdkit_chem_draw_import():
     # This segfaults if the compiled cairo version from centos is used
     from rdkit.Chem.Draw import ReactionToImage
-    from rdkit.Chem.Draw import IPythonConsole
