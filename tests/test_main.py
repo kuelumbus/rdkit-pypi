@@ -27,3 +27,9 @@ def test_data_dir_and_chemical_features():
     m = Chem.MolFromSmiles("OCc1ccccc1CN")
     feats = factory.GetFeaturesForMol(m)
     assert len(feats) == 8
+
+
+def test_rdkit_chem_draw_import():
+    # This segfaults if the compiled cairo version from centos is used
+    from rdkit.Chem.Draw import ReactionToImage
+    from rdkit.Chem.Draw import IPythonConsole
