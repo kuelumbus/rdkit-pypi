@@ -146,6 +146,8 @@ class BuildRDKit(build_ext_orig):
             f"-DCMAKE_BUILD_TYPE=Release",
             # Speed up builds
             f"-DRDK_BUILD_CPP_TESTS=OFF",
+            # Do not add POPCNT compiler flag
+            f"-DRDK_OPTIMIZE_POPCNT=OFF",
         ]
 
         # Ninja (faster  builds) only works for
