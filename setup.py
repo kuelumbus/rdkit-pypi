@@ -269,7 +269,7 @@ setup(
     long_description_content_type="text/markdown",
     packages=find_packages(),
     install_requires=[
-        "numpy>=1.19",
+        "numpy",
         "Pillow",
     ],
     ext_modules=[
