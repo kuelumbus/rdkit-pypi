@@ -255,7 +255,7 @@ class BuildRDKit(build_ext_orig):
 
 setup(
     name="rdkit-pypi",
-    version=rdkit_tag.replace("Release_", "").replace("_", "."),
+    version=rdkit_tag.replace("Release_", "").replace("_", ".") + ".1",
     description="A collection of chemoinformatics and machine-learning software written in C++ and Python",
     author="Christopher Kuenneth",
     author_email="chris@kuenneth.dev",
@@ -269,7 +269,7 @@ setup(
     long_description_content_type="text/markdown",
     packages=find_packages(),
     install_requires=[
-        "numpy>=1.19",
+        "numpy",
         "Pillow",
     ],
     ext_modules=[
