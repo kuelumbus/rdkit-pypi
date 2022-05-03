@@ -139,7 +139,7 @@ class BuildRDKit(build_ext_orig):
             f"-DRDK_BUILD_YAEHMOP_SUPPORT=ON",
             f"-DRDK_INSTALL_INTREE=OFF",
             f"-DRDK_BUILD_CAIRO_SUPPORT=ON",
-            f"-RDK_BUILD_FREESASA_SUPPORT=ON",
+            f"-DRDK_BUILD_FREESASA_SUPPORT=ON",
             # Disable system libs for finding boost
             f"-DBoost_NO_SYSTEM_PATHS=ON",
             # build stuff
@@ -256,7 +256,7 @@ class BuildRDKit(build_ext_orig):
 
 setup(
     name="rdkit-pypi",
-    version=rdkit_tag.replace("Release_", "").replace("_", "."),
+    version=rdkit_tag.replace("Release_", "").replace("_", ".") + ".1",
     description="A collection of chemoinformatics and machine-learning software written in C++ and Python",
     author="Christopher Kuenneth",
     author_email="chris@kuenneth.dev",
