@@ -1,6 +1,7 @@
 # 🔥 RDKit Python Wheels
 
-This repository holds the code to build [RDKit](https://github.com/rdkit/rdkit) platform wheels for Linux, macOS, and Windows. The wheels contain the necessary dynamic libraries (`*.so`, `*.dylib`, and `*.dll`) of the platform and can be installed without any compilation. The wheels are available at the [PyPi](https://pypi.org/project/rdkit-pypi/) repository and can be installed using pip (`pip install rdkit-pypi`).
+This repository holds the code to build [RDKit](https://github.com/rdkit/rdkit) platform wheels for Linux, macOS, and Windows. The wheels contain the platform-specific dynamic libraries (`*.so`, `*.dylib`, and `*.dll`) and are available at [PyPi](https://pypi.org/project/rdkit-pypi/). You can install RDKit using pip (`pip install rdkit-pypi`).
+
 
 Please open an issue if you find something missing or not working as expected.
 
@@ -35,14 +36,17 @@ poetry add rdkit-pypi
 poetry run python -c "from rdkit import Chem; print(Chem.MolToMolBlock(Chem.MolFromSmiles('C1CCC1')))"
 ```
 
-## Build wheels locally
+## Local builds on Linux
 
-cibuildwheel uses `patchelf` (`apt install patchelf`)
+`cibuildwheel` requires `patchelf` (`apt install patchelf`)
 
 ```bash
+python3 -m pip install cibuildwheel
+
 git clone https://github.com/kuelumbus/rdkit-pypi.git
 cd rdkit-pypi
 
-python3 -m pip install cibuildwheel
-python3 -m cibuildwheel --platform linux --output-dir wheelhouse
+CIBW_BUILD=cp37-manylinux_x86_64 python3 -m cibuildwheel --platform linux --output-dir wheelhouse --config-file pyproject.toml
 ```
+
+Replace `cp37-manylinux_x86_64` with `cp38-manylinux_x86_64`, `cp39-manylinux_x86_64`, and `cp310-manylinux_x86_64` to build for other python versions.
