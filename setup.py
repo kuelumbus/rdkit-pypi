@@ -139,6 +139,7 @@ class BuildRDKit(build_ext_orig):
             f"-DRDK_BUILD_YAEHMOP_SUPPORT=ON",
             f"-DRDK_INSTALL_INTREE=OFF",
             f"-DRDK_BUILD_CAIRO_SUPPORT=ON",
+            f"-RDK_BUILD_FREESASA_SUPPORT=ON",
             # Disable system libs for finding boost
             f"-DBoost_NO_SYSTEM_PATHS=ON",
             # build stuff
