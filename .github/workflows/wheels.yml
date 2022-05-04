@@ -119,15 +119,15 @@ jobs:
         with:
           python-version: '3.9'
 
-      - uses: pat-s/always-upload-cache@v3
-        if: ${{ runner.os == 'Windows' }}
-        with:
-          path: |
-            C:\vcpkg\downloads
-            C:\vcpkg\buildtrees
-            C:\vcpkg\packages
-            C:\Users\runneradmin\AppData\Local\Temp\chocolatey
-          key: ${{ runner.os }}-vcpkg-and_choco3
+      # - uses: pat-s/always-upload-cache@v3
+      #   if: ${{ runner.os == 'Windows' }}
+      #   with:
+      #     path: |
+      #       C:\vcpkg\downloads
+      #       C:\vcpkg\buildtrees
+      #       C:\vcpkg\packages
+      #       C:\Users\runneradmin\AppData\Local\Temp\chocolatey
+      #     key: ${{ runner.os }}-vcpkg-and_choco3
 
       - name: Install libraries with vcpkg
         if: ${{ runner.os == 'Windows' }}
