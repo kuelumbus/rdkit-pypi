@@ -98,7 +98,7 @@ class BuildRDKit(build_ext_orig):
 
     def build_rdkit(self, ext):
         """Build RDKit
-        (1) Use Conan to install boost and other libs (for windows only)
+        (1) Use Conan to install boost and other libs
         (2) Build RDKit
         (3) Copy the shared library to correct paths before start building the wheel
         """
@@ -124,6 +124,8 @@ class BuildRDKit(build_ext_orig):
             ["git", "clone", "-b", f"{ext.rdkit_tag}", "https://github.com/rdkit/rdkit"]
         )
 
+        license_file = build_path / "rdkit" / "license.txt"
+
         os.chdir(str("rdkit"))
 
         # CMake options
@@ -148,16 +150,6 @@ class BuildRDKit(build_ext_orig):
             # Speed up builds
             f"-DRDK_BUILD_CPP_TESTS=OFF",
         ]
-
-        # Ninja (faster  builds) only works for
-        # if (
-        #     sys.platform != "win32"
-        #     and "macosx_arm64" not in os.environ["CIBW_BUILD"]
-        #     and "manylinux_aarch64" not in os.environ["CIBW_BUILD"]
-        # ):
-        #     options += [
-        #         "-GNinja",
-        #     ]
 
         if sys.platform == "win32":
             # DRDK_INSTALL_STATIC_LIBS should be fixed in newer RDKit builds
@@ -207,7 +199,7 @@ class BuildRDKit(build_ext_orig):
 
         os.chdir(str(cwd))
 
-        # copy libs to make them finable by wheels creators
+        # copy libs to make them findable by wheels creators
         py_name = "python" + ".".join(map(str, sys.version_info[:2]))
         rdkit_files = rdkit_install_path / "lib" / py_name / "site-packages" / "rdkit"
 
@@ -237,6 +229,8 @@ class BuildRDKit(build_ext_orig):
         copytree(str(rdkit_files), str(wheel_path))
         # Copy the data directory
         copytree(str(rdkit_data_path), str(wheel_path / "Data"))
+        # License
+        copy_file(str(license_file), str(wheel_path))
 
         rdkit_root = rdkit_install_path / "lib"
 
