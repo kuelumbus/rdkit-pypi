@@ -1,11 +1,16 @@
 # 🔥 RDKit Python Wheels
 
-This repository holds the code to build [RDKit](https://github.com/rdkit/rdkit) platform wheels for Linux, macOS, and Windows. The wheels contain the platform-specific dynamic libraries (`*.so`, `*.dylib`, and `*.dll`) and are available at [PyPi](https://pypi.org/project/rdkit-pypi/). You can install RDKit using pip (`pip install rdkit-pypi`).
+This repository holds the code to build [RDKit](https://github.com/rdkit/rdkit) platform wheels for Linux, macOS, and Windows. The wheels contain the platform-specific dynamic libraries (`*.so`, `*.dylib`, and `*.dll`) and are available at [PyPi](https://pypi.org/project/rdkit/). You can install RDKit using pip 
 
+```sh
+pip install rdkit
+```
+
+**_NOTE:_** Older versions of RDKit might be available at the [`rdkit-pypi`](https://pypi.org/project/rdkit-pypi/) PyPi repository (`pip install rdkit-pypi`). `rdkit-pypi` is the old name of RDKit at PyPi. Future RDKit versions will be available at the `rdkit` PyPi repository. Please update your depenencies.
 
 Please open an issue if you find something missing or not working as expected.
 
-[![PyPI version shields.io](https://img.shields.io/pypi/v/rdkit-pypi.svg?style=for-the-badge&logo=PyPI&logoColor=blue)](https://pypi.python.org/pypi/rdkit-pypi/)
+[![PyPI version shields.io](https://img.shields.io/pypi/v/rdkit.svg?style=for-the-badge&logo=PyPI&logoColor=blue)](https://pypi.python.org/pypi/rdkit/)
 [![PyPI download month](https://img.shields.io/pypi/dm/rdkit-pypi.svg?style=for-the-badge&logo=PyPI)](https://pypi.python.org/pypi/rdkit-pypi/)
 [![PyPI download day](https://img.shields.io/pypi/dd/rdkit-pypi.svg?style=for-the-badge&logo=PyPI)](https://pypi.python.org/pypi/rdkit-pypi/)
 [![GitHub stars](https://img.shields.io/github/stars/kuelumbus/rdkit-pypi.svg?style=social&label=Star&maxAge=2592000)](https://github.com/kuelumbus/rdkit-pypi)
@@ -20,19 +25,19 @@ Please open an issue if you find something missing or not working as expected.
 | macOS   | armv8   | 64  | >= macOS-11 (M1 hardware)                           |     | ✔️  | ✔️  | ✔️   | Github Actions |
 | Windows | intel   | 64  |                                                     | ✔️  | ✔️  | ✔️  | ✔️   | Github Actions |
 
-## Install RDKit from PyPi
+## Installation
 
 ### PIP
 
 ```bash
-python -m pip install rdkit-pypi
+python -m pip install rdkit
 python -c "from rdkit import Chem; print(Chem.MolToMolBlock(Chem.MolFromSmiles('C1CCC1')))"
 ```
 
 ### [Poetry](https://python-poetry.org/)
 
 ```bash
-poetry add rdkit-pypi
+poetry add rdkit
 poetry run python -c "from rdkit import Chem; print(Chem.MolToMolBlock(Chem.MolFromSmiles('C1CCC1')))"
 ```
 
