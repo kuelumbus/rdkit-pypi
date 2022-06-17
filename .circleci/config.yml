@@ -20,8 +20,8 @@ jobs:
             CIBW_MANYLINUX_I686_IMAGE: manylinux2014
 
           command: |
-            python3 -m pip install cibuildwheel==2.5.0
-            python3 -m cibuildwheel --output-dir wheelhouse
+            python3 -m pip install cibuildwheel==2.6.1
+            python3 -m cibuildwheel --output-dir wheelhouse --prerelease-pythons
       - store_artifacts:
           path: wheelhouse/
 
@@ -31,4 +31,4 @@ workflows:
       - linux-arm64-wheels:
           matrix:
             parameters:
-              python-version: ["37", "38", "39", "310"]
+              python-version: ["37", "38", "39", "310", "3.11"]

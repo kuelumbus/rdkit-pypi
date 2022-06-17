@@ -6,8 +6,8 @@ on: [push, pull_request]
 
 jobs:
   build_wheels:
-    name: Build for cp${{ matrix.python }}-${{ matrix.platform_id }}
-    runs-on: ${{ matrix.os }}
+    name: Build for cp\${{ matrix.python \}\}-\${{ matrix.platform_id \}\}
+    runs-on: \${{ matrix.os \}\}
     strategy:
       fail-fast: false
       matrix:
@@ -29,6 +29,10 @@ jobs:
             python: 310
             bitness: 64
             platform_id: win_amd64
+          - os: windows-2019
+            python: 311
+            bitness: 64
+            platform_id: win_amd64
 
           # Linux 64 bit Intel: x86_64
           - os: ubuntu-latest
@@ -48,6 +52,11 @@ jobs:
             manylinux_image: manylinux2014
           - os: ubuntu-latest
             python: 310
+            bitness: 64
+            platform_id: manylinux_x86_64
+            manylinux_image: manylinux2014
+          - os: ubuntu-latest
+            python: 311
             bitness: 64
             platform_id: manylinux_x86_64
             manylinux_image: manylinux2014
@@ -91,6 +100,10 @@ jobs:
             bitness: 64
             python: 310
             platform_id: macosx_x86_64
+          - os: macos-latest
+            bitness: 64
+            python: 311
+            platform_id: macosx_x86_64
 
           # MacOS 64 bit ARM: arm64
           - os: macos-latest
@@ -105,14 +118,18 @@ jobs:
             bitness: 64
             python: 310
             platform_id: macosx_arm64
+          - os: macos-latest
+            bitness: 64
+            python: 311
+            platform_id: macosx_arm64
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: Copy to C:\
-        if: ${{ runner.os == 'Windows' }}
+      - name: Copy to C:\\
+        if: \${{ runner.os == 'Windows' \}\}
         run: |
-          Copy-Item -Path D:\a\rdkit-pypi\rdkit-pypi -Destination C:\rdkit -Recurse
+          Copy-Item -Path D:\\a\\rdkit-pypi\\rdkit-pypi -Destination C:\\rdkit -Recurse
 
       - uses: actions/setup-python@v2
         name: Install Python
@@ -120,12 +137,12 @@ jobs:
           python-version: '3.9'
 
       - name: Install libraries with vcpkg
-        if: ${{ runner.os == 'Windows' }}
+        if: \${{ runner.os == 'Windows' \}\}
         run: |
           vcpkg --triplet x64-windows install cairo freetype
 
       - name: Install libraries with chocolatey
-        if: ${{ runner.os == 'Windows' }}
+        if: \${{ runner.os == 'Windows' \}\}
         run: |
           Choco-Install -PackageName sed
           Choco-Install -PackageName pkgconfiglite
@@ -133,25 +150,25 @@ jobs:
 
       - name: Build wheels
         env:
-          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+          CIBW_BUILD: cp\${{ matrix.python \}\}-\${{ matrix.platform_id \}\}
           CIBW_ARCHS: all
-          CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
-          CIBW_MANYLINUX_I686_IMAGE: ${{ matrix.manylinux_image }}
+          CIBW_MANYLINUX_X86_64_IMAGE: \${{ matrix.manylinux_image \}\}
+          CIBW_MANYLINUX_I686_IMAGE: \${{ matrix.manylinux_image \}\}
 
         run: |
-          if [ "$RUNNER_OS" == "Windows" ]; then
-            cd C:\\rdkit
+          if [ "\$RUNNER_OS" == "Windows" ]; then
+            cd C:\\\\rdkit
           fi
-          python -m pip install cibuildwheel==2.5.0
-          python -m cibuildwheel --output-dir wheelhouse
+          python -m pip install cibuildwheel==2.6.1
+          python -m cibuildwheel --output-dir wheelhouse --prerelease-pythons
         shell: bash
 
       - uses: actions/upload-artifact@v2
-        if: ${{ runner.os == 'Windows' }}
+        if: \${{ runner.os == 'Windows' \}\}
         with:
-          path: C:\rdkit\wheelhouse\*.whl
+          path: C:\\rdkit\\wheelhouse\\*.whl
 
       - uses: actions/upload-artifact@v2
-        if: ${{ runner.os != 'Windows' }}
+        if: \${{ runner.os != 'Windows' \}\}
         with:
           path: ./wheelhouse/*.whl
