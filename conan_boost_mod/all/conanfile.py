@@ -1550,7 +1550,7 @@ class BoostConan(ConanFile):
 
         if not self.options.without_python:
             # https://www.boost.org/doc/libs/1_70_0/libs/python/doc/html/building/configuring_boost_build.html
-            if self._python_libraries is None or self.options.without_python_lib:
+            if self._python_library_dir is None or self.options.without_python_lib:
                 contents += '\nusing python : {version} : "{executable}" : "{includes}" ;'.format(
                     version=self._python_version,
                     executable=self._python_executable,
