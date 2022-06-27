@@ -11,7 +11,7 @@ from setuptools import Extension, find_packages, setup
 from setuptools.command.build_ext import build_ext as build_ext_orig
 
 # Set conan logging level
-os.environ['CONAN_LOGGING_LEVEL'] = 10
+os.environ['CONAN_LOGGING_LEVEL'] = '10'
 
 # RDKit version to build (tag from github repository)
 rdkit_tag = "Release_2022_03_3"
