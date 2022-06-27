@@ -72,7 +72,7 @@ class BuildRDKit(build_ext_orig):
             boost:without_python=False
             boost:without_python_lib=True
             boost:python_executable={sys.executable}
-            boost:debug_level:10
+            boost:debug_level=10
         """
 
         Path("conanfile.txt").write_text(dedent(conanfile))
