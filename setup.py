@@ -10,8 +10,6 @@ from textwrap import dedent
 from setuptools import Extension, find_packages, setup
 from setuptools.command.build_ext import build_ext as build_ext_orig
 
-# Set conan logging level
-os.environ['CONAN_LOGGING_LEVEL'] = '10'
 
 # RDKit version to build (tag from github repository)
 rdkit_tag = "Release_2022_03_3"
@@ -74,6 +72,7 @@ class BuildRDKit(build_ext_orig):
             boost:without_python=False
             boost:without_python_lib=True
             boost:python_executable={sys.executable}
+            boost:debug_level:10
         """
 
         Path("conanfile.txt").write_text(dedent(conanfile))
