@@ -21,7 +21,7 @@ jobs:
 
           command: |
             python3 -m pip install cibuildwheel==2.7.0
-            python3 -m cibuildwheel --output-dir wheelhouse
+            python3 -m cibuildwheel --output-dir wheelhouse --prerelease-pythons
       - store_artifacts:
           path: wheelhouse/
 

@@ -160,7 +160,7 @@ jobs:
             cd C:\\rdkit
           fi
           python -m pip install cibuildwheel==2.7.0
-          python -m cibuildwheel --output-dir wheelhouse
+          python -m cibuildwheel --output-dir wheelhouse --prerelease-pythons
         shell: bash
 
       - uses: actions/upload-artifact@v2
