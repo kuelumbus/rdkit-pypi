@@ -221,7 +221,7 @@ class BuildRDKit(build_ext_orig):
         rdkit_data_path = rdkit_install_path / "share" / "RDKit" / "Data"
 
         # Contrib directory
-        rdkit_data_path = rdkit_install_path / "share" / "RDKit" / "Contrib"
+        rdkit_contrib_path = rdkit_install_path / "share" / "RDKit" / "Contrib"
 
         # copy rdkit files here, make sure it's empty
         wheel_path = Path(self.get_ext_fullpath(ext.name)).absolute()
@@ -235,7 +235,7 @@ class BuildRDKit(build_ext_orig):
         copytree(str(rdkit_data_path), str(wheel_path / "Data"))
 
         # Copy the contrib directory
-        copytree(str(rdkit_data_path), str(wheel_path / "Contrib"))
+        copytree(str(rdkit_contrib_path), str(wheel_path / "Contrib"))
 
         # License
         copy_file(str(license_file), str(wheel_path))
