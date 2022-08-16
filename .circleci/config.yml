@@ -31,4 +31,9 @@ workflows:
       - linux-arm64-wheels:
           matrix:
             parameters:
-              python-version: ["37", "38", "39", "310"]
+              python-version: 
+                - "37"
+                - "38"
+                - "39"
+                - "310"
+                - "311"
