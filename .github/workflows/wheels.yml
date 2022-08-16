@@ -142,7 +142,7 @@ jobs:
           if [ "$RUNNER_OS" == "Windows" ]; then
             cd C:\\rdkit
           fi
-          python -m pip install cibuildwheel==2.5.0
+          python -m pip install cibuildwheel==2.9.0
           python -m cibuildwheel --output-dir wheelhouse
         shell: bash
 
