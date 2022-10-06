@@ -208,6 +208,8 @@ patches:
       base_path: "source_subfolder"
     - patch_file: "patches/1.77.0-type_erasure-no-system.patch"
       base_path: "source_subfolder"
+    - patch_file: "patches/1.75.0-python-make-python-3-11-compatible.patch"
+      base_path: "source_subfolder"
   1.76.0:
     - patch_file: "patches/boost_locale_fail_on_missing_backend.patch"
       base_path: "source_subfolder"
