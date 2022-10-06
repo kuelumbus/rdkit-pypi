@@ -228,7 +228,7 @@ class BuildRDKit(build_ext_orig):
         if wheel_path.exists():
             rmtree(str(wheel_path))
 
-        # Copy python files
+        # Copy the Python files
         copytree(str(rdkit_files), str(wheel_path))
         
         # Copy the data directory
@@ -237,7 +237,20 @@ class BuildRDKit(build_ext_orig):
         # Copy the contrib directory
         copytree(str(rdkit_contrib_path), str(wheel_path / "Contrib"))
 
-        # License
+        # Delete some large files from the contrib folder
+        # that are not necessary by RDKit run.
+        # See https://github.com/rdkit/rdkit/issues/5601
+        _dir = wheel_path / "Contrib" / "NIBRSubstructureFilters"
+        rmtree(str(_dir / "examples"))
+        (_dir / "FilterSet_NIBR2019_wPubChemExamples.html").unlink()
+        (_dir / "filterExamples.png").unlink()
+        
+        _dir = wheel_path / "Contrib" / "CalcLigRMSD"
+        rmtree(str(_dir / "data"))
+        rmtree(str(_dir / "figures"))
+        (_dir / "Examples_CalcLigRMSD.ipynb").unlink()
+        
+        # Copy the license
         copy_file(str(license_file), str(wheel_path))
 
         rdkit_root = rdkit_install_path / "lib"
