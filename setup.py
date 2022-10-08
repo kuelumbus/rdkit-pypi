@@ -52,10 +52,12 @@ class BuildRDKit(build_ext_orig):
         )
 
         # needed for windows builds
+        without_python_lib = "False"
         win = """eigen/3.4.0
         """
         if sys.platform != "win32":
             win = ""
+            without_python_lib = "True"
 
         conanfile = f"""\
             [requires]
@@ -69,7 +71,7 @@ class BuildRDKit(build_ext_orig):
             [options]
             boost:shared=True
             boost:without_python=False
-            boost:without_python_lib=True
+            boost:without_python_lib={without_python_lib}
             boost:python_executable={sys.executable}
             boost:debug_level=1
         """
