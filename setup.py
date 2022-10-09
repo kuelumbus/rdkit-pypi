@@ -58,10 +58,10 @@ class BuildRDKit(build_ext_orig):
             win = ""
             without_python_lib = "True"
 
-        addr2line_location = ''
+        without_stacktrace = "False"
         if "macosx_arm64" in os.environ["CIBW_BUILD"]:
             # append addr2line location
-            addr2line_location = """boost:addr2line_location=/usr/local/opt/binutils/bin/addr2line"""
+            without_stacktrace = "True"
 
         conanfile = f"""\
             [requires]
@@ -78,7 +78,7 @@ class BuildRDKit(build_ext_orig):
             boost:without_python_lib={without_python_lib}
             boost:python_executable={sys.executable}
             boost:debug_level=1
-            {addr2line_location}
+            boost:without_stacktrace={without_stacktrace}
         """
 
         # boost:debug_level=1
@@ -240,7 +240,7 @@ class BuildRDKit(build_ext_orig):
 
         # Copy python files
         copytree(str(rdkit_files), str(wheel_path))
-        
+
         # Copy the data directory
         copytree(str(rdkit_data_path), str(wheel_path / "Data"))
 
