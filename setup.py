@@ -60,7 +60,7 @@ class BuildRDKit(build_ext_orig):
 
         without_stacktrace = "False"
         if "macosx_arm64" in os.environ["CIBW_BUILD"]:
-            # append addr2line location
+            # does not work on macos arm64 for some reason
             without_stacktrace = "True"
 
         conanfile = f"""\
@@ -77,10 +77,8 @@ class BuildRDKit(build_ext_orig):
             boost:without_python=False
             boost:without_python_lib={without_python_lib}
             boost:python_executable={sys.executable}
-            boost:debug_level=1
             boost:without_stacktrace={without_stacktrace}
         """
-
         # boost:debug_level=1
 
         Path("conanfile.txt").write_text(dedent(conanfile))
