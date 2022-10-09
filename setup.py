@@ -77,6 +77,7 @@ class BuildRDKit(build_ext_orig):
             boost:without_python=False
             boost:without_python_lib={without_python_lib}
             boost:python_executable={sys.executable}
+            boost:debug_level=1
             {addr2line_location}
         """
 
