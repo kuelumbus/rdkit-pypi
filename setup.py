@@ -61,7 +61,7 @@ class BuildRDKit(build_ext_orig):
         addr2line_location = ''
         if "macosx_arm64" in os.environ["CIBW_BUILD"]:
             # append addr2line location
-            addr2line_location = """boost:addr2line_location=/usr/local/opt/binutils/bin"""
+            addr2line_location = """boost:addr2line_location=/usr/local/opt/binutils/bin/addr2line"""
 
         conanfile = f"""\
             [requires]
