@@ -1,6 +1,6 @@
 # 🔥 RDKit Python Wheels
 
-This repository holds the code to build [RDKit](https://github.com/rdkit/rdkit) platform wheels for Linux, macOS, and Windows. The wheels contain the compiled platform-specific dynamic libraries (`*.so`, `*.dylib`, and `*.dll`) that are necessary to immediately run RDKit on your system. The wheel are available at [PyPi](https://pypi.org/project/rdkit/). You can install RDKit using pip 
+This repository holds the code to build [RDKit](https://github.com/rdkit/rdkit) platform wheels for Linux, macOS, and Windows. The wheels contain the compiled platform-specific dynamic libraries (`*.so`, `*.dylib`, and `*.dll`) and are available at [PyPi](https://pypi.org/project/rdkit/). RDKit can easily be installed using 
 
 ```sh
 pip install rdkit
