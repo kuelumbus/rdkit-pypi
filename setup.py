@@ -149,6 +149,8 @@ class BuildRDKit(build_ext_orig):
             f"-DCMAKE_BUILD_TYPE=Release",
             # Speed up builds
             f"-DRDK_BUILD_CPP_TESTS=OFF",
+            # Fix InChi download
+            f"-DINCHI_URL=https://rdkit.org/downloads/INCHI-1-SRC.zip",
         ]
 
         if sys.platform == "win32":
