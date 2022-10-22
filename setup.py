@@ -1,4 +1,5 @@
 import os
+import shlex
 import sys
 from distutils.file_util import copy_file
 from pathlib import Path
@@ -176,7 +177,7 @@ class BuildRDKit(build_ext_orig):
         if sys.platform == "darwin":
             options += [
                 "-DCMAKE_C_FLAGS=-Wno-implicit-function-declaration",
-                "-DCMAKE_CXX_FLAGS=-Wno-implicit-function-declaration -DCATCH_CONFIG_NO_CPP17_UNCAUGHT_EXCEPTIONS",
+                '-DCMAKE_CXX_FLAGS="-Wno-implicit-function-declaration -DCATCH_CONFIG_NO_CPP17_UNCAUGHT_EXCEPTIONS"',
             ]
 
         vars = {}
@@ -195,7 +196,7 @@ class BuildRDKit(build_ext_orig):
             f"cmake --build build -j 4 --config Release",
             f"cmake --install build",
         ]
-        [check_call(c.split(), env=dict(os.environ, **vars)) for c in cmds]
+        [check_call(shlex.split(c), env=dict(os.environ, **vars)) for c in cmds]
 
         os.chdir(str(cwd))
 
