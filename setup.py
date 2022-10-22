@@ -176,7 +176,7 @@ class BuildRDKit(build_ext_orig):
         if sys.platform == "darwin":
             options += [
                 "-DCMAKE_C_FLAGS=-Wno-implicit-function-declaration",
-                "-DCMAKE_CXX_FLAGS=-Wno-implicit-function-declaration",
+                "-DCMAKE_CXX_FLAGS=-Wno-implicit-function-declaration -DCATCH_CONFIG_NO_CPP17_UNCAUGHT_EXCEPTIONS",
             ]
 
         vars = {}
