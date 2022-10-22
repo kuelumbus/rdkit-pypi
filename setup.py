@@ -12,7 +12,7 @@ from setuptools import Extension, find_packages, setup
 from setuptools.command.build_ext import build_ext as build_ext_orig
 
 # RDKit version to build (tag from github repository)
-rdkit_tag = "Release_2022_03_5"
+rdkit_tag = "Release_2022_09_1"
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -150,6 +150,8 @@ class BuildRDKit(build_ext_orig):
             f"-DCMAKE_BUILD_TYPE=Release",
             # Speed up builds
             f"-DRDK_BUILD_CPP_TESTS=OFF",
+            # Fix InChi download
+            f"-DINCHI_URL=https://rdkit.org/downloads/INCHI-1-SRC.zip",
         ]
 
         if sys.platform == "win32":
