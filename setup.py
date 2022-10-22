@@ -199,7 +199,7 @@ class BuildRDKit(build_ext_orig):
             f"cmake --build build -j 4 --config Release",
             f"cmake --install build",
         ]
-        [check_call(shlex.split(c, posix="win" not in sys.platform), env=dict(os.environ, **vars)) for c in cmds]
+        [check_call(shlex.split(c, posix="win32" not in sys.platform), env=dict(os.environ, **vars)) for c in cmds]
 
         os.chdir(str(cwd))
 
