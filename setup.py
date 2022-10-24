@@ -1,4 +1,5 @@
 import os
+import shlex
 import sys
 from distutils.file_util import copy_file
 from pathlib import Path
@@ -11,7 +12,7 @@ from setuptools import Extension, find_packages, setup
 from setuptools.command.build_ext import build_ext as build_ext_orig
 
 # RDKit version to build (tag from github repository)
-rdkit_tag = "Release_2022_03_5"
+rdkit_tag = "Release_2022_09_1"
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -157,6 +158,8 @@ class BuildRDKit(build_ext_orig):
             f"-DCMAKE_BUILD_TYPE=Release",
             # Speed up builds
             f"-DRDK_BUILD_CPP_TESTS=OFF",
+            # Fix InChi download
+            f"-DINCHI_URL=https://rdkit.org/downloads/INCHI-1-SRC.zip",
         ]
 
         if sys.platform == "win32":
@@ -184,7 +187,8 @@ class BuildRDKit(build_ext_orig):
         if sys.platform == "darwin":
             options += [
                 "-DCMAKE_C_FLAGS=-Wno-implicit-function-declaration",
-                "-DCMAKE_CXX_FLAGS=-Wno-implicit-function-declaration",
+                # CATCH_CONFIG_NO_CPP17_UNCAUGHT_EXCEPTIONS because MacOS does not fully support C++17.
+                '-DCMAKE_CXX_FLAGS="-Wno-implicit-function-declaration -DCATCH_CONFIG_NO_CPP17_UNCAUGHT_EXCEPTIONS"',
             ]
 
         vars = {}
@@ -203,7 +207,7 @@ class BuildRDKit(build_ext_orig):
             f"cmake --build build -j 4 --config Release",
             f"cmake --install build",
         ]
-        [check_call(c.split(), env=dict(os.environ, **vars)) for c in cmds]
+        [check_call(shlex.split(c, posix="win32" not in sys.platform), env=dict(os.environ, **vars)) for c in cmds]
 
         os.chdir(str(cwd))
 
