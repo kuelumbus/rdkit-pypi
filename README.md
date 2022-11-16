@@ -1,7 +1,12 @@
 # 🔥 RDKit Python Wheels
 
-This repository holds the code to build [RDKit](https://github.com/rdkit/rdkit) platform wheels for Linux, macOS, and Windows. The wheels contain the platform-specific dynamic libraries (`*.so`, `*.dylib`, and `*.dll`) and are available at [PyPi](https://pypi.org/project/rdkit-pypi/). You can install RDKit using pip (`pip install rdkit`).
+This repository holds the code to build [RDKit](https://github.com/rdkit/rdkit) platform wheels for Linux, macOS, and Windows. The wheels contain the compiled platform-specific dynamic libraries (`*.so`, `*.dylib`, and `*.dll`) and are available at [PyPi](https://pypi.org/project/rdkit/). RDKit can easily be installed using 
 
+```sh
+pip install rdkit
+```
+
+**_NOTE:_** Older versions of RDKit might be available at the [`rdkit-pypi`](https://pypi.org/project/rdkit-pypi/) PyPi repository (`pip install rdkit-pypi`). `rdkit-pypi` is the old name of this project at PyPi. Future RDKit versions will be available at the `rdkit` PyPi repository. Please update your dependencies.
 
 Please open an issue if you find something missing or not working as expected.
 
@@ -12,13 +17,13 @@ Please open an issue if you find something missing or not working as expected.
 
 ## Available Builds
 
-| OS      | Arch    | Bit | Conditions                                          | 3.7 | 3.8 | 3.9 | 3.10 | CI             |
-| ------- | ------- | --- | --------------------------------------------------- | --- | --- | --- | ---- | -------------- |
-| Linux   | intel   | 64  | glibc >= 2.17 (e.g., Ubuntu 16.04+, CentOS 6+, ...) | ✔️  | ✔️  | ✔️  | ✔️   | Github Actions |
-| Linux   | aarch64 | 64  | glibc >= 2.17 (e.g., Raspberry Pi, ...)             | ✔️  | ✔️  | ✔️  | ✔️   | Circle CI      |
-| macOS   | intel   | 64  | >= macOS-11                                         | ✔️  | ✔️  | ✔️  | ✔️   | Github Actions |
-| macOS   | armv8   | 64  | >= macOS-11 (M1 hardware)                           |     | ✔️  | ✔️  | ✔️   | Github Actions |
-| Windows | intel   | 64  |                                                     | ✔️  | ✔️  | ✔️  | ✔️   | Github Actions |
+| OS      | Arch    | Bit | Conditions                                          | 3.7 | 3.8 | 3.9 | 3.10 | 3.11 | CI             |
+| ------- | ------- | --- | --------------------------------------------------- | --- | --- | --- | ---- | ---- | -------------- |
+| Linux   | intel   | 64  | glibc >= 2.17 (e.g., Ubuntu 16.04+, CentOS 6+, ...) | ✔️   | ✔️   | ✔️   | ✔️    | ✔️    | Github Actions |
+| Linux   | aarch64 | 64  | glibc >= 2.17 (e.g., Raspberry Pi, ...)             | ✔️   | ✔️   | ✔️   | ✔️    | ✔️    | Circle CI      |
+| macOS   | intel   | 64  | >= macOS-11                                         | ✔️   | ✔️   | ✔️   | ✔️    | ✔️    | Github Actions |
+| macOS   | armv8   | 64  | >= macOS-11 (M1 hardware)                           |     | ✔️   | ✔️   | ✔️    | ✔️    | Github Actions |
+| Windows | intel   | 64  |                                                     | ✔️   | ✔️   | ✔️   | ✔️    | ✔️    | Github Actions |
 
 ## Install RDKit from PyPi
 

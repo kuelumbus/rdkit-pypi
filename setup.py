@@ -36,7 +36,7 @@ class BuildRDKit(build_ext_orig):
 
     def conan_install(self, conan_toolchain_path):
         """Run the Conan"""
-        boost_version = "1.75.0"
+        boost_version = "1.78.0"
 
         # This modified conanfile.py for boost does not link libpython*.so
         # When building a platform wheel, we don't want to link libpython*.so.
@@ -53,10 +53,16 @@ class BuildRDKit(build_ext_orig):
         )
 
         # needed for windows builds
-        win = """eigen/3.4.0
-        """
+        without_python_lib = "False"
+        win = """eigen/3.4.0"""
         if sys.platform != "win32":
             win = ""
+            without_python_lib = "True"
+
+        without_stacktrace = "False"
+        if "macosx_arm64" in os.environ["CIBW_BUILD"]:
+            # does not work on macos arm64 for some reason
+            without_stacktrace = "True"
 
         conanfile = f"""\
             [requires]
@@ -70,9 +76,11 @@ class BuildRDKit(build_ext_orig):
             [options]
             boost:shared=True
             boost:without_python=False
-            boost:without_python_lib=True
+            boost:without_python_lib={without_python_lib}
             boost:python_executable={sys.executable}
+            boost:without_stacktrace={without_stacktrace}
         """
+        # boost:debug_level=1
 
         Path("conanfile.txt").write_text(dedent(conanfile))
 
@@ -235,7 +243,7 @@ class BuildRDKit(build_ext_orig):
 
         # Copy the Python files
         copytree(str(rdkit_files), str(wheel_path))
-        
+
         # Copy the data directory
         copytree(str(rdkit_data_path), str(wheel_path / "Data"))
 
