@@ -1,12 +1,12 @@
 # 🔥 RDKit Python Wheels
 
-This repository holds the code to build [RDKit](https://github.com/rdkit/rdkit) platform wheels for Linux, macOS, and Windows. The wheels contain the compiled platform-specific dynamic libraries (`*.so`, `*.dylib`, and `*.dll`) and are available at [PyPi](https://pypi.org/project/rdkit/). RDKit can easily be installed using 
+This repository holds the code to build [RDKit](https://github.com/rdkit/rdkit) platform wheels for Linux, macOS, and Windows. The wheels contain the compiled platform-specific dynamic libraries (`*.so`, `*.dylib`, and `*.dll`) and are available at [PyPI](https://pypi.org/project/rdkit/). RDKit can easily be installed using
 
 ```sh
 pip install rdkit
 ```
 
-**_NOTE:_** Older versions of RDKit might be available at the [`rdkit-pypi`](https://pypi.org/project/rdkit-pypi/) PyPi repository (`pip install rdkit-pypi`). `rdkit-pypi` is the old name of this project at PyPi. Future RDKit versions will be available at the `rdkit` PyPi repository. Please update your dependencies.
+**_NOTE:_** Older versions of RDKit might be available at the [`rdkit-pypi`](https://pypi.org/project/rdkit-pypi/) PyPI repository (`pip install rdkit-pypi`). `rdkit-pypi` is the old name of this project at PyPI. Future RDKit versions will be available at the `rdkit` PyPI repository. Please update your dependencies.
 
 Please open an issue if you find something missing or not working as expected.
 
@@ -25,7 +25,7 @@ Please open an issue if you find something missing or not working as expected.
 | macOS   | armv8   | 64  | >= macOS-11 (M1 hardware)                           |     | ✔️   | ✔️   | ✔️    | ✔️    | Github Actions |
 | Windows | intel   | 64  |                                                     | ✔️   | ✔️   | ✔️   | ✔️    | ✔️    | Github Actions |
 
-## Install RDKit from PyPi
+## Install RDKit from PyPI
 
 ### PIP
 
@@ -54,4 +54,4 @@ cd rdkit-pypi
 CIBW_BUILD=cp37-manylinux_x86_64 python3 -m cibuildwheel --platform linux --output-dir wheelhouse --config-file pyproject.toml
 ```
 
-Replace `cp37-manylinux_x86_64` with `cp38-manylinux_x86_64`, `cp39-manylinux_x86_64`, and `cp310-manylinux_x86_64` to build for other python versions.
+Replace `cp37-manylinux_x86_64` with `cp38-manylinux_x86_64`, `cp39-manylinux_x86_64`, `cp310-manylinux_x86_64`, or `cp311-manylinux_x86_64` to build for different Python versions.

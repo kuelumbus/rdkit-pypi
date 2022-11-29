@@ -17,10 +17,10 @@ def test_data_dir_and_chemical_features():
     """Checks if data directory is correctly set
     and if ChemicalFeatures work
     """
-    from rdkit.Chem import ChemicalFeatures
-    from rdkit import RDConfig
-    from rdkit import Chem
     import os
+
+    from rdkit import Chem, RDConfig
+    from rdkit.Chem import ChemicalFeatures
 
     fdefName = os.path.join(RDConfig.RDDataDir, "BaseFeatures.fdef")
     factory = ChemicalFeatures.BuildFeatureFactory(fdefName)
@@ -31,4 +31,4 @@ def test_data_dir_and_chemical_features():
 
 def test_rdkit_chem_draw_import():
     # This segfaults if the compiled cairo version from centos is used
-    from rdkit.Chem.Draw import ReactionToImage
+    from rdkit.Chem.Draw import ReactionToImage  # noqa: F401

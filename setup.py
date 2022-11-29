@@ -45,8 +45,8 @@ class BuildRDKit(build_ext_orig):
         # Export the modified boost version
         check_call(
             [
-                f"conan",
-                f"export",
+                "conan",
+                "export",
                 f"{mod_conan_path}/all/",
                 f"{boost_version}@chris/mod_boost",
             ]
@@ -86,18 +86,18 @@ class BuildRDKit(build_ext_orig):
 
         # run conan install
         cmd = [
-            f"conan",
-            f"install",
-            f"conanfile.txt",
+            "conan",
+            "install",
+            "conanfile.txt",
             # build all missing
-            f"--build=missing",
-            f"-if",
+            "--build=missing",
+            "-if",
             f"{conan_toolchain_path}",
         ]
 
         # but force build b2 on linux
         if "linux" in sys.platform:
-            cmd += [f"--build=b2"]
+            cmd += ["--build=b2"]
 
         # for arm 64 on MacOS
         if "macosx_arm64" in os.environ["CIBW_BUILD"]:
@@ -107,24 +107,28 @@ class BuildRDKit(build_ext_orig):
 
     def build_rdkit(self, ext):
         """Build RDKit
-        (1) Use Conan to install boost and other libs
+
+        Steps:
+        (1) Use Conan to install boost and other libraries
         (2) Build RDKit
-        (3) Copy the shared library to correct paths before start building the wheel
+        (3) Copy RDKit and additional files to the wheel path
+        (4) Copy the libraries to system paths
         """
 
         cwd = Path().absolute()
 
-        # Install boost using Conan
+        # (1) Install boost and other libraries using Conan
         conan_toolchain_path = cwd / "conan"
         conan_toolchain_path.mkdir(parents=True, exist_ok=True)
         self.conan_install(conan_toolchain_path)
 
-        # Build path for everything
+        # (2) Build RDkit
+        # Define paths
         build_path = Path(self.build_temp).absolute()
         build_path.mkdir(parents=True, exist_ok=True)
         os.chdir(str(build_path))
 
-        # RDKit install path
+        # Install path
         rdkit_install_path = build_path / "rdkit_install"
         rdkit_install_path.mkdir(parents=True, exist_ok=True)
 
@@ -133,36 +137,39 @@ class BuildRDKit(build_ext_orig):
             ["git", "clone", "-b", f"{ext.rdkit_tag}", "https://github.com/rdkit/rdkit"]
         )
 
+        # Location of license file
         license_file = build_path / "rdkit" / "license.txt"
 
+        # Start build process
         os.chdir(str("rdkit"))
 
-        # CMake options
+        # Define CMake options
         options = [
             f"-DCMAKE_TOOLCHAIN_FILE={conan_toolchain_path / 'conan_paths.cmake'}",
             # Select correct python interpreter
             f"-DPYTHON_EXECUTABLE={sys.executable}",
             f"-DPYTHON_INCLUDE_DIR={get_paths()['include']}",
             # RDKit build flags
-            f"-DRDK_BUILD_INCHI_SUPPORT=ON",
-            f"-DRDK_BUILD_AVALON_SUPPORT=ON",
-            f"-DRDK_BUILD_PYTHON_WRAPPERS=ON",
-            f"-DRDK_BUILD_YAEHMOP_SUPPORT=ON",
-            f"-DRDK_BUILD_XYZ2MOL_SUPPORT=ON",
-            f"-DRDK_INSTALL_INTREE=OFF",
-            f"-DRDK_BUILD_CAIRO_SUPPORT=ON",
-            f"-DRDK_BUILD_FREESASA_SUPPORT=ON",
+            "-DRDK_BUILD_INCHI_SUPPORT=ON",
+            "-DRDK_BUILD_AVALON_SUPPORT=ON",
+            "-DRDK_BUILD_PYTHON_WRAPPERS=ON",
+            "-DRDK_BUILD_YAEHMOP_SUPPORT=ON",
+            "-DRDK_BUILD_XYZ2MOL_SUPPORT=ON",
+            "-DRDK_INSTALL_INTREE=OFF",
+            "-DRDK_BUILD_CAIRO_SUPPORT=ON",
+            "-DRDK_BUILD_FREESASA_SUPPORT=ON",
             # Disable system libs for finding boost
-            f"-DBoost_NO_SYSTEM_PATHS=ON",
+            "-DBoost_NO_SYSTEM_PATHS=ON",
             # build stuff
             f"-DCMAKE_INSTALL_PREFIX={rdkit_install_path}",
-            f"-DCMAKE_BUILD_TYPE=Release",
+            "-DCMAKE_BUILD_TYPE=Release",
             # Speed up builds
-            f"-DRDK_BUILD_CPP_TESTS=OFF",
+            "-DRDK_BUILD_CPP_TESTS=OFF",
             # Fix InChi download
-            f"-DINCHI_URL=https://rdkit.org/downloads/INCHI-1-SRC.zip",
+            "-DINCHI_URL=https://rdkit.org/downloads/INCHI-1-SRC.zip",
         ]
 
+        # Modifications for Windows
         if sys.platform == "win32":
             # DRDK_INSTALL_STATIC_LIBS should be fixed in newer RDKit builds
             options += [
@@ -174,7 +181,7 @@ class BuildRDKit(build_ext_orig):
             def to_win_path(pt: Path):
                 return str(pt).replace("\\", "/")
 
-            # link cairo on windows
+            # Link cairo
             vcpkg_path = Path("C:/vcpkg")
             vcpkg_inc = vcpkg_path / "installed" / "x64-windows" / "include"
             vcpkg_lib = vcpkg_path / "installed" / "x64-windows" / "lib"
@@ -185,6 +192,7 @@ class BuildRDKit(build_ext_orig):
                 f"-DFREETYPE_LIBRARY={to_win_path(vcpkg_lib / 'freetype.lib')}",
             ]
 
+        # Modifications for MacOS
         if sys.platform == "darwin":
             options += [
                 "-DCMAKE_C_FLAGS=-Wno-implicit-function-declaration",
@@ -192,6 +200,7 @@ class BuildRDKit(build_ext_orig):
                 '-DCMAKE_CXX_FLAGS="-Wno-implicit-function-declaration -DCATCH_CONFIG_NO_CPP17_UNCAUGHT_EXCEPTIONS"',
             ]
 
+        # Modifications for MacOS arm64 (M1 hardware)
         vars = {}
         if "macosx_arm64" in os.environ["CIBW_BUILD"]:
             options += [
@@ -205,14 +214,22 @@ class BuildRDKit(build_ext_orig):
             f"cmake -S . -B build {' '.join(options)}",
             # f"cmake --build build"
             # if sys.platform != "win32"
-            f"cmake --build build -j 4 --config Release",
-            f"cmake --install build",
+            "cmake --build build -j 4 --config Release",
+            "cmake --install build",
         ]
-        [check_call(shlex.split(c, posix="win32" not in sys.platform), env=dict(os.environ, **vars)) for c in cmds]
+
+        # Run CMake and install RDKit
+        [
+            check_call(
+                shlex.split(c, posix="win32" not in sys.platform),
+                env=dict(os.environ, **vars),
+            )
+            for c in cmds
+        ]
 
         os.chdir(str(cwd))
 
-        # copy libs to make them findable by wheels creators
+        # (3) Copy RDKit and additional files to the wheel path
         py_name = "python" + ".".join(map(str, sys.version_info[:2]))
         rdkit_files = rdkit_install_path / "lib" / py_name / "site-packages" / "rdkit"
 
@@ -225,7 +242,7 @@ class BuildRDKit(build_ext_orig):
             [
                 sed,
                 "-i",
-                "/_share =/c\_share = os.path.dirname(__file__)",
+                "/_share =/c\_share = os.path.dirname(__file__)",  # noqa: W605
                 f"{rdkit_files / 'RDPaths.py'}",
             ]
         )
@@ -250,22 +267,23 @@ class BuildRDKit(build_ext_orig):
         # Copy the contrib directory
         copytree(str(rdkit_contrib_path), str(wheel_path / "Contrib"))
 
-        # Delete some large files from the contrib folder
-        # that are not necessary by RDKit run.
+        # Delete some large files from the Contrib folder
+        # that are not necessary for running RDKit
         # See https://github.com/rdkit/rdkit/issues/5601
         _dir = wheel_path / "Contrib" / "NIBRSubstructureFilters"
         rmtree(str(_dir / "examples"))
         (_dir / "FilterSet_NIBR2019_wPubChemExamples.html").unlink()
         (_dir / "filterExamples.png").unlink()
-        
+
         _dir = wheel_path / "Contrib" / "CalcLigRMSD"
         rmtree(str(_dir / "data"))
         rmtree(str(_dir / "figures"))
         (_dir / "Examples_CalcLigRMSD.ipynb").unlink()
-        
+
         # Copy the license
         copy_file(str(license_file), str(wheel_path))
 
+        # (4) Copy the libraries to system paths
         rdkit_root = rdkit_install_path / "lib"
 
         if "linux" in sys.platform:
