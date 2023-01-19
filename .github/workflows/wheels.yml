@@ -111,7 +111,7 @@ jobs:
         run: |
           Copy-Item -Path D:\a\rdkit-pypi\rdkit-pypi -Destination C:\rdkit -Recurse
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         name: Install Python
         with:
           python-version: '3.9'
@@ -139,7 +139,7 @@ jobs:
           if [ "$RUNNER_OS" == "Windows" ]; then
             cd C:\\rdkit
           fi
-          python -m pip install cibuildwheel==2.11.2
+          python -m pip install cibuildwheel==2.12.0
           python -m cibuildwheel --output-dir wheelhouse
         shell: bash
 
