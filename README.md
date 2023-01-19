@@ -1,20 +1,21 @@
 # 🔥 RDKit Python Wheels
 
-This repository holds the code to build [RDKit](https://github.com/rdkit/rdkit) platform wheels for Linux, macOS, and Windows. The wheels contain the compiled platform-specific dynamic libraries (`*.so`, `*.dylib`, and `*.dll`) and are available at [PyPI](https://pypi.org/project/rdkit/). RDKit can easily be installed using
+This repository holds the code to build [RDKit](https://github.com/rdkit/rdkit) platform wheels for Linux, macOS, and Windows on Github Action and Circle CI. The wheels contain the compiled platform-specific dynamic libraries (`*.so`, `*.dylib`, and `*.dll`) and are available at [PyPI](https://pypi.org/project/rdkit/). RDKit can easily be installed using
 
 ```sh
 pip install rdkit
 ```
 
-**_NOTE:_** Older versions of RDKit might be available at the [`rdkit-pypi`](https://pypi.org/project/rdkit-pypi/) PyPI repository (`pip install rdkit-pypi`). `rdkit-pypi` is the old name of this project at PyPI. Future RDKit versions will be available at the `rdkit` PyPI repository. Please update your dependencies.
+**NOTE:** Older versions of RDKit might be available at the [`rdkit-pypi`](https://pypi.org/project/rdkit-pypi/) PyPI repository (`pip install rdkit-pypi`). `rdkit-pypi` is the old name of this project at PyPI. Future RDKit versions will be available at the `rdkit` PyPI repository. Please update your dependencies, i.e., change `rdkit-pypi` to `rdkit`.
 
 Please open an issue if you find something missing or not working as expected.
 
-[![PyPI version shields.io](https://img.shields.io/pypi/v/rdkit-pypi.svg?style=for-the-badge&logo=PyPI&logoColor=blue)](https://pypi.python.org/pypi/rdkit/)
-[![PyPI download month](https://img.shields.io/pypi/dm/rdkit-pypi.svg?style=for-the-badge&logo=PyPI)](https://pypi.python.org/pypi/rdkit-pypi/)
-[![PyPI download day](https://img.shields.io/pypi/dd/rdkit-pypi.svg?style=for-the-badge&logo=PyPI)](https://pypi.python.org/pypi/rdkit-pypi/)
-[![GitHub stars](https://img.shields.io/github/stars/kuelumbus/rdkit-pypi.svg?style=social&label=Star&maxAge=2592000)](https://github.com/kuelumbus/rdkit-pypi)
 
+[![PyPI version shields.io](https://img.shields.io/pypi/v/rdkit.svg?style=for-the-badge&logo=PyPI&logoColor=blue)](https://pypi.python.org/pypi/rdkit/)
+[![PyPI download day](https://img.shields.io/pypi/dm/rdkit.svg?style=for-the-badge&logo=PyPI)](https://pypi.python.org/pypi/rdkit/)
+[![PyPI download month](https://img.shields.io/pypi/dw/rdkit.svg?style=for-the-badge&logo=PyPI)](https://pypi.python.org/pypi/rdkit/)
+[![PyPI download day](https://img.shields.io/pypi/dd/rdkit.svg?style=for-the-badge&logo=PyPI)](https://pypi.python.org/pypi/rdkit/)
+![GitHub Repo stars](https://img.shields.io/github/stars/kuelumbus/rdkit-pypi?style=for-the-badge&logo=github)
 ## Available Builds
 
 | OS      | Arch    | Bit | Conditions                                          | 3.7 | 3.8 | 3.9 | 3.10 | 3.11 | CI             |
