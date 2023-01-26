@@ -143,12 +143,12 @@ jobs:
           python -m cibuildwheel --output-dir wheelhouse
         shell: bash
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         if: ${{ runner.os == 'Windows' }}
         with:
           path: C:\rdkit\wheelhouse\*.whl
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         if: ${{ runner.os != 'Windows' }}
         with:
           path: ./wheelhouse/*.whl
