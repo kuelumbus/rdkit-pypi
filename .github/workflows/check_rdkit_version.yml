@@ -25,11 +25,11 @@ jobs:
           new_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
           cd ..
           rm -fr rdkit
-          echo ::set-output name=changed::false
+          echo "changed=false" >> $GITHUB_OUTPUT
           if [[ "$new_tag" != "$current_tag" ]]; then
           sed -i "s/rdkit_tag =.*/rdkit_tag = \"$new_tag\"/g" setup.py
-          echo ::set-output name=changed::true
-          echo ::set-output name=new_tag::${new_tag}
+          echo "changed=true" >> $GITHUB_OUTPUT
+          echo "new_tag=${new_tag}" >> $GITHUB_OUTPUT
           fi
 
       - name: Create Pull Request
