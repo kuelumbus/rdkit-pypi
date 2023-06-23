@@ -211,7 +211,8 @@ class BuildRDKit(build_ext_orig):
             vars["CMAKE_OSX_ARCHITECTURES"] = "arm64"
 
         cmds = [
-            f"cmake -S . -B build {' '.join(options)}",
+            # f"cmake -S . -B build {' '.join(options)}",
+            f"cmake -S . -B build --trace-expand {' '.join(options)} ",
             # f"cmake --build build"
             # if sys.platform != "win32"
             "cmake --build build -j 4 --config Release",
