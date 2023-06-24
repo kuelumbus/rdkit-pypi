@@ -212,13 +212,15 @@ class BuildRDKit(build_ext_orig):
 
         cmds = [
             # f"cmake -S . -B build {' '.join(options)}",
-            f"cmake -S . -B build --trace-expand {' '.join(options)} ",
+            f"cmake -S . -B build {' '.join(options)} ",
             # f"cmake --build build"
             # if sys.platform != "win32"
             "cmake --build build -j 4 --config Release",
             "cmake --install build",
         ]
-
+        print('!!! --- DEBUG here', file=sys.stdout)
+        print('cmds', file=sys.stdout)
+        
         # Run CMake and install RDKit
         [
             check_call(
@@ -239,14 +241,14 @@ class BuildRDKit(build_ext_orig):
 
         # Modify RDPaths.py
         sed = "gsed" if sys.platform == "darwin" else "sed"
-        # call(
-        #     [
-        #         sed,
-        #         "-i",
-        #         "/_share =/c\_share = os.path.dirname(__file__)",  # noqa: W605
-        #         f"{rdkit_files / 'RDPaths.py'}",
-        #     ]
-        # )
+        call(
+            [
+                sed,
+                "-i",
+                "/_share =/c\_share = os.path.dirname(__file__)",  # noqa: W605
+                f"{rdkit_files / 'RDPaths.py'}",
+            ]
+        )
 
         # Data directory
         rdkit_data_path = rdkit_install_path / "share" / "RDKit" / "Data"
