@@ -219,7 +219,9 @@ class BuildRDKit(build_ext_orig):
             "cmake --install build",
         ]
         print('!!! --- DEBUG here', file=sys.stdout)
+        print('!!! --- DEBUG here', file=sys.stderr)
         print(cmds, file=sys.stdout)
+        print(cmds, file=sys.stderr)
 
         # Run CMake and install RDKit
         [
