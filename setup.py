@@ -142,10 +142,17 @@ class BuildRDKit(build_ext_orig):
 
         # Start build process
         os.chdir(str("rdkit"))
-        
+
         if rdkit_tag == "Release_2023_03_2":
             # Cherry-pick https://github.com/rdkit/rdkit/pull/6485/commits for
             # correct python install paths on windows 
+            check_call(
+                ["git", "config", "--global", "user.email", '"you@example.com"']
+            )
+            check_call(
+                ["git", "config", "--global", "user.name", '"Your Name"']
+            )
+            
             check_call(
                 ["git", "fetch", "origin", "pull/6485/head:fix_win_py_install"]
             )
