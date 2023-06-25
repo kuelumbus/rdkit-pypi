@@ -19,10 +19,6 @@ jobs:
         include:
           # Window 64 bit
           - os: windows-2022
-            python: 37
-            bitness: 64
-            platform_id: win_amd64
-          - os: windows-2022
             python: 38
             bitness: 64
             platform_id: win_amd64
@@ -40,11 +36,6 @@ jobs:
             platform_id: win_amd64
 
           # Linux 64 bit Intel: x86_64
-          - os: ubuntu-latest
-            python: 37
-            bitness: 64
-            platform_id: manylinux_x86_64
-            manylinux_image: manylinux2014
           - os: ubuntu-latest
             python: 38
             bitness: 64
@@ -69,10 +60,6 @@ jobs:
           # Linux 64 bit ARM: aarch64 (on Circle CI)
 
           # MacOS 64 bit Intel: x86_64
-          - os: macos-11
-            bitness: 64
-            python: 37
-            platform_id: macosx_x86_64
           - os: macos-11
             bitness: 64
             python: 38
