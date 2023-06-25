@@ -137,6 +137,15 @@ class BuildRDKit(build_ext_orig):
             ["git", "clone", "-b", f"{ext.rdkit_tag}", "https://github.com/rdkit/rdkit"]
         )
 
+        # Cherry-pick https://github.com/rdkit/rdkit/pull/6485/commits for
+        # correct python install paths on windows 
+        check_call(
+            ["git", "fetch", "origin", "pull/6485/head:fix_win_py_install"]
+        )
+        check_call(
+            ["git", "cherry-pick", "91a1ce03424d2924acb5659561604ada9545bfb4"]
+        )
+
         # Location of license file
         license_file = build_path / "rdkit" / "license.txt"
 
