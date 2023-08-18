@@ -12,7 +12,7 @@ from setuptools import Extension, find_packages, setup
 from setuptools.command.build_ext import build_ext as build_ext_orig
 
 # RDKit version to build (tag from github repository)
-rdkit_tag = "Release_2023_03_2"
+rdkit_tag = "Release_2023_03_3"
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -142,23 +142,6 @@ class BuildRDKit(build_ext_orig):
 
         # Start build process
         os.chdir(str("rdkit"))
-
-        if rdkit_tag == "Release_2023_03_2":
-            # Cherry-pick https://github.com/rdkit/rdkit/pull/6485/commits for
-            # correct python install paths on windows 
-            check_call(
-                ["git", "config", "--global", "user.email", '"you@example.com"']
-            )
-            check_call(
-                ["git", "config", "--global", "user.name", '"Your Name"']
-            )
-            
-            check_call(
-                ["git", "fetch", "origin", "pull/6485/head:fix_win_py_install"]
-            )
-            check_call(
-                ["git", "cherry-pick", "91a1ce03424d2924acb5659561604ada9545bfb4"]
-            )
 
         # Define CMake options
         options = [
