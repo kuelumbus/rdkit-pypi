@@ -12,7 +12,7 @@ from setuptools import Extension, find_packages, setup
 from setuptools.command.build_ext import build_ext as build_ext_orig
 
 # RDKit version to build (tag from github repository)
-rdkit_tag = "Release_2023_03_2"
+rdkit_tag = "Release_2023_03_3"
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -143,7 +143,7 @@ class BuildRDKit(build_ext_orig):
         # Start build process
         os.chdir(str("rdkit"))
 
-        if rdkit_tag == "Release_2023_03_2":
+        if rdkit_tag = "Release_2023_03_3"
             # Cherry-pick https://github.com/rdkit/rdkit/pull/6485/commits for
             # correct python install paths on windows 
             check_call(
