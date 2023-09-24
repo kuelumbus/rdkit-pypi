@@ -18,13 +18,13 @@ Please open an issue if you find something missing or not working as expected.
 ![GitHub Repo stars](https://img.shields.io/github/stars/kuelumbus/rdkit-pypi?style=for-the-badge&logo=github)
 ## Available Builds
 
-| OS      | Arch    | Bit | Conditions                                          | 3.8 | 3.9 | 3.10 | 3.11 | CI             |
-| ------- | ------- | --- | --------------------------------------------------- | --- | --- | ---- | ---- | -------------- |
-| Linux   | intel   | 64  | glibc >= 2.17 (e.g., Ubuntu 16.04+, CentOS 6+, ...) | ✔️   | ✔️   | ✔️    | ✔️    | Github Actions |
-| Linux   | aarch64 | 64  | glibc >= 2.17 (e.g., Raspberry Pi, ...)             | ✔️   | ✔️   | ✔️    | ✔️    | Circle CI      |
-| macOS   | intel   | 64  | >= macOS-11                                         | ✔️   | ✔️   | ✔️    | ✔️    | Github Actions |
-| macOS   | armv8   | 64  | >= macOS-11 (M1 hardware)                           | ✔️   | ✔️   | ✔️    | ✔️    | Github Actions |
-| Windows | intel   | 64  |                                                     | ✔️   | ✔️   | ✔️    | ✔️    | Github Actions |
+| OS      | Arch    | Bit | Conditions                                          | 3.8 | 3.9 | 3.10 | 3.11 | 3.12 | CI             |
+| ------- | ------- | --- | --------------------------------------------------- | --- | --- | ---- | ---- | ---- | -------------- |
+| Linux   | intel   | 64  | glibc >= 2.17 (e.g., Ubuntu 16.04+, CentOS 6+, ...) | ✔️   | ✔️   | ✔️    | ✔️    | ✔️    | Github Actions |
+| Linux   | aarch64 | 64  | glibc >= 2.17 (e.g., Raspberry Pi, ...)             | ✔️   | ✔️   | ✔️    | ✔️    | ✔️    | Circle CI      |
+| macOS   | intel   | 64  | >= macOS-11                                         | ✔️   | ✔️   | ✔️    | ✔️    | ✔️    | Github Actions |
+| macOS   | armv8   | 64  | >= macOS-11 (M1 hardware)                           | ✔️   | ✔️   | ✔️    | ✔️    | ✔️    | Github Actions |
+| Windows | intel   | 64  |                                                     | ✔️   | ✔️   | ✔️    | ✔️    | ✔️    | Github Actions |
 
 ## Installation
 
@@ -55,4 +55,4 @@ cd rdkit-pypi
 CIBW_BUILD=cp38-manylinux_x86_64 python3 -m cibuildwheel --platform linux --output-dir wheelhouse --config-file pyproject.toml
 ```
 
-Replace `cp38-manylinux_x86_64` with `cp39-manylinux_x86_64`, `cp310-manylinux_x86_64`, or `cp311-manylinux_x86_64` to build for different Python versions.
+Replace `cp38-manylinux_x86_64` with `cp39-manylinux_x86_64`, `cp310-manylinux_x86_64`, `cp311-manylinux_x86_64`, or `cp312-manylinux_x86_64` to build for different Python versions.
