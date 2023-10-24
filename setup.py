@@ -192,13 +192,6 @@ class BuildRDKit(build_ext_orig):
                 f"-DFREETYPE_LIBRARY={to_win_path(vcpkg_lib / 'freetype.lib')}",
             ]
 
-            # On python 3.12, the INCHI library selects the wrong python310.lib instead of python312.lib
-            if sys.version_info.minor == 12:
-                inchi_lib = Path("C:/Users/runneradmin/AppData/Local/pypa/cibuildwheel/Cache/nuget-cpython/python.3.12.0/tools/libs/")
-                options += [
-                    f"-DINCHI_LIBRARY={to_win_path(inchi_lib)}"
-                ]
-
         # Modifications for MacOS
         if sys.platform == "darwin":
             options += [
