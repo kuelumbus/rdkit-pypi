@@ -197,7 +197,11 @@ class BuildRDKit(build_ext_orig):
             options += [
                 "-DCMAKE_C_FLAGS=-Wno-implicit-function-declaration",
                 # CATCH_CONFIG_NO_CPP17_UNCAUGHT_EXCEPTIONS because MacOS does not fully support C++17.
-                '-DCMAKE_CXX_FLAGS="-Wno-implicit-function-declaration -DCATCH_CONFIG_NO_CPP17_UNCAUGHT_EXCEPTIONS"',
+
+                # -fno-exceptions: See https://developer.apple.com/xcode/cpp/#c++17 P0220R1. 
+                # macOS <10.14 does not support the std::bad_any_cast method of c++17 :-(.
+                # Workaround is "-fno-exceptions" that makes RDKit crash ... 
+                '-DCMAKE_CXX_FLAGS="-Wno-implicit-function-declaration -DCATCH_CONFIG_NO_CPP17_UNCAUGHT_EXCEPTIONS -fno-exceptions"',
             ]
 
         # Modifications for MacOS arm64 (M1 hardware)
