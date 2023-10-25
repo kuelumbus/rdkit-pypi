@@ -1,7 +1,7 @@
 def test_descriptor():
     from rdkit.Chem import Descriptors
-
-    assert len(Descriptors._descList) == 209
+    # Was 209 but changed to 211 in Release_2023_09_1
+    assert len(Descriptors._descList) == 211
 
 
 def test_3d_descriptors():

@@ -12,7 +12,7 @@ from setuptools import Extension, find_packages, setup
 from setuptools.command.build_ext import build_ext as build_ext_orig
 
 # RDKit version to build (tag from github repository)
-rdkit_tag = "Release_2023_03_3"
+rdkit_tag = "Release_2023_09_1"
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -198,6 +198,10 @@ class BuildRDKit(build_ext_orig):
                 "-DCMAKE_C_FLAGS=-Wno-implicit-function-declaration",
                 # CATCH_CONFIG_NO_CPP17_UNCAUGHT_EXCEPTIONS because MacOS does not fully support C++17.
                 '-DCMAKE_CXX_FLAGS="-Wno-implicit-function-declaration -DCATCH_CONFIG_NO_CPP17_UNCAUGHT_EXCEPTIONS"',
+                # macOS < 10.13 has a incomplete C++17 implementation
+                # See https://github.com/kuelumbus/rdkit-pypi/pull/85 for a discussion
+                '-DCMAKE_OSX_DEPLOYMENT_TARGET=10.13',
+
             ]
 
         # Modifications for MacOS arm64 (M1 hardware)
