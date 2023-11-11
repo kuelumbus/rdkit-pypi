@@ -1,13 +1,7 @@
 
 name: Build wheels
 
-on: 
-  push:
-    branches:
-      - '**'
-  pull_request:
-    types: [opened, reopened]
-
+on: [push, pull_request]
 
 jobs:
   build_wheels:
