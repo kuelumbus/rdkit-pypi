@@ -67,46 +67,46 @@ jobs:
           # Linux 64 bit ARM: aarch64 (on Circle CI)
 
           # MacOS 64 bit Intel: x86_64
-          - os: macos-11
+          - os: macos-12
             bitness: 64
             python: 38
             platform_id: macosx_x86_64
-          - os: macos-11
+          - os: macos-12
             bitness: 64
             python: 39
             platform_id: macosx_x86_64
-          - os: macos-11
+          - os: macos-12
             bitness: 64
             python: 310
             platform_id: macosx_x86_64
-          - os: macos-11
+          - os: macos-12
             bitness: 64
             python: 311
             platform_id: macosx_x86_64
-          - os: macos-11
+          - os: macos-12
             bitness: 64
             python: 312
             platform_id: macosx_x86_64
 
 
           # MacOS 64 bit ARM: arm64
-          - os: macos-11
+          - os: macos-12
             bitness: 64
             python: 38
             platform_id: macosx_arm64
-          - os: macos-11
+          - os: macos-12
             bitness: 64
             python: 39
             platform_id: macosx_arm64
-          - os: macos-11
+          - os: macos-12
             bitness: 64
             python: 310
             platform_id: macosx_arm64
-          - os: macos-11
+          - os: macos-12
             bitness: 64
             python: 311
             platform_id: macosx_arm64
-          - os: macos-11
+          - os: macos-12
             bitness: 64
             python: 312
             platform_id: macosx_arm64
