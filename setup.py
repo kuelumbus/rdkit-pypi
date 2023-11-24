@@ -109,8 +109,8 @@ class BuildRDKit(build_ext_orig):
                 compiler.version=14
                 compiler.libcxx=libc++
                 compiler.cppstd=20
-                arch=armv8
-                arch_build=armv8
+                arch=x86_64
+                arch_build=x86_64
                 build_type=Release
                 """
             
@@ -122,8 +122,8 @@ class BuildRDKit(build_ext_orig):
                 compiler.version=14
                 compiler.libcxx=libc++
                 compiler.cppstd=20
-                arch=x86_64
-                arch_build=x86_64
+                arch=armv8
+                arch_build=armv8
                 build_type=Release
                 """
 
