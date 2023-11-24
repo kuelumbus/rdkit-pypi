@@ -128,7 +128,7 @@ class BuildRDKit(build_ext_orig):
                 """
 
             Path("macos-cross-host").write_text(dedent(host_profile))
-            Path("macos-cross-build ").write_text(dedent(build_profile))
+            Path("macos-cross-build").write_text(dedent(build_profile))
             cmd += ["-pr:h", "macos-cross-host", "-pr:b", "macos-cross-build"]
 
         check_call(cmd)
