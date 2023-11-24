@@ -46,7 +46,7 @@ environment-pass = ["CIBW_BUILD"]
 before-all = [
 '''if [[ "$CIBW_BUILD" == *macosx_arm64* ]]; then
     rm /usr/local/lib/libfreetype.dylib
-    install_arm=( libpng libx11 libxau libxcb libxdmcp libxext libxrender libiconv fontconfig glib lzo pixman cairo freetype )
+    install_arm=( libpng libx11 libxau libxcb libxdmcp libxext libxrender fontconfig glib lzo pixman cairo freetype )
     for i in "${install_arm[@]}"; do
         response=$(brew fetch --force --bottle-tag=arm64_monterey $i | grep Downloaded )
         download_path=$(echo $response | xargs -n 1 | tail -1)
