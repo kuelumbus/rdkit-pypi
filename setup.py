@@ -101,6 +101,19 @@ class BuildRDKit(build_ext_orig):
 
         # for arm 64 on MacOS
         if "macosx_arm64" in os.environ["CIBW_BUILD"]:
+            build_profile = """\
+                [settings]
+                os=Macos
+                os_build=Macos
+                compiler=apple-clang
+                compiler.version=14
+                compiler.libcxx=libc++
+                compiler.cppstd=20
+                arch=armv8
+                arch_build=armv8
+                build_type=Release
+                """
+            
             host_profile = """\
                 [settings]
                 os=Macos
@@ -110,12 +123,13 @@ class BuildRDKit(build_ext_orig):
                 compiler.libcxx=libc++
                 compiler.cppstd=20
                 arch=x86_64
-                arch_build=armv8
+                arch_build=x86_64
                 build_type=Release
                 """
+
             Path("macos-cross-host").write_text(dedent(host_profile))
-            cmd += ["-pr:h", "macos-cross-host"]
-            # cmd += ["-s", "arch=armv8", "-s", "arch_build=armv8"]
+            Path("macos-cross-build ").write_text(dedent(build_profile))
+            cmd += ["-pr:h", "macos-cross-host", "-pr:b", "macos-cross-build"]
 
         check_call(cmd)
 
