@@ -1,13 +1,10 @@
 
 name: Build wheels
 
-on: 
+on:
   push:
-    branches:
-      - '**'
+    branches: [ main ]
   pull_request:
-    types: [opened, reopened]
-
 
 jobs:
   build_wheels:
@@ -70,52 +67,52 @@ jobs:
           # Linux 64 bit ARM: aarch64 (on Circle CI)
 
           # MacOS 64 bit Intel: x86_64
-          - os: macos-11
+          - os: macos-12
             bitness: 64
             python: 38
             platform_id: macosx_x86_64
-          - os: macos-11
+          - os: macos-12
             bitness: 64
             python: 39
             platform_id: macosx_x86_64
-          - os: macos-11
+          - os: macos-12
             bitness: 64
             python: 310
             platform_id: macosx_x86_64
-          - os: macos-11
+          - os: macos-12
             bitness: 64
             python: 311
             platform_id: macosx_x86_64
-          - os: macos-11
+          - os: macos-12
             bitness: 64
             python: 312
             platform_id: macosx_x86_64
 
 
           # MacOS 64 bit ARM: arm64
-          - os: macos-11
+          - os: macos-12
             bitness: 64
             python: 38
             platform_id: macosx_arm64
-          - os: macos-11
+          - os: macos-12
             bitness: 64
             python: 39
             platform_id: macosx_arm64
-          - os: macos-11
+          - os: macos-12
             bitness: 64
             python: 310
             platform_id: macosx_arm64
-          - os: macos-11
+          - os: macos-12
             bitness: 64
             python: 311
             platform_id: macosx_arm64
-          - os: macos-11
+          - os: macos-12
             bitness: 64
             python: 312
             platform_id: macosx_arm64
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Copy to C:\
         if: ${{ runner.os == 'Windows' }}
@@ -125,7 +122,7 @@ jobs:
       - uses: actions/setup-python@v4
         name: Install Python
         with:
-          python-version: '3.9'
+          python-version: '3.11'
 
       - name: Install libraries with vcpkg
         if: ${{ runner.os == 'Windows' }}

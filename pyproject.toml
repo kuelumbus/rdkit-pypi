@@ -4,8 +4,7 @@ requires = [
     "wheel",
     "cmake == 3.21.1",
     "oldest-supported-numpy",
-#   "conan == 1.60.2",
-    "conan@git+https://github.com/conan-io/conan@e992ec6ff0992ed543e14b1aceaee8139fed701a",
+    "conan == 1.62.0",
     "ninja",
     ]
 build-backend = "setuptools.build_meta"
@@ -49,7 +48,7 @@ before-all = [
     rm /usr/local/lib/libfreetype.dylib
     install_arm=( libpng libx11 libxau libxcb libxdmcp libxext libxrender fontconfig glib lzo pixman cairo freetype )
     for i in "${install_arm[@]}"; do
-        response=$(brew fetch --force --bottle-tag=arm64_big_sur $i | grep Downloaded )
+        response=$(brew fetch --force --bottle-tag=arm64_monterey $i | grep Downloaded )
         download_path=$(echo $response | xargs -n 1 | tail -1)
         brew reinstall $download_path
     done
