@@ -133,7 +133,7 @@ jobs:
         if: ${{ runner.os == 'Windows' }}
         run: |
           choco install sed
-          choco install pkgconfiglite
+          choco install pkgconfiglite --allow-empty-checksums
         shell: pwsh
 
       - name: Build wheels
