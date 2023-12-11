@@ -132,8 +132,8 @@ jobs:
       - name: Install libraries with chocolatey
         if: ${{ runner.os == 'Windows' }}
         run: |
-          Choco-Install -PackageName sed
-          Choco-Install -PackageName pkgconfiglite
+          choco install sed
+          choco install pkgconfiglite
         shell: pwsh
 
       - name: Build wheels
