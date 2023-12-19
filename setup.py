@@ -55,6 +55,7 @@ class BuildRDKit(build_ext_orig):
         # needed for windows builds
         without_python_lib = "False"
         win = """eigen/3.4.0"""
+        
         if sys.platform != "win32":
             win = ""
             without_python_lib = "True"
@@ -67,7 +68,6 @@ class BuildRDKit(build_ext_orig):
         conanfile = f"""\
             [requires]
             boost/{boost_version}@chris/mod_boost
-            {win}
 
             [generators]
             CMakeDeps
