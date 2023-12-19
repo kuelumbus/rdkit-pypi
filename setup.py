@@ -178,7 +178,7 @@ class BuildRDKit(build_ext_orig):
 
         # Define CMake options
         options = [
-            f"-DCMAKE_TOOLCHAIN_FILE={conan_toolchain_path / 'conan_paths.cmake'}",
+            f"-DCMAKE_TOOLCHAIN_FILE={conan_toolchain_path / 'conan_toolchain.cmake'}",
             # Select correct python interpreter
             f"-DPYTHON_EXECUTABLE={sys.executable}",
             f"-DPYTHON_INCLUDE_DIR={get_paths()['include']}",
