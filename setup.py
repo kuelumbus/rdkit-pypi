@@ -179,6 +179,8 @@ class BuildRDKit(build_ext_orig):
         # Define CMake options
         options = [
             f"-DCMAKE_TOOLCHAIN_FILE={conan_toolchain_path / 'conan_toolchain.cmake'}",
+            # For the toolchain file this needs to be set
+            f"-DCMAKE_POLICY_DEFAULT_CMP0091=NEW",
             # Select correct python interpreter
             f"-DPYTHON_EXECUTABLE={sys.executable}",
             f"-DPYTHON_INCLUDE_DIR={get_paths()['include']}",
@@ -200,6 +202,7 @@ class BuildRDKit(build_ext_orig):
             "-DRDK_BUILD_CPP_TESTS=OFF",
             # Fix InChi download
             "-DINCHI_URL=https://rdkit.org/downloads/INCHI-1-SRC.zip",
+            
         ]
 
         # Modifications for Windows
@@ -209,6 +212,7 @@ class BuildRDKit(build_ext_orig):
                 "-Ax64",
                 "-DRDK_INSTALL_STATIC_LIBS=OFF",
                 "-DRDK_INSTALL_DLLS_MSVC=ON",
+
             ]
 
             def to_win_path(pt: Path):
