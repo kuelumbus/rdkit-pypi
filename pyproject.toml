@@ -2,7 +2,7 @@
 requires = [
     "setuptools>=42",
     "wheel",
-    "cmake == 3.21.1",
+    "cmake == 3.28.1",
     "oldest-supported-numpy",
     "conan == 1.62.0",
     "ninja",
