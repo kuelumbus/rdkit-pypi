@@ -70,8 +70,8 @@ class BuildRDKit(build_ext_orig):
             {win}
 
             [generators]
-            cmake_paths
-            virtualrunenv
+            CMakeDeps
+            CMakeToolchain
 
             [options]
             boost:shared=True
