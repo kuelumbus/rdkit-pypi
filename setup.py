@@ -94,10 +94,15 @@ class BuildRDKit(build_ext_orig):
             "-if",
             f"{conan_toolchain_path}",
         ]
+        
+        if sys.platform == "win32":
+            cmd += ["-pr:b", "default"]
+
 
         # but force build b2 on linux
         if "linux" in sys.platform:
-            cmd += ["--build=b2"]
+            cmd += ["--build=b2", 
+                    "-pr:b", "default"]
 
         # for arm 64 on MacOS
         if "macosx_arm64" in os.environ["CIBW_BUILD"]:
