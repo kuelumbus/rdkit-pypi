@@ -6,6 +6,13 @@ on:
     branches: [ main ]
   pull_request:
 
+permissions:
+  contents: write
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  VCPKG_FEATURE_FLAGS: dependencygraph
+
 jobs:
   build_wheels:
     name: Build for cp${{ matrix.python }}-${{ matrix.platform_id }}
@@ -127,7 +134,7 @@ jobs:
       - name: Install libraries with vcpkg
         if: ${{ runner.os == 'Windows' }}
         run: |
-          vcpkg --triplet x64-windows install cairo freetype
+          ${{ github.workspace }}/vcpkg/vcpkg --triplet x64-windows install
 
       - name: Install libraries with chocolatey
         if: ${{ runner.os == 'Windows' }}
