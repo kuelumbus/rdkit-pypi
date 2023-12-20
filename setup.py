@@ -55,8 +55,6 @@ class BuildRDKit(build_ext_orig):
         # needed for windows builds
         without_python_lib = "False"
         only_win = """eigen/3.4.0
-        cairo/1.18.0
-        freetype/2.13.2
         """
         
         if sys.platform != "win32":
@@ -224,10 +222,9 @@ class BuildRDKit(build_ext_orig):
             def to_win_path(pt: Path):
                 return str(pt).replace("\\", "/")
 
-            # Link cairo
-            vcpkg_path = Path("C:/vcpkg")
-            vcpkg_inc = vcpkg_path / "installed" / "x64-windows" / "include"
-            vcpkg_lib = vcpkg_path / "installed" / "x64-windows" / "lib"
+            # Link cairo and freetype
+            vcpkg_inc = cwd / "vcpkg_installed" / "x64-windows" / "include"
+            vcpkg_lib = cwd / "vcpkg_installed" / "x64-windows" / "lib"
             options += [
                 f"-DCAIRO_INCLUDE_DIR={to_win_path(vcpkg_inc)}",
                 f"-DCAIRO_LIBRARY_DIR={to_win_path(vcpkg_lib)}",
