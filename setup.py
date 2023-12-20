@@ -72,6 +72,7 @@ class BuildRDKit(build_ext_orig):
             [generators]
             CMakeDeps
             CMakeToolchain
+            VirtualRunEnv
 
             [options]
             boost:shared=True
@@ -186,8 +187,9 @@ class BuildRDKit(build_ext_orig):
             f"-DPYTHON_INCLUDE_DIR={get_paths()['include']}",
             # RDKit build flags
             "-DRDK_BUILD_INCHI_SUPPORT=ON",
-            "-DRDK_BUILD_AVALON_SUPPORT=ON",
+            "-DRDK_BUILD_AVALON_SUPPORT=ON", 
             "-DRDK_BUILD_PYTHON_WRAPPERS=ON",
+            "-DRDK_BOOST_PYTHON3_NAME=python", # Overwrite this. This is the name of the interface in cmake defined by conan. 
             "-DRDK_BUILD_YAEHMOP_SUPPORT=ON",
             "-DRDK_BUILD_XYZ2MOL_SUPPORT=ON",
             "-DRDK_INSTALL_INTREE=OFF",

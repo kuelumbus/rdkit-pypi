@@ -35,7 +35,7 @@ before-all = [
 
 repair-wheel-command = [
     # for boost libs
-    'source conan/activate_run.sh',
+    'source conan/conanrun.sh',
     'auditwheel repair -w {dest_dir} {wheel}'
 ]
 
@@ -61,7 +61,7 @@ brew install gnu-sed eigen
 
 repair-wheel-command = [
     "export DYLD_LIBRARY_PATH='/usr/local/lib:/usr/lib'",
-    "source conan/activate_run.sh",
+    "source conan/conanrun.sh",
     "delocate-listdeps {wheel}",
     "delocate-wheel --require-archs {delocate_archs} -w {dest_dir} {wheel}",
 ]
@@ -74,7 +74,7 @@ before-build = [
 
 environment = { TMP='C:\\temp', TEMP='C:\\temp', RUNNER_TEMP='C:\\temp'}
 repair-wheel-command = [
-    "C:\\rdkit\\conan\\activate_run.bat",
+    "C:\\rdkit\\conan\\conanrun.bat",
     "delvewheel show -v --add-path C:\\libs;C:\\vcpkg\\installed\\x64-windows\\bin {wheel}",
     "delvewheel repair -v --add-path C:\\libs;C:\\vcpkg\\installed\\x64-windows\\bin -w {dest_dir} {wheel}"
     ]
