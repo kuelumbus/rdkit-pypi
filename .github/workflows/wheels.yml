@@ -131,10 +131,10 @@ jobs:
         with:
           python-version: '3.11'
       
-      - name: Install libraries with vcpkg
-        if: ${{ runner.os == 'Windows' }}
-        run: |
-          vcpkg --triplet x64-windows install
+      # - name: Install libraries with vcpkg
+      #   if: ${{ runner.os == 'Windows' }}
+      #   run: |
+      #     vcpkg --triplet x64-windows install
 
       - name: Install libraries with chocolatey
         if: ${{ runner.os == 'Windows' }}
