@@ -68,7 +68,8 @@ class BuildRDKit(build_ext_orig):
         conanfile = f"""\
             [requires]
             boost/{boost_version}@chris/mod_boost
-
+            {win}
+            
             [generators]
             CMakeDeps
             CMakeToolchain
