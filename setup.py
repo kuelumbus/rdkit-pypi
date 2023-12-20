@@ -54,22 +54,25 @@ class BuildRDKit(build_ext_orig):
 
         # needed for windows builds
         without_python_lib = "False"
-        win = """eigen/3.4.0"""
+        only_win = """eigen/3.4.0
+        cairo/1.18.0
+        freetype/2.13.2
+        """
         
         if sys.platform != "win32":
-            win = ""
+            only_win = ""
             without_python_lib = "True"
 
         without_stacktrace = "False"
         if "macosx_arm64" in os.environ["CIBW_BUILD"]:
             # does not work on macos arm64 for some reason
             without_stacktrace = "True"
-
+            
         conanfile = f"""\
             [requires]
             boost/{boost_version}@chris/mod_boost
-            {win}
-            
+            {only_win}
+
             [generators]
             CMakeDeps
             CMakeToolchain
