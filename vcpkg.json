@@ -3,11 +3,11 @@
     "dependencies": [
         {
             "name": "cairo",
-            "platform": "!windows"
+            "platform": "windows"
         },
         {
             "name": "freetype",
-            "platform": "!windows"
+            "platform": "windows"
         }
     ]
 }
