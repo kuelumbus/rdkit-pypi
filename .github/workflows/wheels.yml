@@ -134,7 +134,7 @@ jobs:
       - name: Install libraries with vcpkg
         if: ${{ runner.os == 'Windows' }}
         run: |
-          ${{ github.workspace }}/vcpkg/vcpkg --triplet x64-windows install
+          vcpkg --triplet x64-windows install
 
       - name: Install libraries with chocolatey
         if: ${{ runner.os == 'Windows' }}
