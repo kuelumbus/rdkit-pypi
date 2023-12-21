@@ -8,6 +8,10 @@
         {
             "name": "freetype",
             "platform": "windows"
+        },
+        {
+            "name": "eigen3",
+            "platform": "windows"
         }
     ]
 }

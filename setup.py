@@ -54,8 +54,7 @@ class BuildRDKit(build_ext_orig):
 
         # needed for windows builds
         without_python_lib = "False"
-        only_win = """eigen/3.4.0
-        """
+        only_win = """"""
         
         if sys.platform != "win32":
             only_win = ""
@@ -223,7 +222,7 @@ class BuildRDKit(build_ext_orig):
                 return str(pt).replace("\\", "/")
 
             # Link cairo and freetype
-            vcpkg_path = Path("C:/vcpkg")
+            vcpkg_path = cwd
             vcpkg_inc = vcpkg_path / "vcpkg_installed" / "x64-windows" / "include"
             vcpkg_lib = vcpkg_path / "vcpkg_installed" / "x64-windows" / "lib"
             options += [
