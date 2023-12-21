@@ -125,7 +125,6 @@ jobs:
         if: ${{ runner.os == 'Windows' }}
         run: |
           Copy-Item -Path D:\a\rdkit-pypi\rdkit-pypi -Destination C:\rdkit -Recurse
-          cd C:\\rdkit
 
       - uses: actions/setup-python@v4
         name: Install Python
@@ -135,6 +134,7 @@ jobs:
       - name: Install libraries with vcpkg
         if: ${{ runner.os == 'Windows' }}
         run: |
+          cd C:\\rdkit
           vcpkg --triplet x64-windows install
 
       - name: Install libraries with chocolatey
@@ -152,6 +152,9 @@ jobs:
           CIBW_MANYLINUX_I686_IMAGE: ${{ matrix.manylinux_image }}
 
         run: |
+          if [ "$RUNNER_OS" == "Windows" ]; then
+            cd C:\\rdkit
+          fi
           python -m pip install cibuildwheel==2.16.2
           python -m cibuildwheel --output-dir wheelhouse
         shell: bash
