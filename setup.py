@@ -223,8 +223,9 @@ class BuildRDKit(build_ext_orig):
                 return str(pt).replace("\\", "/")
 
             # Link cairo and freetype
-            vcpkg_inc = cwd / "vcpkg_installed" / "x64-windows" / "include"
-            vcpkg_lib = cwd / "vcpkg_installed" / "x64-windows" / "lib"
+            vcpkg_path = Path("C:/vcpkg")
+            vcpkg_inc = vcpkg_path / "vcpkg_installed" / "x64-windows" / "include"
+            vcpkg_lib = vcpkg_path / "vcpkg_installed" / "x64-windows" / "lib"
             options += [
                 f"-DCAIRO_INCLUDE_DIR={to_win_path(vcpkg_inc)}",
                 f"-DCAIRO_LIBRARY_DIR={to_win_path(vcpkg_lib)}",
