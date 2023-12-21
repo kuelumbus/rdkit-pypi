@@ -167,3 +167,7 @@ jobs:
         if: ${{ runner.os != 'Windows' }}
         with:
           path: ./wheelhouse/*.whl
+      
+      - name: Setup tmate session
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
