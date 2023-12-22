@@ -259,7 +259,7 @@ class BuildRDKit(build_ext_orig):
             f"cmake -S . -B build {' '.join(options)} ",
             # f"cmake --build build"
             # if sys.platform != "win32"
-            "cmake --build build -j 4 --config Release",
+            "cmake --build build -j 4 --config Release -v",
             "cmake --install build",
         ]
 
