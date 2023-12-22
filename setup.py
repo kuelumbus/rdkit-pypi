@@ -52,12 +52,9 @@ class BuildRDKit(build_ext_orig):
             ]
         )
 
-        # needed for windows builds
+        # For the windows builds, we need the python libraries
         without_python_lib = "False"
-        only_win = """"""
-        
         if sys.platform != "win32":
-            only_win = ""
             without_python_lib = "True"
 
         without_stacktrace = "False"
@@ -68,7 +65,6 @@ class BuildRDKit(build_ext_orig):
         conanfile = f"""\
             [requires]
             boost/{boost_version}@chris/mod_boost
-            {only_win}
 
             [generators]
             CMakeDeps
@@ -152,12 +148,12 @@ class BuildRDKit(build_ext_orig):
 
         cwd = Path().absolute()
 
-        # (1) Install boost and other libraries using Conan
+        # Install boost and other libraries using Conan
         conan_toolchain_path = cwd / "conan"
         conan_toolchain_path.mkdir(parents=True, exist_ok=True)
         self.conan_install(conan_toolchain_path)
 
-        # (2) Build RDkit
+        # Build RDkit
         # Define paths
         build_path = Path(self.build_temp).absolute()
         build_path.mkdir(parents=True, exist_ok=True)
@@ -251,14 +247,11 @@ class BuildRDKit(build_ext_orig):
                 "-DCMAKE_OSX_ARCHITECTURES=arm64",
                 "-DRDK_OPTIMIZE_POPCNT=OFF",
             ]
-            # also export it to compile yaehmop for arm64 too
+            # also export it to compile yaehmop for arm64
             vars["CMAKE_OSX_ARCHITECTURES"] = "arm64"
 
         cmds = [
-            # f"cmake -S . -B build {' '.join(options)}",
             f"cmake -S . -B build {' '.join(options)} ",
-            # f"cmake --build build"
-            # if sys.platform != "win32"
             "cmake --build build -j 4 --config Release -v",
             "cmake --install build",
         ]
@@ -277,7 +270,7 @@ class BuildRDKit(build_ext_orig):
 
         os.chdir(str(cwd))
 
-        # (3) Copy RDKit and additional files to the wheel path
+        # Copy RDKit and additional files to the wheel path
         py_name = "python" + ".".join(map(str, sys.version_info[:2]))
         rdkit_files = rdkit_install_path / "lib" / py_name / "site-packages" / "rdkit"
 
@@ -331,7 +324,7 @@ class BuildRDKit(build_ext_orig):
         # Copy the license
         copy_file(str(license_file), str(wheel_path))
 
-        # (4) Copy the libraries to system paths
+        # Copy the libraries to system paths
         rdkit_root = rdkit_install_path / "lib"
 
         if "linux" in sys.platform:
