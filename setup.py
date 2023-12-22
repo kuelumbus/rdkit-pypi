@@ -12,7 +12,7 @@ from setuptools import Extension, find_packages, setup
 from setuptools.command.build_ext import build_ext as build_ext_orig
 
 # RDKit version to build (tag from github repository)
-rdkit_tag = "Release_2023_09_2"
+rdkit_tag = "Release_2023_09_3"
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -52,26 +52,24 @@ class BuildRDKit(build_ext_orig):
             ]
         )
 
-        # needed for windows builds
+        # For the windows builds, we need the python libraries
         without_python_lib = "False"
-        win = """eigen/3.4.0"""
         if sys.platform != "win32":
-            win = ""
             without_python_lib = "True"
 
         without_stacktrace = "False"
         if "macosx_arm64" in os.environ["CIBW_BUILD"]:
             # does not work on macos arm64 for some reason
             without_stacktrace = "True"
-
+            
         conanfile = f"""\
             [requires]
             boost/{boost_version}@chris/mod_boost
-            {win}
 
             [generators]
-            cmake_paths
-            virtualrunenv
+            CMakeDeps
+            CMakeToolchain
+            VirtualRunEnv
 
             [options]
             boost:shared=True
@@ -94,10 +92,15 @@ class BuildRDKit(build_ext_orig):
             "-if",
             f"{conan_toolchain_path}",
         ]
+        
+        if sys.platform == "win32":
+            cmd += ["-pr:b", "default"]
+
 
         # but force build b2 on linux
         if "linux" in sys.platform:
-            cmd += ["--build=b2"]
+            cmd += ["--build=b2", 
+                    "-pr:b", "default"]
 
         # for arm 64 on MacOS
         if "macosx_arm64" in os.environ["CIBW_BUILD"]:
@@ -145,12 +148,12 @@ class BuildRDKit(build_ext_orig):
 
         cwd = Path().absolute()
 
-        # (1) Install boost and other libraries using Conan
+        # Install boost and other libraries using Conan
         conan_toolchain_path = cwd / "conan"
         conan_toolchain_path.mkdir(parents=True, exist_ok=True)
         self.conan_install(conan_toolchain_path)
 
-        # (2) Build RDkit
+        # Build RDkit
         # Define paths
         build_path = Path(self.build_temp).absolute()
         build_path.mkdir(parents=True, exist_ok=True)
@@ -173,14 +176,17 @@ class BuildRDKit(build_ext_orig):
 
         # Define CMake options
         options = [
-            f"-DCMAKE_TOOLCHAIN_FILE={conan_toolchain_path / 'conan_paths.cmake'}",
+            f"-DCMAKE_TOOLCHAIN_FILE={conan_toolchain_path / 'conan_toolchain.cmake'}",
+            # For the toolchain file this needs to be set
+            f"-DCMAKE_POLICY_DEFAULT_CMP0091=NEW",
             # Select correct python interpreter
             f"-DPYTHON_EXECUTABLE={sys.executable}",
             f"-DPYTHON_INCLUDE_DIR={get_paths()['include']}",
             # RDKit build flags
             "-DRDK_BUILD_INCHI_SUPPORT=ON",
-            "-DRDK_BUILD_AVALON_SUPPORT=ON",
+            "-DRDK_BUILD_AVALON_SUPPORT=ON", 
             "-DRDK_BUILD_PYTHON_WRAPPERS=ON",
+            "-DRDK_BOOST_PYTHON3_NAME=python", # Overwrite this. This is the name of the interface in cmake defined by conan. 
             "-DRDK_BUILD_YAEHMOP_SUPPORT=ON",
             "-DRDK_BUILD_XYZ2MOL_SUPPORT=ON",
             "-DRDK_INSTALL_INTREE=OFF",
@@ -195,6 +201,7 @@ class BuildRDKit(build_ext_orig):
             "-DRDK_BUILD_CPP_TESTS=OFF",
             # Fix InChi download
             "-DINCHI_URL=https://rdkit.org/downloads/INCHI-1-SRC.zip",
+            
         ]
 
         # Modifications for Windows
@@ -204,15 +211,16 @@ class BuildRDKit(build_ext_orig):
                 "-Ax64",
                 "-DRDK_INSTALL_STATIC_LIBS=OFF",
                 "-DRDK_INSTALL_DLLS_MSVC=ON",
+
             ]
 
             def to_win_path(pt: Path):
                 return str(pt).replace("\\", "/")
 
-            # Link cairo
-            vcpkg_path = Path("C:/vcpkg")
-            vcpkg_inc = vcpkg_path / "installed" / "x64-windows" / "include"
-            vcpkg_lib = vcpkg_path / "installed" / "x64-windows" / "lib"
+            # Link cairo and freetype
+            vcpkg_path = cwd
+            vcpkg_inc = vcpkg_path / "vcpkg_installed" / "x64-windows" / "include"
+            vcpkg_lib = vcpkg_path / "vcpkg_installed" / "x64-windows" / "lib"
             options += [
                 f"-DCAIRO_INCLUDE_DIR={to_win_path(vcpkg_inc)}",
                 f"-DCAIRO_LIBRARY_DIR={to_win_path(vcpkg_lib)}",
@@ -239,15 +247,12 @@ class BuildRDKit(build_ext_orig):
                 "-DCMAKE_OSX_ARCHITECTURES=arm64",
                 "-DRDK_OPTIMIZE_POPCNT=OFF",
             ]
-            # also export it to compile yaehmop for arm64 too
+            # also export it to compile yaehmop for arm64
             vars["CMAKE_OSX_ARCHITECTURES"] = "arm64"
 
         cmds = [
-            # f"cmake -S . -B build {' '.join(options)}",
             f"cmake -S . -B build {' '.join(options)} ",
-            # f"cmake --build build"
-            # if sys.platform != "win32"
-            "cmake --build build -j 4 --config Release",
+            "cmake --build build -j 4 --config Release -v",
             "cmake --install build",
         ]
 
@@ -265,7 +270,7 @@ class BuildRDKit(build_ext_orig):
 
         os.chdir(str(cwd))
 
-        # (3) Copy RDKit and additional files to the wheel path
+        # Copy RDKit and additional files to the wheel path
         py_name = "python" + ".".join(map(str, sys.version_info[:2]))
         rdkit_files = rdkit_install_path / "lib" / py_name / "site-packages" / "rdkit"
 
@@ -319,7 +324,7 @@ class BuildRDKit(build_ext_orig):
         # Copy the license
         copy_file(str(license_file), str(wheel_path))
 
-        # (4) Copy the libraries to system paths
+        # Copy the libraries to system paths
         rdkit_root = rdkit_install_path / "lib"
 
         if "linux" in sys.platform:

@@ -1,0 +1,17 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+    "dependencies": [
+        {
+            "name": "cairo",
+            "platform": "windows"
+        },
+        {
+            "name": "freetype",
+            "platform": "windows"
+        },
+        {
+            "name": "eigen3",
+            "platform": "windows"
+        }
+    ]
+}

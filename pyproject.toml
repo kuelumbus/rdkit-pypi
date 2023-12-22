@@ -2,7 +2,7 @@
 requires = [
     "setuptools>=42",
     "wheel",
-    "cmake == 3.21.1",
+    "cmake == 3.26.4",
     "oldest-supported-numpy",
     "conan == 1.62.0",
     "ninja",
@@ -22,7 +22,8 @@ test-command = "pytest --exitfirst --verbose --failed-first {package}/tests"
 before-all = [
     # Has eigen3-devel.aarch64
     "yum install -y epel-release",
-    "yum install -y wget freetype-devel libpng12-devel pixman-devel zlib-devel eigen3-devel",
+    # "yum install -y wget freetype-devel libpng12-devel pixman-devel zlib-devel eigen3-devel",
+    "yum install -y wget freetype-devel libpng12-devel pixman-devel zlib-devel",
     # cairo-devel from the centos repo does not work, build here
     "wget https://www.cairographics.org/snapshots/cairo-1.15.14.tar.xz --no-check-certificate",
     "tar xvf cairo-*",
@@ -35,7 +36,7 @@ before-all = [
 
 repair-wheel-command = [
     # for boost libs
-    'source conan/activate_run.sh',
+    'source conan/conanrun.sh',
     'auditwheel repair -w {dest_dir} {wheel}'
 ]
 
@@ -61,7 +62,7 @@ brew install gnu-sed eigen
 
 repair-wheel-command = [
     "export DYLD_LIBRARY_PATH='/usr/local/lib:/usr/lib'",
-    "source conan/activate_run.sh",
+    "source conan/conanrun.sh",
     "delocate-listdeps {wheel}",
     "delocate-wheel --require-archs {delocate_archs} -w {dest_dir} {wheel}",
 ]
@@ -74,7 +75,7 @@ before-build = [
 
 environment = { TMP='C:\\temp', TEMP='C:\\temp', RUNNER_TEMP='C:\\temp'}
 repair-wheel-command = [
-    "C:\\rdkit\\conan\\activate_run.bat",
-    "delvewheel show -v --add-path C:\\libs;C:\\vcpkg\\installed\\x64-windows\\bin {wheel}",
-    "delvewheel repair -v --add-path C:\\libs;C:\\vcpkg\\installed\\x64-windows\\bin -w {dest_dir} {wheel}"
+    "C:\\rdkit\\conan\\conanrun.bat",
+    "delvewheel show -v --add-path C:\\libs;C:\\rdkit\\vcpkg_installed\\x64-windows\\bin {wheel}",
+    "delvewheel repair -v --add-path C:\\libs;C:\\rdkit\\vcpkg_installed\\x64-windows\\bin -w {dest_dir} {wheel}"
     ]

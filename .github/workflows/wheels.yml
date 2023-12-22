@@ -6,6 +6,13 @@ on:
     branches: [ main ]
   pull_request:
 
+permissions:
+  contents: write
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  VCPKG_FEATURE_FLAGS: dependencygraph
+
 jobs:
   build_wheels:
     name: Build for cp${{ matrix.python }}-${{ matrix.platform_id }}
@@ -123,17 +130,18 @@ jobs:
         name: Install Python
         with:
           python-version: '3.11'
-
+      
       - name: Install libraries with vcpkg
         if: ${{ runner.os == 'Windows' }}
         run: |
-          vcpkg --triplet x64-windows install cairo freetype
+          cd C:\\rdkit
+          vcpkg --triplet x64-windows install
 
       - name: Install libraries with chocolatey
         if: ${{ runner.os == 'Windows' }}
         run: |
-          Choco-Install -PackageName sed
-          Choco-Install -PackageName pkgconfiglite
+          choco install sed
+          choco install pkgconfiglite --allow-empty-checksums
         shell: pwsh
 
       - name: Build wheels
@@ -160,3 +168,7 @@ jobs:
         if: ${{ runner.os != 'Windows' }}
         with:
           path: ./wheelhouse/*.whl
+      
+      - name: Setup tmate session
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
