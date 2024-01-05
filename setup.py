@@ -34,9 +34,8 @@ class BuildRDKit(build_ext_orig):
         ext_path = ext_name.split(".")
         return os.path.join(*ext_path)
 
-    def conan_install(self, conan_toolchain_path):
+    def conan_install(self, boost_version, conan_toolchain_path):
         """Run the Conan"""
-        boost_version = "1.78.0"
 
         # This modified conanfile.py for boost does not link libpython*.so
         # When building a platform wheel, we don't want to link libpython*.so.
@@ -151,7 +150,9 @@ class BuildRDKit(build_ext_orig):
         # Install boost and other libraries using Conan
         conan_toolchain_path = cwd / "conan"
         conan_toolchain_path.mkdir(parents=True, exist_ok=True)
-        self.conan_install(conan_toolchain_path)
+        boost_version = "1.78.0"
+        boost_lib_version = "_".join(boost_version.split('.')[:2])
+        self.conan_install(boost_version, conan_toolchain_path)
 
         # Build RDkit
         # Define paths
@@ -179,6 +180,9 @@ class BuildRDKit(build_ext_orig):
             f"-DCMAKE_TOOLCHAIN_FILE={conan_toolchain_path / 'conan_toolchain.cmake'}",
             # For the toolchain file this needs to be set
             f"-DCMAKE_POLICY_DEFAULT_CMP0091=NEW",
+            # Boost_VERSION_STRING is set but Boost_LIB_VERSION is not set by conan. 
+            # Boost_LIB_VERSION is required by RDKit => Set manually
+            f"-DBoost_LIB_VERSION={boost_lib_version}",
             # Select correct python interpreter
             f"-DPYTHON_EXECUTABLE={sys.executable}",
             f"-DPYTHON_INCLUDE_DIR={get_paths()['include']}",
