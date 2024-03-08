@@ -258,6 +258,7 @@ class BuildRDKit(build_ext_orig):
             f"cmake -S . -B build {' '.join(options)} ",
             "cmake --build build -j 4 --config Release -v",
             "cmake --install build",
+            "cmake --build build --config Release --target stubs",
         ]
 
         print('!!! --- CMAKE build command', file=sys.stderr)
