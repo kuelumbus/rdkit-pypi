@@ -254,6 +254,16 @@ class BuildRDKit(build_ext_orig):
             # also export it to compile yaehmop for arm64
             vars["CMAKE_OSX_ARCHITECTURES"] = "arm64"
 
+        rdkit_files = rdkit_install_path / "lib" / py_name / "site-packages" / "rdkit"
+        if sys.platform == "win32":
+            rdkit_files = rdkit_install_path / "Lib" / "site-packages" / "rdkit"
+
+        old_pythonpath = os.environ.get("PYTHONPATH", None)
+        new_pythonpath = os.path.dirname(rdkit_files)
+        if old_pythonpath:
+            new_pythonpath += os.pathsep + old_pythonpath
+        vars["PYTHONPATH"] = new_pythonpath
+
         cmds = [
             f"cmake -S . -B build {' '.join(options)} ",
             "cmake --build build -j 4 --config Release -v",
@@ -277,10 +287,6 @@ class BuildRDKit(build_ext_orig):
 
         # Copy RDKit and additional files to the wheel path
         py_name = "python" + ".".join(map(str, sys.version_info[:2]))
-        rdkit_files = rdkit_install_path / "lib" / py_name / "site-packages" / "rdkit"
-
-        if sys.platform == "win32":
-            rdkit_files = rdkit_install_path / "Lib" / "site-packages" / "rdkit"
 
         # Modify RDPaths.py
         sed = "gsed" if sys.platform == "darwin" else "sed"
