@@ -245,29 +245,41 @@ class BuildRDKit(build_ext_orig):
             ]
 
         # Modifications for MacOS arm64 (M1 hardware)
-        vars = {}
+        variables = {}
         if "macosx_arm64" in os.environ["CIBW_BUILD"]:
             options += [
                 "-DCMAKE_OSX_ARCHITECTURES=arm64",
                 "-DRDK_OPTIMIZE_POPCNT=OFF",
             ]
             # also export it to compile yaehmop for arm64
-            vars["CMAKE_OSX_ARCHITECTURES"] = "arm64"
+            variables["CMAKE_OSX_ARCHITECTURES"] = "arm64"
 
         cmds = [
             f"cmake -S . -B build {' '.join(options)} ",
             "cmake --build build -j 4 --config Release -v",
+            "cmake --build build --config Release --target stubs -v",
             "cmake --install build",
         ]
 
-        print('!!! --- CMAKE build command', file=sys.stderr)
+        # Define the rdkit_files path 
+        py_name = "python" + ".".join(map(str, sys.version_info[:2]))
+        rdkit_files = rdkit_install_path / "lib" / py_name / "site-packages" / "rdkit"
+
+        if sys.platform == "win32":
+            rdkit_files = rdkit_install_path / "Lib" / "site-packages" / "rdkit"
+
+        # rdkit-stubs require the site-package path to be in sys.path / PYTHONPATH
+        variables['PYTHONPATH'] = os.environ["PYTHONPATH"] + os.pathsep + str(rdkit_files.parent)
+
+        print('!!! --- CMAKE build command and variables', file=sys.stderr)
         print(cmds, file=sys.stderr)
+        print(variables, file=sys.stderr)
 
         # Run CMake and install RDKit
         [
             check_call(
                 shlex.split(c, posix="win32" not in sys.platform),
-                env=dict(os.environ, **vars),
+                env=dict(os.environ, **variables),
             )
             for c in cmds
         ]
@@ -275,12 +287,6 @@ class BuildRDKit(build_ext_orig):
         os.chdir(str(cwd))
 
         # Copy RDKit and additional files to the wheel path
-        py_name = "python" + ".".join(map(str, sys.version_info[:2]))
-        rdkit_files = rdkit_install_path / "lib" / py_name / "site-packages" / "rdkit"
-
-        if sys.platform == "win32":
-            rdkit_files = rdkit_install_path / "Lib" / "site-packages" / "rdkit"
-
         # Modify RDPaths.py
         sed = "gsed" if sys.platform == "darwin" else "sed"
         call(
