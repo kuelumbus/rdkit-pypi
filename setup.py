@@ -257,8 +257,8 @@ class BuildRDKit(build_ext_orig):
         cmds = [
             f"cmake -S . -B build {' '.join(options)} ",
             "cmake --build build -j 4 --config Release -v",
-            "cmake --build build --config Release --target stubs -v",
             "cmake --install build",
+            "cmake --build build --config Release --target stubs -v",
         ]
 
         # Define the rdkit_files path 
