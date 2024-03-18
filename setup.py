@@ -66,6 +66,7 @@ class BuildRDKit(build_ext_orig):
             boost/{boost_version}@chris/mod_boost
 
             [generators]
+            deploy
             CMakeDeps
             CMakeToolchain
             VirtualRunEnv
@@ -258,7 +259,6 @@ class BuildRDKit(build_ext_orig):
             f"cmake -S . -B build {' '.join(options)} ",
             "cmake --build build -j 4 --config Release -v",
             "cmake --install build",
-            "cmake --build build --config Release --target stubs -v",
         ]
 
         # Define the rdkit_files path 
@@ -268,10 +268,9 @@ class BuildRDKit(build_ext_orig):
         if sys.platform == "win32":
             rdkit_files = rdkit_install_path / "Lib" / "site-packages" / "rdkit"
 
-        # rdkit-stubs require the site-package path to be in sys.path / PYTHONPATH
-        variables['PYTHONPATH'] = os.environ["PYTHONPATH"] + os.pathsep + str(rdkit_files.parent)
 
-        print('!!! --- CMAKE build command and variables', file=sys.stderr)
+
+        print('!!! --- CMAKE build command and variables for RDKit', file=sys.stderr)
         print(cmds, file=sys.stderr)
         print(variables, file=sys.stderr)
 
@@ -283,6 +282,61 @@ class BuildRDKit(build_ext_orig):
             )
             for c in cmds
         ]
+
+        # --- Copy libs to system path
+        # While repairing the wheels, the built libs need to be copied to the platform wheels
+        # Also, the libs needs to be accessible for building the stubs
+        rdkit_root = rdkit_install_path / "lib"
+        boost_lib_path = conan_toolchain_path / 'boost' / 'lib'
+
+        if "linux" in sys.platform:
+            # Libs end with .so
+            to_path = Path("/usr/local/lib")
+            [copy_file(i, str(to_path)) for i in rdkit_root.glob("*.so*")]
+            [copy_file(i, str(to_path)) for i in boost_lib_path.glob("*.so*")]
+            update_command = 'ldconfig'
+        elif "win32" in sys.platform:
+            # Libs end with .dll
+            # windows paths are case insensitive
+            # C://libs is specified as search dir in 
+            to_path = Path("C://libs")
+            to_path.mkdir(parents=True, exist_ok=True)
+            [copy_file(i, str(to_path)) for i in rdkit_root.glob("*.dll")]
+
+            # Copy to default dll search path
+            to_path = Path("C://Windows//System32")
+            [copy_file(i, str(to_path)) for i in rdkit_root.glob("*.dll")]
+            [copy_file(i, str(to_path)) for i in boost_lib_path.glob("*.dll")]
+            update_command = ''
+
+        elif "darwin" in sys.platform:
+            # Libs end with dylib?
+            to_path = Path("/usr/local/lib")
+            [copy_file(i, str(to_path)) for i in rdkit_root.glob("*dylib")]
+            [copy_file(i, str(to_path)) for i in boost_lib_path.glob("*dylib")]
+            update_command = 'update_dyld_shared_cache'
+
+        # Build the RDKit stubs
+        cmds = [
+            f"{update_command}", # Update the ldconfig cache
+            "cmake --build build --config Release --target stubs -v",
+                ]
+
+        # rdkit-stubs require the site-package path to be in sys.path / PYTHONPATH
+        variables['PYTHONPATH'] = os.environ["PYTHONPATH"] + os.pathsep + str(rdkit_files.parent)
+
+        print('!!! --- CMAKE build command and variables for building stubs', file=sys.stderr)
+        print(cmds, file=sys.stderr)
+        print(variables, file=sys.stderr)
+
+        [
+            check_call(
+                shlex.split(c, posix="win32" not in sys.platform),
+                env=dict(os.environ, **variables),
+            )
+            for c in cmds
+        ]
+
 
         os.chdir(str(cwd))
 
@@ -298,6 +352,9 @@ class BuildRDKit(build_ext_orig):
             ]
         )
 
+        # RDKit stubs directory
+        rdkit_stubs_files = rdkit_files.parent / "rdkit-stubs"
+
         # Data directory
         rdkit_data_path = rdkit_install_path / "share" / "RDKit" / "Data"
 
@@ -311,6 +368,10 @@ class BuildRDKit(build_ext_orig):
 
         # Copy the Python files
         copytree(str(rdkit_files), str(wheel_path))
+
+        # Copy the RDKit stubs files to the wheel
+        from distutils.dir_util import copy_tree
+        copy_tree(str(rdkit_stubs_files), str(wheel_path.parent))
 
         # Copy the data directory
         copytree(str(rdkit_data_path), str(wheel_path / "Data"))
@@ -333,23 +394,8 @@ class BuildRDKit(build_ext_orig):
 
         # Copy the license
         copy_file(str(license_file), str(wheel_path))
-
-        # Copy the libraries to system paths
-        rdkit_root = rdkit_install_path / "lib"
-
-        if "linux" in sys.platform:
-            to_path = Path("/usr/local/lib")
-            [copy_file(i, str(to_path)) for i in rdkit_root.glob("*.so*")]
-        elif "win32" in sys.platform:
-            # windows is Lib or libs?
-            to_path = Path("C://libs")
-            to_path.mkdir(parents=True, exist_ok=True)
-            [copy_file(i, str(to_path)) for i in rdkit_root.glob("*.dll")]
-
-        elif "darwin" in sys.platform:
-            to_path = Path("/usr/local/lib")
-            [copy_file(i, str(to_path)) for i in rdkit_root.glob("*dylib")]
-
+        
+        
 
 setup(
     name="rdkit",
