@@ -289,12 +289,15 @@ class BuildRDKit(build_ext_orig):
         rdkit_root = rdkit_install_path / "lib"
         boost_lib_path = conan_toolchain_path / 'boost' / 'lib'
 
+        cmds = []
+
         if "linux" in sys.platform:
             # Libs end with .so
             to_path = Path("/usr/local/lib")
             [copy_file(i, str(to_path)) for i in rdkit_root.glob("*.so*")]
             [copy_file(i, str(to_path)) for i in boost_lib_path.glob("*.so*")]
-            update_command = 'ldconfig'
+            cmds.append('ldconfig')
+            
         elif "win32" in sys.platform:
             # Libs end with .dll
             # windows paths are case insensitive
@@ -307,18 +310,17 @@ class BuildRDKit(build_ext_orig):
             to_path = Path("C://Windows//System32")
             [copy_file(i, str(to_path)) for i in rdkit_root.glob("*.dll")]
             [copy_file(i, str(to_path)) for i in boost_lib_path.glob("*.dll")]
-            update_command = ''
 
         elif "darwin" in sys.platform:
             # Libs end with dylib?
             to_path = Path("/usr/local/lib")
             [copy_file(i, str(to_path)) for i in rdkit_root.glob("*dylib")]
             [copy_file(i, str(to_path)) for i in boost_lib_path.glob("*dylib")]
-            update_command = 'update_dyld_shared_cache'
+            cmds.append('update_dyld_shared_cache')
+            
 
         # Build the RDKit stubs
-        cmds = [
-            f"{update_command}", # Update the ldconfig cache
+        cmds += [
             "cmake --build build --config Release --target stubs -v",
                 ]
 
