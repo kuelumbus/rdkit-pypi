@@ -6,6 +6,7 @@ requires = [
     "oldest-supported-numpy",
     "conan == 1.62.0",
     "ninja",
+    "pybind11-stubgen",
     ]
 build-backend = "setuptools.build_meta"
 
