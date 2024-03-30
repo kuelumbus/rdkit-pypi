@@ -126,7 +126,7 @@ jobs:
         run: |
           Copy-Item -Path D:\a\rdkit-pypi\rdkit-pypi -Destination C:\rdkit -Recurse
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         name: Install Python
         with:
           python-version: '3.11'
@@ -159,12 +159,12 @@ jobs:
           python -m cibuildwheel --output-dir wheelhouse
         shell: bash
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: ${{ runner.os == 'Windows' }}
         with:
           path: C:\rdkit\wheelhouse\*.whl
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: ${{ runner.os != 'Windows' }}
         with:
           path: ./wheelhouse/*.whl
