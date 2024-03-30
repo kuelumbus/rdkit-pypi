@@ -384,17 +384,22 @@ class BuildRDKit(build_ext_orig):
         if wheel_path.exists():
             rmtree(str(wheel_path))
 
+
+        def copytree_log(src, dest):
+            def _logpath(path, names):
+                print(f"Working in {path}", file=sys.stderr)
+            
+            ret = copytree(str(src), str(dest), ignore=_logpath)
+            print(ret, file=sys.stderr)
+            
         # Copy the Python files
-        copytree(str(dir_rdkit_site_packages), str(wheel_path))
-
+        copytree_log(dir_rdkit_site_packages, wheel_path)
         # Copy the RDKit stubs files to the rdkit-stubs wheels path
-        copytree(str(dir_rdkit_stubs), str(wheel_path.parent / "rdkit-stubs"))
-
+        copytree_log(dir_rdkit_stubs, wheel_path.parent / "rdkit-stubs")
         # Copy the data directory
-        copytree(str(rdkit_data_path), str(wheel_path / "Data"))
-
+        copytree_log(rdkit_data_path, wheel_path / "Data")
         # Copy the contrib directory
-        copytree(str(rdkit_contrib_path), str(wheel_path / "Contrib"))
+        copytree_log(rdkit_contrib_path, wheel_path / "Contrib")
 
         # Delete some large files from the Contrib folder
         # that are not necessary for running RDKit
