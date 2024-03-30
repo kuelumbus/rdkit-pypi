@@ -176,6 +176,23 @@ class BuildRDKit(build_ext_orig):
         # Start build process
         os.chdir(str("rdkit"))
 
+        if rdkit_tag == "Release_2023_09_6": 
+            # https://github.com/rdkit/rdkit/pull/7308/commits/bc3cc44dbf38621440c32f34689cdd68974e3a7d
+            check_call(
+                ["git", "config", "--global", "user.email", '"you@example.com"']
+            )
+            check_call(
+                ["git", "config", "--global", "user.name", '"Your Name"']
+            )
+
+            check_call(
+                ["git", "fetch", "origin", "pull/7308/head:tag_release"]
+            )
+            check_call(
+                ["git", "cherry-pick", "--strategy=recursive", "-X", "theirs", "bc3cc44dbf38621440c32f34689cdd68974e3a7d"]
+            )
+
+
         # Define CMake options
         options = [
             f"-DCMAKE_TOOLCHAIN_FILE={conan_toolchain_path / 'conan_toolchain.cmake'}",
@@ -263,10 +280,10 @@ class BuildRDKit(build_ext_orig):
 
         # Define the rdkit_files path 
         py_name = "python" + ".".join(map(str, sys.version_info[:2]))
-        rdkit_files = rdkit_install_path / "lib" / py_name / "site-packages" / "rdkit"
+        dir_rdkit_site_packages = rdkit_install_path / "lib" / py_name / "site-packages" / "rdkit"
 
         if sys.platform == "win32":
-            rdkit_files = rdkit_install_path / "Lib" / "site-packages" / "rdkit"
+            dir_rdkit_site_packages = rdkit_install_path / "Lib" / "site-packages" / "rdkit"
 
 
 
@@ -290,7 +307,6 @@ class BuildRDKit(build_ext_orig):
         boost_lib_path = conan_toolchain_path / 'boost' / 'lib'
 
         cmds = []
-
         if "linux" in sys.platform:
             # Libs end with .so
             to_path = Path("/usr/local/lib")
@@ -325,7 +341,7 @@ class BuildRDKit(build_ext_orig):
                 ]
 
         # rdkit-stubs require the site-package path to be in sys.path / PYTHONPATH
-        variables['PYTHONPATH'] = os.environ["PYTHONPATH"] + os.pathsep + str(rdkit_files.parent)
+        variables['PYTHONPATH'] = os.environ["PYTHONPATH"] + os.pathsep + str(dir_rdkit_site_packages.parent)
 
         print('!!! --- CMAKE build command and variables for building stubs', file=sys.stderr)
         print(cmds, file=sys.stderr)
@@ -350,12 +366,12 @@ class BuildRDKit(build_ext_orig):
                 sed,
                 "-i",
                 "/_share =/c\_share = os.path.dirname(__file__)",  # noqa: W605
-                f"{rdkit_files / 'RDPaths.py'}",
+                f"{dir_rdkit_site_packages / 'RDPaths.py'}",
             ]
         )
 
         # RDKit stubs directory
-        rdkit_stubs_files = rdkit_files.parent / "rdkit-stubs"
+        dir_rdkit_stubs = dir_rdkit_site_packages.parent / "rdkit-stubs"
 
         # Data directory
         rdkit_data_path = rdkit_install_path / "share" / "RDKit" / "Data"
@@ -369,11 +385,10 @@ class BuildRDKit(build_ext_orig):
             rmtree(str(wheel_path))
 
         # Copy the Python files
-        copytree(str(rdkit_files), str(wheel_path))
+        copytree(str(dir_rdkit_site_packages), str(wheel_path))
 
-        # Copy the RDKit stubs files to the wheel
-        from distutils.dir_util import copy_tree
-        copy_tree(str(rdkit_stubs_files), str(wheel_path.parent))
+        # Copy the RDKit stubs files to the rdkit-stubs wheels path
+        copytree(str(dir_rdkit_stubs), str(wheel_path.parent / "rdkit-stubs"))
 
         # Copy the data directory
         copytree(str(rdkit_data_path), str(wheel_path / "Data"))
