@@ -174,5 +174,5 @@ jobs:
           path: ./wheelhouse/*.whl
       
       - name: Setup tmate session
-        if: ${{ failure() }}
+        # if: ${{ failure() }}
         uses: mxschmitt/action-tmate@v3
