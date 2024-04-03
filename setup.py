@@ -313,9 +313,15 @@ class BuildRDKit(build_ext_orig):
             to_path = Path("C://libs")
             to_path.mkdir(parents=True, exist_ok=True)
             [copy_file(i, str(to_path)) for i in rdkit_lib_path.glob("*.dll")]
+            [copy_file(i, str(to_path)) for i in boost_lib_path.glob("*.dll")]
 
             # Copy to default dll search path
             to_path = Path("C://Windows//System32")
+            [copy_file(i, str(to_path)) for i in rdkit_lib_path.glob("*.dll")]
+            [copy_file(i, str(to_path)) for i in boost_lib_path.glob("*.dll")]
+
+            # Copy to cwd.
+            to_path = cwd
             [copy_file(i, str(to_path)) for i in rdkit_lib_path.glob("*.dll")]
             [copy_file(i, str(to_path)) for i in boost_lib_path.glob("*.dll")]
 
@@ -324,11 +330,10 @@ class BuildRDKit(build_ext_orig):
             to_path = Path("/usr/local/lib")
             [copy_file(i, str(to_path)) for i in rdkit_lib_path.glob("*dylib")]
             [copy_file(i, str(to_path)) for i in boost_lib_path.glob("*dylib")]
-            cmds.append("update_dyld_shared_cache")
 
         # Build the RDKit stubs
         cmds += [
-            "cmake --build build --config Release --target stubs -v",
+            f"cmake --build build --config Release --target stubs -v",
         ]
 
         # rdkit-stubs require the site-package path to be in sys.path / PYTHONPATH
