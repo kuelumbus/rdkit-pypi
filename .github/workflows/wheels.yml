@@ -12,6 +12,8 @@ permissions:
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   VCPKG_FEATURE_FLAGS: dependencygraph
+  PYTHONUNBUFFERED: "1"
+
 
 jobs:
   build_wheels:
