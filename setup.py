@@ -254,7 +254,6 @@ class BuildRDKit(build_ext_orig):
                 # macOS < 10.13 has a incomplete C++17 implementation
                 # See https://github.com/kuelumbus/rdkit-pypi/pull/85 for a discussion
                 "-DCMAKE_OSX_DEPLOYMENT_TARGET=10.13",
-                "-D_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION",
             ]
 
         # Modifications for MacOS arm64 (M1 hardware)
@@ -263,6 +262,8 @@ class BuildRDKit(build_ext_orig):
             options += [
                 "-DCMAKE_OSX_ARCHITECTURES=arm64",
                 "-DRDK_OPTIMIZE_POPCNT=OFF",
+                "-DBOOST_NO_CXX98_FUNCTION_BASE",
+                "-D_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION",
             ]
             # also export it to compile yaehmop for arm64
             variables["CMAKE_OSX_ARCHITECTURES"] = "arm64"
