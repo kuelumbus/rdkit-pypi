@@ -304,34 +304,40 @@ class BuildRDKit(build_ext_orig):
         if "linux" in sys.platform:
             # Libs end with .so
             to_path = Path("/usr/local/lib")
-            [copy_file(i, str(to_path)) for i in rdkit_lib_path.glob("*.so*")]
-            [copy_file(i, str(to_path)) for i in boost_lib_path.glob("*.so*")]
+            [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.so*")]
+            [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*.so*")]
             cmds.append("ldconfig")
 
         elif "win32" in sys.platform:
             # Libs end with .dll
             # windows paths are case insensitive
-            # C://libs is specified as search dir in
+            # C://libs is specified as search dir for repairing the wheel
             to_path = Path("C://libs")
             to_path.mkdir(parents=True, exist_ok=True)
-            [copy_file(i, str(to_path)) for i in rdkit_lib_path.glob("*.dll")]
-            [copy_file(i, str(to_path)) for i in boost_lib_path.glob("*.dll")]
+            [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.dll")]
+            [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.pyd")]
+            [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.lib")]
+            [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*.dll")]
 
             # Copy to default dll search path
             to_path = Path("C://Windows//System32")
-            [copy_file(i, str(to_path)) for i in rdkit_lib_path.glob("*.dll")]
-            [copy_file(i, str(to_path)) for i in boost_lib_path.glob("*.dll")]
+            [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.dll")]
+            [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.pyd")]
+            [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.lib")]
+            [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*.dll")]
 
             # Copy to cwd.
             to_path = cwd
-            [copy_file(i, str(to_path)) for i in rdkit_lib_path.glob("*.dll")]
-            [copy_file(i, str(to_path)) for i in boost_lib_path.glob("*.dll")]
+            [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.dll")]
+            [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.pyd")]
+            [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.lib")]
+            [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*.dll")]
 
         elif "darwin" in sys.platform:
             # Libs end with dylib?
             to_path = Path("/usr/local/lib")
-            [copy_file(i, str(to_path)) for i in rdkit_lib_path.glob("*dylib")]
-            [copy_file(i, str(to_path)) for i in boost_lib_path.glob("*dylib")]
+            [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*dylib")]
+            [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*dylib")]
 
         # Build the RDKit stubs
         cmds += [
