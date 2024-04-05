@@ -250,10 +250,11 @@ class BuildRDKit(build_ext_orig):
             options += [
                 "-DCMAKE_C_FLAGS=-Wno-implicit-function-declaration",
                 # CATCH_CONFIG_NO_CPP17_UNCAUGHT_EXCEPTIONS because MacOS does not fully support C++17.
-                '-DCMAKE_CXX_FLAGS="-Wno-implicit-function-declaration -DCATCH_CONFIG_NO_CPP17_UNCAUGHT_EXCEPTIONS -D_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION"',
+                '-DCMAKE_CXX_FLAGS="-Wno-implicit-function-declaration -DCATCH_CONFIG_NO_CPP17_UNCAUGHT_EXCEPTIONS"',
                 # macOS < 10.13 has a incomplete C++17 implementation
                 # See https://github.com/kuelumbus/rdkit-pypi/pull/85 for a discussion
                 "-DCMAKE_OSX_DEPLOYMENT_TARGET=10.13",
+                "-D_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION",
             ]
 
         # Modifications for MacOS arm64 (M1 hardware)
