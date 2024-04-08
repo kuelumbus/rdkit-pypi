@@ -51,19 +51,26 @@ class BuildRDKit(build_ext_orig):
             ]
         )
 
-        # For the windows builds, we need the python libraries
-        without_python_lib = "False"
-        if sys.platform != "win32":
-            without_python_lib = "True"
-
+        
+        without_python_lib = "boost:without_python_lib=False"
+        boost_version_string = f"boost/{boost_version}@chris/mod_boost"
         without_stacktrace = "False"
+    
+        if sys.platform != "win32":
+            # For the windows builds, we need the python libraries
+            without_python_lib = "boost:without_python_lib=True"
+        
         if "macosx_arm64" in os.environ["CIBW_BUILD"]:
             # does not work on macos arm64 for some reason
             without_stacktrace = "True"
 
+            # This is the lowest version that has the unary_function issue fixed
+            boost_version_string= "boost/1.81.0"
+            without_python_lib = ""
+
         conanfile = f"""\
             [requires]
-            boost/{boost_version}@chris/mod_boost
+            {boost_version_string}
 
             [generators]
             deploy
@@ -74,7 +81,7 @@ class BuildRDKit(build_ext_orig):
             [options]
             boost:shared=True
             boost:without_python=False
-            boost:without_python_lib={without_python_lib}
+            {without_python_lib}
             boost:python_executable={sys.executable}
             boost:without_stacktrace={without_stacktrace}
         """
@@ -262,8 +269,6 @@ class BuildRDKit(build_ext_orig):
             options += [
                 "-DCMAKE_OSX_ARCHITECTURES=arm64",
                 "-DRDK_OPTIMIZE_POPCNT=OFF",
-                "-DBOOST_NO_CXX98_FUNCTION_BASE",
-                "-D_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION",
             ]
             # also export it to compile yaehmop for arm64
             variables["CMAKE_OSX_ARCHITECTURES"] = "arm64"
