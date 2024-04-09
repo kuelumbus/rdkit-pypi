@@ -323,24 +323,17 @@ class BuildRDKit(build_ext_orig):
             [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.pyd")]
             [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.lib")]
             [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*.dll")]
+            variables["PATH"] = os.environ["PATH"] + os.pathsep + str(to_path)
 
-            # Copy to default dll search path
-            to_path = Path("C://Windows//System32")
-            [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.dll")]
-            [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.pyd")]
-            [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.lib")]
-            [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*.dll")]
-
-            # Copy to 64 bit search dir?
-            to_path = Path("C://Windows//SysWOW64")
-            [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.dll")]
-            [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.pyd")]
-            [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.lib")]
-            [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*.dll")]
 
         elif "darwin" in sys.platform:
-            # Libs end with dylib?
-            to_path = Path(os.environ['HOME']) / 'lib'
+            # on Github Actions
+            to_path = Path('/usr/local/lib')
+            if "macosx_arm64" in os.environ["CIBW_BUILD"]:
+                # on cirrus CI
+                to_path = Path(os.environ['CIRRUS_WORKING_DIR']) / 'lib'
+                variables["DYLD_LIBRARY_PATH"] = os.environ["DYLD_LIBRARY_PATH"] + os.pathsep + str(to_path)
+
             [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*dylib")]
             [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*dylib")]
 
