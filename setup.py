@@ -331,12 +331,14 @@ class BuildRDKit(build_ext_orig):
             [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.lib")]
             [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*.dll")]
 
-            # Copy to cwd.
-            to_path = cwd
+            # Copy to 64 bit search dir?
+            to_path = Path("C://Windows//SysWOW64")
             [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.dll")]
             [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.pyd")]
             [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.lib")]
             [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*.dll")]
+
+            
 
         elif "darwin" in sys.platform:
             # Libs end with dylib?
