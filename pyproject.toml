@@ -48,7 +48,7 @@ environment-pass = ["CIBW_BUILD"]
 before-all = ["brew install gnu-sed eigen cairo"]
 
 repair-wheel-command = [
-    "export DYLD_LIBRARY_PATH='/usr/local/lib:/usr/lib'",
+    "export DYLD_LIBRARY_PATH='/usr/local/lib:/usr/lib:$HOME/lib'",
     "source conan/conanrun.sh",
     "delocate-listdeps {wheel}",
     "delocate-wheel --require-archs {delocate_archs} -w {dest_dir} {wheel}",
