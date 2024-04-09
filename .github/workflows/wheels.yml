@@ -97,29 +97,6 @@ jobs:
             python: 312
             platform_id: macosx_x86_64
 
-
-          # MacOS 64 bit ARM: arm64
-          - os: macos-14
-            bitness: 64
-            python: 38
-            platform_id: macosx_arm64
-          - os: macos-14
-            bitness: 64
-            python: 39
-            platform_id: macosx_arm64
-          - os: macos-14
-            bitness: 64
-            python: 310
-            platform_id: macosx_arm64
-          - os: macos-14
-            bitness: 64
-            python: 311
-            platform_id: macosx_arm64
-          - os: macos-14
-            bitness: 64
-            python: 312
-            platform_id: macosx_arm64
-
     steps:
       - uses: actions/checkout@v4
 
