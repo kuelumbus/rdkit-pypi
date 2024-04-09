@@ -332,7 +332,7 @@ class BuildRDKit(build_ext_orig):
             if "macosx_arm64" in os.environ["CIBW_BUILD"]:
                 # on cirrus CI
                 to_path = Path(os.environ['CIRRUS_WORKING_DIR']) / 'lib'
-                variables["DYLD_LIBRARY_PATH"] = os.environ["DYLD_LIBRARY_PATH"] + os.pathsep + str(to_path)
+                variables["DYLD_LIBRARY_PATH"] = str(to_path)
 
             [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*dylib")]
             [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*dylib")]
