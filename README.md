@@ -23,7 +23,7 @@ Please open an issue if you find something missing or not working as expected.
 | Linux   | intel   | 64  | glibc >= 2.17 (e.g., Ubuntu 16.04+, CentOS 6+, ...) | ✔️   | ✔️   | ✔️    | ✔️    | ✔️    | Github Actions |
 | Linux   | aarch64 | 64  | glibc >= 2.17 (e.g., Raspberry Pi, ...)             | ✔️   | ✔️   | ✔️    | ✔️    | ✔️    | Circle CI      |
 | macOS   | intel   | 64  | >= macOS 10.13                                      | ✔️   | ✔️   | ✔️    | ✔️    | ✔️    | Github Actions |
-| macOS   | armv8   | 64  | >= macOS 11, M1 hardware                            | ✔️   | ✔️   | ✔️    | ✔️    | ✔️    | Github Actions |
+| macOS   | armv8   | 64  | >= macOS 11, M1 hardware                            | ✔️   | ✔️   | ✔️    | ✔️    | ✔️    | Cirrus CI Actions |
 | Windows | intel   | 64  |                                                     | ✔️   | ✔️   | ✔️    | ✔️    | ✔️    | Github Actions |
 
 ## Installation
