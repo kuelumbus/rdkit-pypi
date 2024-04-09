@@ -65,7 +65,7 @@ class BuildRDKit(build_ext_orig):
             without_stacktrace = "True"
 
             # This is the lowest version that has the unary_function issue fixed
-            boost_version_string= "boost/1.82.0"
+            boost_version_string= "boost/1.84.0"
             without_python_lib = ""
 
         conanfile = f"""\
