@@ -342,7 +342,7 @@ class BuildRDKit(build_ext_orig):
 
         elif "darwin" in sys.platform:
             # Libs end with dylib?
-            to_path = Path("/usr/local/lib")
+            to_path = Path("/usr/lib")
             [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*dylib")]
             [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*dylib")]
 
