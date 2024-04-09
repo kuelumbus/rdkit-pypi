@@ -267,11 +267,8 @@ class BuildRDKit(build_ext_orig):
         variables = {}
         if "macosx_arm64" in os.environ["CIBW_BUILD"]:
             options += [
-                "-DCMAKE_OSX_ARCHITECTURES=arm64",
                 "-DRDK_OPTIMIZE_POPCNT=OFF",
             ]
-            # also export it to compile yaehmop for arm64
-            variables["CMAKE_OSX_ARCHITECTURES"] = "arm64"
 
         cmds = [
             f"cmake -S . -B build {' '.join(options)} ",
