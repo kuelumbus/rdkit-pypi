@@ -45,21 +45,7 @@ environment-pass = ["CIBW_BUILD"]
 
 [tool.cibuildwheel.macos]
 
-before-all = [
-'''if [[ "$CIBW_BUILD" == *macosx_arm64* ]]; then
-    rm /usr/local/lib/libfreetype.dylib
-    install_arm=( libpng libx11 libxau libxcb libxdmcp libxext libxrender fontconfig glib lzo pixman cairo freetype )
-    for i in "${install_arm[@]}"; do
-        response=$(brew fetch --force --bottle-tag=arm64_monterey $i | grep Downloaded )
-        download_path=$(echo $response | xargs -n 1 | tail -1)
-        brew reinstall $download_path
-    done
-else
-    brew install cairo
-fi
-brew install gnu-sed eigen
-'''
-]
+before-all = ["brew install gnu-sed eigen cairo"]
 
 repair-wheel-command = [
     "export DYLD_LIBRARY_PATH='/usr/local/lib:/usr/lib'",
