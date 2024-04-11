@@ -360,6 +360,10 @@ class BuildRDKit(build_ext_orig):
             for c in cmds
         ]
 
+        # Print the stubs error file to rdkit-stubs/gen_rdkit_stubs.err
+        stubs_error_file = Path() / "rdkit-stubs" / "gen_rdkit_stubs.err"
+        with open(stubs_error_file, 'r') as fin: print(fin.read(), file=sys.stderr)
+
         os.chdir(str(cwd))
 
         # Copy RDKit and additional files to the wheel path
@@ -386,6 +390,8 @@ class BuildRDKit(build_ext_orig):
         # Setuptools searches at this path for files to include
         wheel_path = Path(self.get_ext_fullpath(ext.name)).absolute().parent
         wheel_path.mkdir(exist_ok=True)
+
+        
 
         # Copy RDMKit files to .../rdkit directory
         def _logpath(path, names):
