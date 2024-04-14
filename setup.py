@@ -361,7 +361,7 @@ class BuildRDKit(build_ext_orig):
         ]
 
         # Print the stubs error file to rdkit-stubs/gen_rdkit_stubs.err
-        stubs_error_file = build_path / 'rdkit' / "rdkit-stubs" / "gen_rdkit_stubs.err"
+        stubs_error_file = build_path / 'rdkit' / "build" /"rdkit-stubs" / "gen_rdkit_stubs.err"
         with open(stubs_error_file, 'r') as fin: print(fin.read(), file=sys.stderr)
 
         os.chdir(str(cwd))
