@@ -105,6 +105,13 @@ jobs:
         run: |
           Copy-Item -Path D:\a\rdkit-pypi\rdkit-pypi -Destination C:\rdkit -Recurse
 
+      - name: Setup tmate session
+        # if: ${{ failure() }}
+        if: ${{ runner.os == 'Windows' }}
+        uses: mxschmitt/action-tmate@v3
+        with:
+          detached: true
+
       - uses: actions/setup-python@v5
         name: Install Python
         with:
@@ -150,6 +157,4 @@ jobs:
           name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
           path: ./wheelhouse/*.whl
       
-      - name: Setup tmate session
-        if: ${{ failure() }}
-        uses: mxschmitt/action-tmate@v3
+
