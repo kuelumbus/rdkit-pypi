@@ -3,7 +3,7 @@ import shlex
 import sys
 from distutils.file_util import copy_file
 from pathlib import Path
-from shutil import copytree, rmtree
+from shutil import copytree, rmtree, ignore_patterns
 from subprocess import call, check_call
 from sysconfig import get_paths
 from textwrap import dedent
@@ -395,12 +395,12 @@ class BuildRDKit(build_ext_orig):
 
         # Copy RDMKit files to .../rdkit directory
         def _logpath(path, names):
+            ignore_patterns
             print(f"In directory {path} copy files: {names}", file=sys.stderr)
-            return []
+            return ignore_patterns('*.pyc')
 
         # Copy the RDKit stubs files to the rdkit-stubs wheels path
         copytree(dir_rdkit_stubs, wheel_path / "rdkit-stubs", ignore=_logpath)
-
         # Copy the Python files
         copytree(path_site_packages / "rdkit", wheel_path / "rdkit", ignore=_logpath)
         # Copy the data directory
