@@ -397,7 +397,7 @@ class BuildRDKit(build_ext_orig):
         def _logpath(path, names):
             ignore_patterns
             print(f"In directory {path} copy files: {names}", file=sys.stderr)
-            return ignore_patterns('*.pyc')
+            return ignore_patterns('*.pyc')(path, names)
 
         # Copy the RDKit stubs files to the rdkit-stubs wheels path
         copytree(dir_rdkit_stubs, wheel_path / "rdkit-stubs", ignore=_logpath)
