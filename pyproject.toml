@@ -7,6 +7,7 @@ requires = [
     "conan == 1.62.0",
     "ninja",
     "pybind11-stubgen",
+    "Pillow",  # required for building the stubs
     ]
 build-backend = "setuptools.build_meta"
 
