@@ -5,6 +5,14 @@ on:
   push:
     branches: [ main ]
   pull_request:
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        type: boolean
+        description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
+        required: false
+        default: false
+  
 
 permissions:
   contents: write
@@ -105,13 +113,6 @@ jobs:
         run: |
           Copy-Item -Path D:\a\rdkit-pypi\rdkit-pypi -Destination C:\rdkit -Recurse
 
-      - name: Setup tmate session
-        # if: ${{ failure() }}
-        if: ${{ runner.os == 'Windows' }}
-        uses: mxschmitt/action-tmate@v3
-        with:
-          detached: true
-
       - uses: actions/setup-python@v5
         name: Install Python
         with:
@@ -144,6 +145,10 @@ jobs:
           python -m pip install cibuildwheel==2.17.0
           python -m cibuildwheel --output-dir wheelhouse
         shell: bash
+
+      - name: Setup tmate session
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+        uses: mxschmitt/action-tmate@v3
 
       - uses: actions/upload-artifact@v4
         if: ${{ runner.os == 'Windows' }}
