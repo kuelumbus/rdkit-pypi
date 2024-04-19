@@ -321,7 +321,10 @@ class BuildRDKit(build_ext_orig):
                 [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.dll")]
                 [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.pyd")]
                 [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.lib")]
+                
                 [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*.dll")]
+                [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*.pyd")]
+                [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*.lib")]
                 variables["PATH"] = os.environ["PATH"] + os.pathsep + str(to_path)
 
 
