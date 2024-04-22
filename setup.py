@@ -107,38 +107,6 @@ class BuildRDKit(build_ext_orig):
         if "linux" in sys.platform:
             cmd += ["--build=b2", "-pr:b", "default"]
 
-        # for arm 64 on MacOS
-        # if "macosx_arm64" in os.environ["CIBW_BUILD"]:
-        #     build_profile = """\
-        #         [settings]
-        #         os=Macos
-        #         os_build=Macos
-        #         compiler=apple-clang
-        #         compiler.version=14
-        #         compiler.libcxx=libc++
-        #         compiler.cppstd=20
-        #         arch=armv8
-        #         arch_build=armv8
-        #         build_type=Release
-        #         """
-
-        #     host_profile = """\
-        #         [settings]
-        #         os=Macos
-        #         os_build=Macos
-        #         compiler=apple-clang
-        #         compiler.version=14
-        #         compiler.libcxx=libc++
-        #         compiler.cppstd=20
-        #         arch=armv8
-        #         arch_build=armv8
-        #         build_type=Release
-        #         """
-
-        #     Path("macos-cross-host").write_text(dedent(host_profile))
-        #     Path("macos-cross-build").write_text(dedent(build_profile))
-        #     cmd += ["-pr:h", "macos-cross-host", "-pr:b", "macos-cross-build"]
-
         check_call(cmd)
 
     def build_rdkit(self, ext):
@@ -230,6 +198,9 @@ class BuildRDKit(build_ext_orig):
         ]
 
         # Modifications for Windows
+        vcpkg_path = cwd
+        vcpkg_inc = vcpkg_path / "vcpkg_installed" / "x64-windows" / "include"
+        vcpkg_lib = vcpkg_path / "vcpkg_installed" / "x64-windows" / "lib"
         if sys.platform == "win32":
             # DRDK_INSTALL_STATIC_LIBS should be fixed in newer RDKit builds
             options += [
@@ -242,9 +213,7 @@ class BuildRDKit(build_ext_orig):
                 return str(pt).replace("\\", "/")
 
             # Link cairo and freetype
-            vcpkg_path = cwd
-            vcpkg_inc = vcpkg_path / "vcpkg_installed" / "x64-windows" / "include"
-            vcpkg_lib = vcpkg_path / "vcpkg_installed" / "x64-windows" / "lib"
+
             options += [
                 f"-DCAIRO_INCLUDE_DIR={to_win_path(vcpkg_inc)}",
                 f"-DCAIRO_LIBRARY_DIR={to_win_path(vcpkg_lib)}",
@@ -325,7 +294,12 @@ class BuildRDKit(build_ext_orig):
                 [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*.dll")]
                 [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*.pyd")]
                 [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*.lib")]
+
                 variables["PATH"] = os.environ["PATH"] + os.pathsep + str(to_path)
+            
+            # VCPKG libs
+            variables["PATH"] = os.environ["PATH"] + os.pathsep + str(vcpkg_lib)
+
 
 
         elif "darwin" in sys.platform:
