@@ -12,7 +12,7 @@ permissions:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  VCPKG_FEATURE_FLAGS: dependencygraph
+  VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
   PYTHONUNBUFFERED: "1"
 
 
@@ -110,6 +110,14 @@ jobs:
         name: Install Python
         with:
           python-version: '3.11'
+      
+      - name: Export GitHub Actions cache environment variables for vcpkg
+        if: ${{ runner.os == 'Windows' }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
       
       - name: Install libraries with vcpkg
         if: ${{ runner.os == 'Windows' }}
