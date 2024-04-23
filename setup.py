@@ -240,8 +240,8 @@ class BuildRDKit(build_ext_orig):
             ]
 
         cmds = [
-            f"cmake -G 'Ninja' -S . -B build {' '.join(options)} ",
-            "cmake -G 'Ninja' --build build --config Release",
+            f"cmake -S . -B build {' '.join(options)} ",
+            "cmake --build build --config Release",
             "cmake --install build",
         ]
 
