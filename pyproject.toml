@@ -46,7 +46,7 @@ environment-pass = ["CIBW_BUILD"]
 
 [tool.cibuildwheel.macos]
 
-before-all = ["brew install gnu-sed eigen cairo"]
+before-all = ["brew install gnu-sed eigen cairo freetype"]
 
 repair-wheel-command = [
     "export DYLD_LIBRARY_PATH='/usr/local/lib:/usr/lib:/Users/admin/lib'",
