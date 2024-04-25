@@ -2,16 +2,26 @@
 name: Build wheels
 
 on:
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        type: boolean
+        description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
+        required: false
+        default: false
   push:
     branches: [ main ]
   pull_request:
+  
 
 permissions:
   contents: write
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  VCPKG_FEATURE_FLAGS: dependencygraph
+  VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
+  PYTHONUNBUFFERED: "1"
+
 
 jobs:
   build_wheels:
@@ -95,41 +105,32 @@ jobs:
             python: 312
             platform_id: macosx_x86_64
 
-
-          # MacOS 64 bit ARM: arm64
-          - os: macos-12
-            bitness: 64
-            python: 38
-            platform_id: macosx_arm64
-          - os: macos-12
-            bitness: 64
-            python: 39
-            platform_id: macosx_arm64
-          - os: macos-12
-            bitness: 64
-            python: 310
-            platform_id: macosx_arm64
-          - os: macos-12
-            bitness: 64
-            python: 311
-            platform_id: macosx_arm64
-          - os: macos-12
-            bitness: 64
-            python: 312
-            platform_id: macosx_arm64
-
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup tmate session
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+        uses: mxschmitt/action-tmate@v3
+        with:
+          detached: true
 
       - name: Copy to C:\
         if: ${{ runner.os == 'Windows' }}
         run: |
           Copy-Item -Path D:\a\rdkit-pypi\rdkit-pypi -Destination C:\rdkit -Recurse
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         name: Install Python
         with:
           python-version: '3.11'
+      
+      - name: Export GitHub Actions cache environment variables for vcpkg
+        if: ${{ runner.os == 'Windows' }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
       
       - name: Install libraries with vcpkg
         if: ${{ runner.os == 'Windows' }}
@@ -154,21 +155,22 @@ jobs:
         run: |
           if [ "$RUNNER_OS" == "Windows" ]; then
             cd C:\\rdkit
+            echo "C:\\libs" >> $GITHUB_PATH
           fi
-          python -m pip install cibuildwheel==2.16.2
+          python -m pip install cibuildwheel==2.17.0
           python -m cibuildwheel --output-dir wheelhouse
         shell: bash
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: ${{ runner.os == 'Windows' }}
         with:
+          name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
           path: C:\rdkit\wheelhouse\*.whl
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: ${{ runner.os != 'Windows' }}
         with:
+          name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
           path: ./wheelhouse/*.whl
       
-      - name: Setup tmate session
-        if: ${{ failure() }}
-        uses: mxschmitt/action-tmate@v3
+
