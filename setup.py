@@ -237,7 +237,11 @@ class BuildRDKit(build_ext_orig):
         if "macosx_arm64" in os.environ["CIBW_BUILD"]:
             options += [
                 "-DRDK_OPTIMIZE_POPCNT=OFF",
+                # Detection sometimes fails
+                f"-DFREETYPE_INCLUDE_DIRS=/opt/homebrew/include",
+                f"-DFREETYPE_LIBRARY=/opt/homebrew/lib",
             ]
+            
 
         cmds = [
             f"cmake -S . -B build {' '.join(options)} ",
