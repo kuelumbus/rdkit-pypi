@@ -148,23 +148,6 @@ class BuildRDKit(build_ext_orig):
         # Start build process
         os.chdir(str("rdkit"))
 
-        if rdkit_tag = "Release_2024_03_1"
-            # https://github.com/rdkit/rdkit/pull/7308/commits/bc3cc44dbf38621440c32f34689cdd68974e3a7d
-            check_call(["git", "config", "--global", "user.email", '"you@example.com"'])
-            check_call(["git", "config", "--global", "user.name", '"Your Name"'])
-
-            check_call(["git", "fetch", "origin", "pull/7308/head:tag_release"])
-            check_call(
-                [
-                    "git",
-                    "cherry-pick",
-                    "--strategy=recursive",
-                    "-X",
-                    "theirs",
-                    "bc3cc44dbf38621440c32f34689cdd68974e3a7d",
-                ]
-            )
-
         # Define CMake options
         options = [
             f"-DCMAKE_TOOLCHAIN_FILE={conan_toolchain_path / 'conan_toolchain.cmake'}",
