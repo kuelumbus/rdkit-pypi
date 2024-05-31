@@ -222,12 +222,19 @@ class BuildRDKit(build_ext_orig):
                 "-DRDK_OPTIMIZE_POPCNT=OFF",
             ]
             
-
-        cmds = [
-            f"cmake -S . -B build {' '.join(options)} ",
-            "cmake --build build --config Release",
-            "cmake --install build",
-        ]
+        if "linux" in sys.platform:
+            # Use ninja for linux builds
+            cmds = [
+                f"cmake -S . -B build -G Ninja {' '.join(options)} ",
+                "cmake --build build --config Release",
+                "cmake --install build",
+            ]
+        else:
+            cmds = [
+                f"cmake -S . -B build {' '.join(options)} ",
+                "cmake --build build --config Release",
+                "cmake --install build",
+            ]
 
         # Define the rdkit_files path
         py_name = "python" + ".".join(map(str, sys.version_info[:2]))
