@@ -12,7 +12,7 @@ from setuptools import Extension, find_packages, setup
 from setuptools.command.build_ext import build_ext as build_ext_orig
 
 # RDKit version to build (tag from github repository)
-rdkit_tag = "Release_2023_09_6"
+rdkit_tag = "Release_2024_03_1"
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -106,10 +106,6 @@ class BuildRDKit(build_ext_orig):
         # but force build b2 on linux
         if "linux" in sys.platform:
             cmd += ["--build=b2", "-pr:b", "default"]
-
-        if "macosx_arm64" in os.environ["CIBW_BUILD"]:
-            cmd += ["-s", "arch=armv8", "-s", "arch_build=armv8"]
-
 
         check_call(cmd)
 
@@ -243,12 +239,19 @@ class BuildRDKit(build_ext_orig):
                 "-DRDK_OPTIMIZE_POPCNT=OFF",
             ]
             
-
-        cmds = [
-            f"cmake -S . -B build {' '.join(options)} ",
-            "cmake --build build --config Release",
-            "cmake --install build",
-        ]
+        if "linux" in sys.platform:
+            # Use ninja for linux builds
+            cmds = [
+                f"cmake -S . -B build -G Ninja {' '.join(options)} ",
+                "cmake --build build --config Release",
+                "cmake --install build",
+            ]
+        else:
+            cmds = [
+                f"cmake -S . -B build {' '.join(options)} ",
+                "cmake --build build --config Release",
+                "cmake --install build",
+            ]
 
         # Define the rdkit_files path
         py_name = "python" + ".".join(map(str, sys.version_info[:2]))
