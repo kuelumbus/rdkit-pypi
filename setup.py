@@ -36,7 +36,7 @@ class BuildRDKit(build_ext_orig):
 
     def conan_install(self, boost_version, conan_toolchain_path):
         """Run the Conan"""
-
+        
         # This modified conanfile.py for boost does not link libpython*.so
         # When building a platform wheel, we don't want to link libpython*.so.
         mod_conan_path = "conan_boost_mod"
@@ -50,23 +50,19 @@ class BuildRDKit(build_ext_orig):
                 f"{boost_version}@chris/mod_boost",
             ]
         )
-
         
-        without_python_lib = "boost:without_python_lib=False"
+        without_python_lib = "boost:without_python_lib=True"
         boost_version_string = f"boost/{boost_version}@chris/mod_boost"
         without_stacktrace = "False"
     
         if sys.platform != "win32":
             # For the windows builds, we need the python libraries
-            without_python_lib = "boost:without_python_lib=True"
+            without_python_lib = "boost:without_python_lib=False"
         
         if "macosx_arm64" in os.environ["CIBW_BUILD"]:
             # does not work on macos arm64 for some reason
             without_stacktrace = "True"
-
-            # This is the lowest version that has the unary_function issue fixed
-            boost_version_string= "boost/1.84.0"
-            without_python_lib = ""
+    
 
         conanfile = f"""\
             [requires]
@@ -124,7 +120,7 @@ class BuildRDKit(build_ext_orig):
         # Install boost and other libraries using Conan
         conan_toolchain_path = cwd / "conan"
         conan_toolchain_path.mkdir(parents=True, exist_ok=True)
-        boost_version = "1.78.0"
+        boost_version = "1.85.0"
         boost_lib_version = "_".join(boost_version.split(".")[:2])
         self.conan_install(boost_version, conan_toolchain_path)
 
