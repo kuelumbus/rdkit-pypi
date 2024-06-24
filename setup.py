@@ -51,13 +51,13 @@ class BuildRDKit(build_ext_orig):
             ]
         )
         
-        without_python_lib = "boost:without_python_lib=True"
+        without_python_lib = "boost:without_python_lib=False"
         boost_version_string = f"boost/{boost_version}@chris/mod_boost"
         without_stacktrace = "False"
     
         if sys.platform != "win32":
-            # For the windows builds, we need the python libraries
-            without_python_lib = "boost:without_python_lib=False"
+            # if no windows builds, compile boost without python lib.a/.so/.dylib
+            without_python_lib = "boost:without_python_lib=True"
         
         if "macosx_arm64" in os.environ["CIBW_BUILD"]:
             # does not work on macos arm64 for some reason
