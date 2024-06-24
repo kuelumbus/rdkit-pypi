@@ -107,10 +107,6 @@ class BuildRDKit(build_ext_orig):
         if "linux" in sys.platform:
             cmd += ["--build=b2", "-pr:b", "default"]
 
-        if "macosx_arm64" in os.environ["CIBW_BUILD"]:
-            cmd += ["-s", "arch=armv8", "-s", "arch_build=armv8"]
-
-
         check_call(cmd)
 
     def build_rdkit(self, ext):
@@ -243,12 +239,19 @@ class BuildRDKit(build_ext_orig):
                 "-DRDK_OPTIMIZE_POPCNT=OFF",
             ]
             
-
-        cmds = [
-            f"cmake -S . -B build {' '.join(options)} ",
-            "cmake --build build --config Release",
-            "cmake --install build",
-        ]
+        if "linux" in sys.platform:
+            # Use ninja for linux builds
+            cmds = [
+                f"cmake -S . -B build -G Ninja {' '.join(options)} ",
+                "cmake --build build --config Release",
+                "cmake --install build",
+            ]
+        else:
+            cmds = [
+                f"cmake -S . -B build {' '.join(options)} ",
+                "cmake --build build --config Release",
+                "cmake --install build",
+            ]
 
         # Define the rdkit_files path
         py_name = "python" + ".".join(map(str, sys.version_info[:2]))
