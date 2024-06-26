@@ -202,18 +202,19 @@ class BuildRDKit(build_ext_orig):
         vcpkg_inc = vcpkg_path / "vcpkg_installed" / "x64-windows" / "include"
         vcpkg_lib = vcpkg_path / "vcpkg_installed" / "x64-windows" / "lib"
         if sys.platform == "win32":
-            # DRDK_INSTALL_STATIC_LIBS should be fixed in newer RDKit builds
             options += [
                 "-Ax64",
+                # DRDK_INSTALL_STATIC_LIBS should be fixed in newer RDKit builds. Remove?
                 "-DRDK_INSTALL_STATIC_LIBS=OFF",
                 "-DRDK_INSTALL_DLLS_MSVC=ON",
+                # Avoid linking `VCRUNTIME140_1.dll`. https://github.com/pypa/cibuildwheel/issues/423
+                "-DCMAKE_CXX_FLAGS=-d2FH4-", 
             ]
 
             def to_win_path(pt: Path):
                 return str(pt).replace("\\", "/")
 
             # Link cairo and freetype
-
             options += [
                 f"-DCAIRO_INCLUDE_DIR={to_win_path(vcpkg_inc)}",
                 f"-DCAIRO_LIBRARY_DIR={to_win_path(vcpkg_lib)}",
