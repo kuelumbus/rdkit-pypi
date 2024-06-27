@@ -41,9 +41,9 @@ class BuildRDKit(build_ext_orig):
         # When building a platform wheel, we don't want to link libpython*.so.
         mod_conan_path = "conan_boost_mod"
 
-        if sys.platform != "win32":
-             boost_version = "1.78.0"
-             
+        if sys.platform == "win32":
+            boost_version = "1.78.0"
+
         # Export the modified boost version
         check_call(
             [
