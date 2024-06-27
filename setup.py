@@ -41,9 +41,6 @@ class BuildRDKit(build_ext_orig):
         # When building a platform wheel, we don't want to link libpython*.so.
         mod_conan_path = "conan_boost_mod"
 
-        if sys.platform == "win32":
-            boost_version = "1.78.0"
-
         # Export the modified boost version
         check_call(
             [
@@ -190,8 +187,6 @@ class BuildRDKit(build_ext_orig):
                 "-Ax64",
                 "-DRDK_INSTALL_STATIC_LIBS=OFF",
                 "-DRDK_INSTALL_DLLS_MSVC=ON",
-                # Avoid linking `VCRUNTIME140_1.dll`. https://github.com/pypa/cibuildwheel/issues/423
-                "-DCMAKE_CXX_FLAGS=-d2FH4-", 
             ]
 
             def to_win_path(pt: Path):
