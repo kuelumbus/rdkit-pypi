@@ -313,7 +313,7 @@ class BuildRDKit(build_ext_orig):
 
         # rdkit-stubs require the site-package path to be in sys.path / PYTHONPATH
         variables["PYTHONPATH"] = (
-            os.environ["PYTHONPATH"] + os.pathsep + str(path_site_packages)
+            os.environ.get("PYTHONPATH", "") + os.pathsep + str(path_site_packages)
         )
 
         print(
