@@ -28,7 +28,7 @@ jobs:
   osx-wheels:
     working_directory: ~/osx-wheels
     macos:
-      xcode: 12.5.1
+      xcode: 15.4.0
     parameters:
       python-version:
         type: string
