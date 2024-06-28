@@ -261,6 +261,7 @@ class BuildRDKit(build_ext_orig):
         # Also, the libs needs to be accessible for building the stubs
         rdkit_lib_path = rdkit_install_path / "lib"
         boost_lib_path = conan_toolchain_path / "boost" / "lib"
+        boost_lib_path_bin_windows_only = conan_toolchain_path / "boost" / "bin"
 
         cmds = []
         if "linux" in sys.platform:
@@ -282,9 +283,9 @@ class BuildRDKit(build_ext_orig):
                 [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.pyd")]
                 [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.lib")]
                 
-                [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*.dll")]
-                [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*.pyd")]
                 [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*.lib")]
+                [copy_file(i, str(to_path)) for i in boost_lib_path_bin_windows_only.rglob("*.dll")]
+
 
                 variables["PATH"] = os.environ["PATH"] + os.pathsep + str(to_path)
             
