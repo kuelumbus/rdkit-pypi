@@ -169,7 +169,9 @@ patches:
       patch_source: "https://github.com/boostorg/geometry/discussions/1041"
   "1.78.0":
     - patch_file: "patches/1.75.0-python-make-python-3-11-compatible.patch"
-      base_path: "source_subfolder"
+      patch_description: "OWN: Fixes python 3.11 compatibility"
+      patch_type: "official"
+      patch_source: "https://github.com/python/cpython/issues/88429"
     - patch_file: "patches/1.85.0-OWNPATH-numpy2.patch"
       patch_description: "Patch Numpy 2"
       patch_type: "official"
