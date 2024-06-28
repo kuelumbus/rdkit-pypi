@@ -29,6 +29,9 @@ jobs:
     working_directory: ~/osx-wheels
     macos:
       xcode: 12.5.1
+    parameters:
+      python-version:
+        type: string
     steps:
       - checkout
       - run:
@@ -49,18 +52,8 @@ workflows:
       - linux-arm64-wheels:
           matrix:
             parameters:
-              python-version:
-                - "38"
-                - "39"
-                - "310"
-                - "311"
-                - "312"
+              python-version: ["38", "39", "310", "311", "312"]
       - osx-wheels:
           matrix:
             parameters:
-              python-version:
-                - "38"
-                - "39"
-                - "310"
-                - "311"
-                - "312"
+              python-version: ["38", "39", "310", "311", "312"]
