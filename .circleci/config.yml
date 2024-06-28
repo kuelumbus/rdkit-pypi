@@ -25,10 +25,37 @@ jobs:
       - store_artifacts:
           path: wheelhouse/
 
+  osx-wheels:
+    working_directory: ~/osx-wheels
+    macos:
+      xcode: 12.5.1
+    steps:
+      - checkout
+      - run:
+          name: Build the OS X wheels.
+          environment:
+            CIBW_BUILD: cp<< parameters.python-version >>-macosx_arm64
+
+          command: |
+            pip3 install cibuildwheel[uv]==2.19.1
+            cibuildwheel --output-dir wheelhouse
+      - store_artifacts:
+          path: wheelhouse/
+
+
 workflows:
   all-tests:
     jobs:
       - linux-arm64-wheels:
+          matrix:
+            parameters:
+              python-version:
+                - "38"
+                - "39"
+                - "310"
+                - "311"
+                - "312"
+      - osx-wheels:
           matrix:
             parameters:
               python-version:
