@@ -168,6 +168,10 @@ patches:
       patch_type: "portability"
       patch_source: "https://github.com/boostorg/geometry/discussions/1041"
   "1.78.0":
+    - patch_file: "patches/1.85.0-OWNPATH-numpy2.patch"
+      patch_description: "Patch Numpy 2"
+      patch_type: "official"
+      patch_source: "https://github.com/boostorg/python/commit/0474de0f6cc9c6e7230aeb7164af2f7e4ccf74bf"
     - patch_file: "patches/boost_locale_fail_on_missing_backend.patch"
       patch_description: "Fails the build when there is no iconv backend"
       patch_type: "conan"
