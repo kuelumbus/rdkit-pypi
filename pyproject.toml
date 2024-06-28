@@ -18,7 +18,7 @@ build-verbosity = "1"
 # test
 test-requires = "pytest"
 test-command = "pytest --exitfirst --verbose --failed-first {package}/tests"
-test-skip = "*-win_amd64"
+# test-skip = "*-win_amd64"
 
 
 [tool.cibuildwheel.linux]
