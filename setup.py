@@ -121,9 +121,6 @@ class BuildRDKit(build_ext_orig):
         conan_toolchain_path = cwd / "conan"
         conan_toolchain_path.mkdir(parents=True, exist_ok=True)
         boost_version = "1.85.0"
-        if sys.platform == "win32":
-            # This is the lowest version that has the unary_function issue fixed
-            boost_version = "1.78.0"
 
         boost_lib_version = "_".join(boost_version.split(".")[:2])
         self.conan_install(boost_version, conan_toolchain_path)
