@@ -145,7 +145,7 @@ jobs:
             cd C:\\rdkit
             echo "C:\\libs" >> $GITHUB_PATH
           fi
-          python -m pip install cibuildwheel==2.17.0
+          python -m pip install cibuildwheel==2.19.1
           python -m cibuildwheel --output-dir wheelhouse
         shell: bash
 
