@@ -29,6 +29,7 @@ jobs:
     working_directory: ~/osx-wheels
     macos:
       xcode: 15.4.0
+    resource_class: macos.m1.medium.gen1
     parameters:
       python-version:
         type: string
