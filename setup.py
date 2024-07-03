@@ -408,7 +408,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     install_requires=[
-        "numpy",
+        "numpy < 2.0",
         "Pillow",
     ],
     ext_modules=[
