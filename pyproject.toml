@@ -14,7 +14,7 @@ build-backend = "setuptools.build_meta"
 [tool.cibuildwheel]
 
 build-verbosity = "1"
-build-frontend = { name = "build[uv]"}
+# build-frontend = { name = "build[uv]"}
 # test
 test-requires = "pytest"
 test-command = "pytest --exitfirst --verbose --failed-first {package}/tests"
