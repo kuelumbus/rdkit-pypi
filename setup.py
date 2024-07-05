@@ -36,7 +36,7 @@ class BuildRDKit(build_ext_orig):
 
     def conan_install(self, boost_version, conan_toolchain_path):
         """Run the Conan"""
-
+        
         # This modified conanfile.py for boost does not link libpython*.so
         # When building a platform wheel, we don't want to link libpython*.so.
         mod_conan_path = "conan_boost_mod"
@@ -57,16 +57,13 @@ class BuildRDKit(build_ext_orig):
         without_stacktrace = "False"
     
         if sys.platform != "win32":
-            # For the windows builds, we need the python libraries
+            # if no windows builds, compile boost without python lib.a/.so/.dylib
             without_python_lib = "boost:without_python_lib=True"
         
         if "macosx_arm64" in os.environ["CIBW_BUILD"]:
             # does not work on macos arm64 for some reason
             without_stacktrace = "True"
-
-            # This is the lowest version that has the unary_function issue fixed
-            boost_version_string= "boost/1.84.0"
-            without_python_lib = ""
+    
 
         conanfile = f"""\
             [requires]
@@ -124,7 +121,8 @@ class BuildRDKit(build_ext_orig):
         # Install boost and other libraries using Conan
         conan_toolchain_path = cwd / "conan"
         conan_toolchain_path.mkdir(parents=True, exist_ok=True)
-        boost_version = "1.78.0"
+        boost_version = "1.85.0"
+
         boost_lib_version = "_".join(boost_version.split(".")[:2])
         self.conan_install(boost_version, conan_toolchain_path)
 
@@ -148,22 +146,6 @@ class BuildRDKit(build_ext_orig):
         # Start build process
         os.chdir(str("rdkit"))
 
-        if rdkit_tag = "Release_2024_03_3"
-            # https://github.com/rdkit/rdkit/pull/7308/commits/bc3cc44dbf38621440c32f34689cdd68974e3a7d
-            check_call(["git", "config", "--global", "user.email", '"you@example.com"'])
-            check_call(["git", "config", "--global", "user.name", '"Your Name"'])
-
-            check_call(["git", "fetch", "origin", "pull/7308/head:tag_release"])
-            check_call(
-                [
-                    "git",
-                    "cherry-pick",
-                    "--strategy=recursive",
-                    "-X",
-                    "theirs",
-                    "bc3cc44dbf38621440c32f34689cdd68974e3a7d",
-                ]
-            )
 
         # Define CMake options
         options = [
@@ -279,6 +261,7 @@ class BuildRDKit(build_ext_orig):
         # Also, the libs needs to be accessible for building the stubs
         rdkit_lib_path = rdkit_install_path / "lib"
         boost_lib_path = conan_toolchain_path / "boost" / "lib"
+        boost_lib_path_bin_windows_only = conan_toolchain_path / "boost" / "bin"
 
         cmds = []
         if "linux" in sys.platform:
@@ -300,9 +283,9 @@ class BuildRDKit(build_ext_orig):
                 [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.pyd")]
                 [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.lib")]
                 
-                [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*.dll")]
-                [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*.pyd")]
                 [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*.lib")]
+                [copy_file(i, str(to_path)) for i in boost_lib_path_bin_windows_only.rglob("*.dll")]
+
 
                 variables["PATH"] = os.environ["PATH"] + os.pathsep + str(to_path)
             
@@ -330,7 +313,7 @@ class BuildRDKit(build_ext_orig):
 
         # rdkit-stubs require the site-package path to be in sys.path / PYTHONPATH
         variables["PYTHONPATH"] = (
-            os.environ["PYTHONPATH"] + os.pathsep + str(path_site_packages)
+            os.environ.get("PYTHONPATH", "") + os.pathsep + str(path_site_packages)
         )
 
         print(
@@ -428,7 +411,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     install_requires=[
-        "numpy",
+        "numpy < 2.0",
         "Pillow",
     ],
     ext_modules=[
