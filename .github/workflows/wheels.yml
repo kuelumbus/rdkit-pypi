@@ -8,7 +8,7 @@ on:
   pull_request:
   
 
-permissions:
+permissions: 
   contents: write
 
 env:
@@ -26,23 +26,23 @@ jobs:
       matrix:
         include:
           # Window 64 bit
-          - os: windows-2022
+          - os: windows-2019
             python: 38
             bitness: 64
             platform_id: win_amd64
-          - os: windows-2022
+          - os: windows-2019
             python: 39
             bitness: 64
             platform_id: win_amd64
-          - os: windows-2022
+          - os: windows-2019
             python: 310
             bitness: 64
             platform_id: win_amd64
-          - os: windows-2022
+          - os: windows-2019
             python: 311
             bitness: 64
             platform_id: win_amd64
-          - os: windows-2022
+          - os: windows-2019
             python: 312
             bitness: 64
             platform_id: win_amd64
@@ -148,21 +148,21 @@ jobs:
           python -m pip install cibuildwheel==2.17.0
           python -m cibuildwheel --output-dir wheelhouse
         shell: bash
-      
+
       - name: Setup tmate session
         if: ${{ failure() }}
         uses: mxschmitt/action-tmate@v3
-        
+
       - uses: actions/upload-artifact@v4
         if: ${{ runner.os == 'Windows' }}
         with:
-          name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
+          name: cp${{ matrix.python }}-${{ matrix.platform_id }}-${{ strategy.job-index }}
           path: C:\rdkit\wheelhouse\*.whl
 
       - uses: actions/upload-artifact@v4
         if: ${{ runner.os != 'Windows' }}
         with:
-          name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
+          name: cp${{ matrix.python }}-${{ matrix.platform_id }}-${{ strategy.job-index }}
           path: ./wheelhouse/*.whl
       
 
