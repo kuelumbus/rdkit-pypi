@@ -16,8 +16,6 @@ jobs:
           environment:
             CIBW_BUILD: cp<< parameters.python-version >>-manylinux_aarch64
             CIBW_ARCHS: aarch64
-            CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
-            CIBW_MANYLINUX_I686_IMAGE: manylinux2014
 
           command: |
             python3 -m pip install cibuildwheel==2.17.0

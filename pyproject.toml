@@ -21,29 +21,14 @@ test-command = "pytest --exitfirst --verbose --failed-first {package}/tests"
 # test-skip = "*-win_amd64"
 
 
+manylinux-x86_64-image = "quay.io/pypa/manylinux_2_28_x86_64:latest"
+manylinux-aarch64-image = "quay.io/pypa/manylinux_2_28_aarch64:latest"
+
+
 [tool.cibuildwheel.linux]
 before-all = [
-
-    # Fix yum sources
-    # https://serverfault.com/questions/1161816/mirrorlist-centos-org-no-longer-resolve
-    "sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo",
-    "sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo",
-    "sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo",
-    "yum clean all",
-    "yum update",
-
-    # Has eigen3-devel.aarch64
-    "yum install -y epel-release",
-    # "yum install -y wget freetype-devel libpng12-devel pixman-devel zlib-devel eigen3-devel",
-    "yum install -y wget freetype-devel libpng12-devel pixman-devel zlib-devel",
-    # cairo-devel from the centos repo does not work, build here
-    "wget https://www.cairographics.org/snapshots/cairo-1.15.14.tar.xz --no-check-certificate",
-    "tar xvf cairo-*",
-    "cd cairo-*",
-    "./configure",
-    "make -j 20",
-    "make install",
-    "cd ..",
+    "yum update -y",
+    "yum install freetype-devel libpng-devel pixman-devel zlib-devel eigen3-devel cairo-devel -y"
 ]
 
 repair-wheel-command = [
