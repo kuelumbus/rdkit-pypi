@@ -30,7 +30,7 @@ before-all = [
     "sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo",
     "sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo",
     "yum clean all",
-    "sudo yum update",
+    "yum update",
 
     # Has eigen3-devel.aarch64
     "yum install -y epel-release",
