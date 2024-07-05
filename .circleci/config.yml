@@ -16,8 +16,6 @@ jobs:
           environment:
             CIBW_BUILD: cp<< parameters.python-version >>-manylinux_aarch64
             CIBW_ARCHS: aarch64
-            CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
-            CIBW_MANYLINUX_I686_IMAGE: manylinux2014
 
           command: |
             python3 -m pip install cibuildwheel==2.17.0
@@ -25,26 +23,26 @@ jobs:
       - store_artifacts:
           path: wheelhouse/
 
-  osx-wheels:
-    working_directory: ~/osx-wheels
-    macos:
-      xcode: 15.4.0
-    resource_class: macos.m1.medium.gen1
-    parameters:
-      python-version:
-        type: string
-    steps:
-      - checkout
-      - run:
-          name: Build the OS X wheels.
-          environment:
-            CIBW_BUILD: cp<< parameters.python-version >>-macosx_arm64
+  # osx-wheels:
+  #   working_directory: ~/osx-wheels
+  #   macos:
+  #     xcode: 15.4.0
+  #   resource_class: macos.m1.medium.gen1
+  #   parameters:
+  #     python-version:
+  #       type: string
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Build the OS X wheels.
+  #         environment:
+  #           CIBW_BUILD: cp<< parameters.python-version >>-macosx_arm64
 
-          command: |
-            pip3 install cibuildwheel==2.17.0
-            cibuildwheel --output-dir wheelhouse
-      - store_artifacts:
-          path: wheelhouse/
+  #         command: |
+  #           pip3 install cibuildwheel==2.17.0
+  #           cibuildwheel --output-dir wheelhouse
+  #     - store_artifacts:
+  #         path: wheelhouse/
 
 
 workflows:
@@ -54,7 +52,8 @@ workflows:
           matrix:
             parameters:
               python-version: ["38", "39", "310", "311", "312"]
-      - osx-wheels:
-          matrix:
-            parameters:
-              python-version: ["38", "39", "310", "311", "312"]
+      # - osx-wheels:
+      #     matrix:
+      #       parameters:
+      #         python-version: ["38", "39", "310", "311", "312"]
+

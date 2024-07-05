@@ -53,27 +53,22 @@ jobs:
             python: 38
             bitness: 64
             platform_id: manylinux_x86_64
-            manylinux_image: manylinux2014
           - os: ubuntu-latest
             python: 39
             bitness: 64
             platform_id: manylinux_x86_64
-            manylinux_image: manylinux2014
           - os: ubuntu-latest
             python: 310
             bitness: 64
             platform_id: manylinux_x86_64
-            manylinux_image: manylinux2014
           - os: ubuntu-latest
             python: 311
             bitness: 64
             platform_id: manylinux_x86_64
-            manylinux_image: manylinux2014
           - os: ubuntu-latest
             python: 312
             bitness: 64
             platform_id: manylinux_x86_64
-            manylinux_image: manylinux2014
 
           # Linux 64 bit ARM: aarch64 (on Circle CI)
 
@@ -137,8 +132,6 @@ jobs:
         env:
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           CIBW_ARCHS: all
-          CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
-          CIBW_MANYLINUX_I686_IMAGE: ${{ matrix.manylinux_image }}
 
         run: |
           if [ "$RUNNER_OS" == "Windows" ]; then
