@@ -122,9 +122,6 @@ class BuildRDKit(build_ext_orig):
         conan_toolchain_path.mkdir(parents=True, exist_ok=True)
         boost_version = "1.85.0"
 
-        if sys.platform == "win32":
-            boost_version = "1.79.0"
-
         boost_lib_version = "_".join(boost_version.split(".")[:2])
         self.conan_install(boost_version, conan_toolchain_path)
 
@@ -191,8 +188,6 @@ class BuildRDKit(build_ext_orig):
                 # DRDK_INSTALL_STATIC_LIBS should be fixed in newer RDKit builds. Remove?
                 "-DRDK_INSTALL_STATIC_LIBS=OFF",
                 "-DRDK_INSTALL_DLLS_MSVC=ON",
-                # Avoid linking `VCRUNTIME140_1.dll`. https://github.com/pypa/cibuildwheel/issues/423
-                "-DCMAKE_CXX_FLAGS=-d2FH4-", 
             ]
 
             def to_win_path(pt: Path):
