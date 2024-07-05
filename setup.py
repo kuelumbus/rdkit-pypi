@@ -50,7 +50,6 @@ class BuildRDKit(build_ext_orig):
                 f"{boost_version}@chris/mod_boost",
             ]
         )
-
         
         without_python_lib = "boost:without_python_lib=False"
         boost_version_string = f"boost/{boost_version}@chris/mod_boost"
@@ -411,7 +410,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     install_requires=[
-        "numpy",
+        "numpy < 2.0",
         "Pillow",
     ],
     ext_modules=[
