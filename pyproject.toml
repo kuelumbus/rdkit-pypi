@@ -23,6 +23,12 @@ test-command = "pytest --exitfirst --verbose --failed-first {package}/tests"
 
 [tool.cibuildwheel.linux]
 before-all = [
+    # Fix yum sources
+    # https://serverfault.com/questions/1161816/mirrorlist-centos-org-no-longer-resolve
+    "sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo",
+    "sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo",
+    "sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo",
+
     # Has eigen3-devel.aarch64
     "yum install -y epel-release",
     # "yum install -y wget freetype-devel libpng12-devel pixman-devel zlib-devel eigen3-devel",
