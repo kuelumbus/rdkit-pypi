@@ -176,6 +176,7 @@ class BuildRDKit(build_ext_orig):
             "-DRDK_BUILD_CPP_TESTS=OFF",
             # Fix InChi download
             "-DINCHI_URL=https://rdkit.org/downloads/INCHI-1-SRC.zip",
+            "-DBoost_DEBUG=ON",
         ]
 
         # Modifications for Windows
