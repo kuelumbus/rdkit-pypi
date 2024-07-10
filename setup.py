@@ -145,6 +145,24 @@ class BuildRDKit(build_ext_orig):
         # Start build process
         os.chdir(str("rdkit"))
 
+        # Fix a bug in conan or rdkit: target name for numpy is boost::numpy{pyversion} with small 'b'
+        # and not Boost::numpy{pyversion}
+        # Line 345 in 2024_03_04 in CMakeLists.txt
+        # target_link_libraries(rdkit_py_base INTERFACE Boost::${Boost_Python_Lib} "Boost::numpy${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")
+        import fileinput
+
+        def replace_all(file, search_exp, replace_exp):
+            with fileinput.input(file, inplace=True) as f:
+                for line in f:
+                    if search_exp in line:
+                        line = line.replace(search_exp, replace_exp)
+                    print(line, end='')
+
+        replace_all(
+            "CMakeLists.txt",
+            'target_link_libraries(rdkit_py_base INTERFACE Boost::${Boost_Python_Lib} "Boost::numpy${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")',
+            'target_link_libraries(rdkit_py_base INTERFACE Boost::${Boost_Python_Lib} "boost::numpy${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")'
+        )
 
         # Define CMake options
         options = [
@@ -176,7 +194,6 @@ class BuildRDKit(build_ext_orig):
             "-DRDK_BUILD_CPP_TESTS=OFF",
             # Fix InChi download
             "-DINCHI_URL=https://rdkit.org/downloads/INCHI-1-SRC.zip",
-            "-DBoost_DEBUG=ON",
         ]
 
         # Modifications for Windows
@@ -219,7 +236,7 @@ class BuildRDKit(build_ext_orig):
             options += [
                 "-DRDK_OPTIMIZE_POPCNT=OFF",
             ]
-            
+
         if "linux" in sys.platform:
             # Use ninja for linux builds
             cmds = [
@@ -294,10 +311,10 @@ class BuildRDKit(build_ext_orig):
 
         elif "darwin" in sys.platform:
             # on Github Actions
-            to_path = Path('/usr/local/lib')
+            to_path = Path("/usr/local/lib")
             if "macosx_arm64" in os.environ["CIBW_BUILD"]:
                 # on cirrus CI
-                to_path = Path('/Users/admin/lib')
+                to_path = Path("/Users/admin/lib")
                 to_path.mkdir(parents=True, exist_ok=True)
                 variables["DYLD_LIBRARY_PATH"] = str(to_path)
 
@@ -330,8 +347,11 @@ class BuildRDKit(build_ext_orig):
         ]
 
         # Print the stubs error file to rdkit-stubs/gen_rdkit_stubs.err
-        stubs_error_file = build_path / 'rdkit' / "build" /"rdkit-stubs" / "gen_rdkit_stubs.err"
-        with open(stubs_error_file, 'r') as fin: print(fin.read(), file=sys.stderr)
+        stubs_error_file = (
+            build_path / "rdkit" / "build" / "rdkit-stubs" / "gen_rdkit_stubs.err"
+        )
+        with open(stubs_error_file, "r") as fin:
+            print(fin.read(), file=sys.stderr)
 
         os.chdir(str(cwd))
 
@@ -360,13 +380,11 @@ class BuildRDKit(build_ext_orig):
         wheel_path = Path(self.get_ext_fullpath(ext.name)).absolute().parent
         wheel_path.mkdir(exist_ok=True)
 
-        
-
         # Copy RDMKit files to .../rdkit directory
         def _logpath(path, names):
             ignore_patterns
             print(f"In directory {path} copy files: {names}", file=sys.stderr)
-            return ignore_patterns('*.pyc')(path, names)
+            return ignore_patterns("*.pyc")(path, names)
 
         # Copy the RDKit stubs files to the rdkit-stubs wheels path
         copytree(dir_rdkit_stubs, wheel_path / "rdkit-stubs", ignore=_logpath)
