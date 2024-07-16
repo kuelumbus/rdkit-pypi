@@ -310,9 +310,8 @@ class BuildRDKit(build_ext_orig):
 
 
         elif "darwin" in sys.platform:
-            # on Github Actions
             to_path = Path("/usr/local/lib")
-            if "macosx_arm64" in os.environ["CIBW_BUILD"]:
+            if 'CIRRUS_CI' in os.environ:
                 # on cirrus CI
                 to_path = Path("/Users/admin/lib")
                 to_path.mkdir(parents=True, exist_ok=True)
