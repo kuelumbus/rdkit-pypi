@@ -94,7 +94,6 @@ jobs:
             python: 312
             platform_id: macosx_arm64
 
-
           # MacOS 64 bit Intel: x86_64
           - os: macos-12
             bitness: 64
