@@ -307,20 +307,17 @@ class BuildRDKit(build_ext_orig):
             variables["PATH"] = os.environ["PATH"] + os.pathsep + str(vcpkg_lib)
 
         elif "darwin" in sys.platform:
-            to_path = Path("/usr/lib")
+            to_path = Path("/Users/runner/work/lib")
             if 'CIRRUS_CI' in os.environ:
                 # on cirrus CI
                 to_path = Path("/Users/admin/lib")
                 to_path.mkdir(parents=True, exist_ok=True)
                 variables["DYLD_LIBRARY_PATH"] = str(to_path)
             
-            # give write permission to user
-            cmd = f"sudo chmod o+rw {to_path}"
-            check_call(
-                shlex.split(cmd, posix="win32" not in sys.platform),
-            )
+            # Make sure path exists?
             to_path.mkdir(parents=True, exist_ok=True)
-
+            
+            # copy all boost and rdkit libs to one path
             [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*dylib")]
             [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*dylib")]
 
