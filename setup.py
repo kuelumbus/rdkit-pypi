@@ -306,16 +306,18 @@ class BuildRDKit(build_ext_orig):
             # VCPKG libs
             variables["PATH"] = os.environ["PATH"] + os.pathsep + str(vcpkg_lib)
 
-        elif "darwin" in sys.platform:
+        elif "darwin" in sys.platform: 
+            # Github actions
             to_path = Path("/Users/runner/work/lib")
             if 'CIRRUS_CI' in os.environ:
                 # on cirrus CI
                 to_path = Path("/Users/admin/lib")
-                to_path.mkdir(parents=True, exist_ok=True)
-                variables["DYLD_LIBRARY_PATH"] = str(to_path)
-            
+
             # Make sure path exists?
             to_path.mkdir(parents=True, exist_ok=True)
+
+            # Add path to DYLD_LIBRARY_PATH for generating stubs
+            variables["DYLD_LIBRARY_PATH"] = str(to_path)
             
             # copy all boost and rdkit libs to one path
             [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*dylib")]
