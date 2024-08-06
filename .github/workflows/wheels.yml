@@ -73,6 +73,28 @@ jobs:
           # Linux 64 bit ARM: aarch64 (on Circle CI)
 
           # MacOS 64 bit Intel: x86_64
+          - os: macos-14
+            bitness: 64
+            python: 38
+            platform_id: macosx_arm64
+          - os: macos-14
+            bitness: 64
+            python: 39
+            platform_id: macosx_arm64
+          - os: macos-14
+            bitness: 64
+            python: 310
+            platform_id: macosx_arm64
+          - os: macos-14
+            bitness: 64
+            python: 311
+            platform_id: macosx_arm64
+          - os: macos-14
+            bitness: 64
+            python: 312
+            platform_id: macosx_arm64
+
+          # MacOS 64 bit Intel: x86_64
           - os: macos-12
             bitness: 64
             python: 38
@@ -109,7 +131,7 @@ jobs:
       
       - name: Export GitHub Actions cache environment variables for vcpkg
         if: ${{ runner.os == 'Windows' }}
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
