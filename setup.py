@@ -103,6 +103,10 @@ class BuildRDKit(build_ext_orig):
         if "linux" in sys.platform:
             cmd += ["--build=b2", "-pr:b", "default"]
 
+        if "cp38-macosx_arm64" in os.environ["CIBW_BUILD"]:
+            # only in this case, conan detects x68_64 instead of armv8
+            cmd += ["-s", "arch=armv8", "-s", "arch_build=armv8"]
+
         check_call(cmd)
 
     def build_rdkit(self, ext):
@@ -145,6 +149,24 @@ class BuildRDKit(build_ext_orig):
         # Start build process
         os.chdir(str("rdkit"))
 
+        # Fix a bug in conan or rdkit: target name for numpy is boost::numpy{pyversion} with small 'b'
+        # and not Boost::numpy{pyversion}
+        # Line 345 in 2024_03_04 in CMakeLists.txt
+        # target_link_libraries(rdkit_py_base INTERFACE Boost::${Boost_Python_Lib} "Boost::numpy${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")
+        import fileinput
+
+        def replace_all(file, search_exp, replace_exp):
+            with fileinput.input(file, inplace=True) as f:
+                for line in f:
+                    if search_exp in line:
+                        line = line.replace(search_exp, replace_exp)
+                    print(line, end='')
+
+        replace_all(
+            "CMakeLists.txt",
+            'target_link_libraries(rdkit_py_base INTERFACE Boost::${Boost_Python_Lib} "Boost::numpy${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")',
+            'target_link_libraries(rdkit_py_base INTERFACE Boost::${Boost_Python_Lib} "boost::numpy${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")'
+        )
 
         # Define CMake options
         options = [
@@ -217,8 +239,11 @@ class BuildRDKit(build_ext_orig):
         if "macosx_arm64" in os.environ["CIBW_BUILD"]:
             options += [
                 "-DRDK_OPTIMIZE_POPCNT=OFF",
+                # Otherwise, cmake tries to link the system freetype
+                "-DFREETYPE_LIBRARY=/opt/homebrew/lib/libfreetype.dylib",
+                "-DFREETYPE_INCLUDE_DIRS=/opt/homebrew/include",
             ]
-            
+
         if "linux" in sys.platform:
             # Use ninja for linux builds
             cmds = [
@@ -283,23 +308,25 @@ class BuildRDKit(build_ext_orig):
                 [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*.lib")]
                 [copy_file(i, str(to_path)) for i in boost_lib_path_bin_windows_only.rglob("*.dll")]
 
-
                 variables["PATH"] = os.environ["PATH"] + os.pathsep + str(to_path)
             
             # VCPKG libs
             variables["PATH"] = os.environ["PATH"] + os.pathsep + str(vcpkg_lib)
 
-
-
-        elif "darwin" in sys.platform:
-            # on Github Actions
-            to_path = Path('/usr/local/lib')
-            if "macosx_arm64" in os.environ["CIBW_BUILD"]:
+        elif "darwin" in sys.platform: 
+            # Github actions
+            to_path = Path("/Users/runner/work/lib")
+            if 'CIRRUS_CI' in os.environ:
                 # on cirrus CI
-                to_path = Path('/Users/admin/lib')
-                to_path.mkdir(parents=True, exist_ok=True)
-                variables["DYLD_LIBRARY_PATH"] = str(to_path)
+                to_path = Path("/Users/admin/lib")
 
+            # Make sure path exists?
+            to_path.mkdir(parents=True, exist_ok=True)
+
+            # Add path to DYLD_LIBRARY_PATH for generating stubs
+            variables["DYLD_LIBRARY_PATH"] = str(to_path)
+            
+            # copy all boost and rdkit libs to one path
             [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*dylib")]
             [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*dylib")]
 
@@ -329,8 +356,11 @@ class BuildRDKit(build_ext_orig):
         ]
 
         # Print the stubs error file to rdkit-stubs/gen_rdkit_stubs.err
-        stubs_error_file = build_path / 'rdkit' / "build" /"rdkit-stubs" / "gen_rdkit_stubs.err"
-        with open(stubs_error_file, 'r') as fin: print(fin.read(), file=sys.stderr)
+        stubs_error_file = (
+            build_path / "rdkit" / "build" / "rdkit-stubs" / "gen_rdkit_stubs.err"
+        )
+        with open(stubs_error_file, "r") as fin:
+            print(fin.read(), file=sys.stderr)
 
         os.chdir(str(cwd))
 
@@ -359,13 +389,11 @@ class BuildRDKit(build_ext_orig):
         wheel_path = Path(self.get_ext_fullpath(ext.name)).absolute().parent
         wheel_path.mkdir(exist_ok=True)
 
-        
-
         # Copy RDMKit files to .../rdkit directory
         def _logpath(path, names):
             ignore_patterns
             print(f"In directory {path} copy files: {names}", file=sys.stderr)
-            return ignore_patterns('*.pyc')(path, names)
+            return ignore_patterns("*.pyc")(path, names)
 
         # Copy the RDKit stubs files to the rdkit-stubs wheels path
         copytree(dir_rdkit_stubs, wheel_path / "rdkit-stubs", ignore=_logpath)
@@ -408,7 +436,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     install_requires=[
-        "numpy < 2.0",
+        "numpy",
         "Pillow",
     ],
     ext_modules=[
