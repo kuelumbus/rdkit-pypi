@@ -41,7 +41,9 @@ environment-pass = ["CIBW_BUILD"]
 
 [tool.cibuildwheel.macos]
 
-before-all = ["brew install gnu-sed eigen cairo freetype"]
+# Disable installing libraries using brew because they do not meet the development target
+# eigen cairo freetype libpixman
+before-all = ["brew install gnu-sed"]
 
 repair-wheel-command = [
     "export DYLD_LIBRARY_PATH='/usr/local/lib:/usr/lib:/Users/admin/lib:/Users/runner/work/lib'",

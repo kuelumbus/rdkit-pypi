@@ -63,9 +63,20 @@ class BuildRDKit(build_ext_orig):
             # does not work on macos arm64 for some reason
             without_stacktrace = "True"
 
+        if "macosx" in os.environ["CIBW_BUILD"]:
+            ## install these libraries to meet the development target
+            macos_libs = """
+pixman/0.43.4
+cairo/1.18.0
+libpng/1.6.43
+fontconfig/2.15.0
+freetype/2.13.2
+"""
+
         conanfile = f"""\
             [requires]
             {boost_version_string}
+            {macos_libs}
 
             [generators]
             deploy
