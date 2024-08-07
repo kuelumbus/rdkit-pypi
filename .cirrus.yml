@@ -16,11 +16,11 @@ macos_arm64_task:
   env:
     PATH: /opt/homebrew/opt/python@3.10/libexec/bin:$PATH
     matrix:
-      - CIBW_BUILD: "cp38-macosx_arm64"
       - CIBW_BUILD: "cp39-macosx_arm64"
       - CIBW_BUILD: "cp310-macosx_arm64"
       - CIBW_BUILD: "cp311-macosx_arm64"
       - CIBW_BUILD: "cp312-macosx_arm64"
+      - CIBW_BUILD: "cp313-macosx_arm64"
     CIBW_ARCHS: arm64
   install_pre_requirements_script:
     - brew install python@3.10
