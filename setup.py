@@ -36,7 +36,7 @@ class BuildRDKit(build_ext_orig):
 
     def conan_install(self, boost_version, conan_toolchain_path):
         """Run the Conan"""
-        
+
         # This modified conanfile.py for boost does not link libpython*.so
         # When building a platform wheel, we don't want to link libpython*.so.
         mod_conan_path = "conan_boost_mod"
@@ -50,19 +50,18 @@ class BuildRDKit(build_ext_orig):
                 f"{boost_version}@chris/mod_boost",
             ]
         )
-        
+
         without_python_lib = "boost:without_python_lib=False"
         boost_version_string = f"boost/{boost_version}@chris/mod_boost"
         without_stacktrace = "False"
-    
+
         if sys.platform != "win32":
             # if no windows builds, compile boost without python lib.a/.so/.dylib
             without_python_lib = "boost:without_python_lib=True"
-        
+
         if "macosx_arm64" in os.environ["CIBW_BUILD"]:
             # does not work on macos arm64 for some reason
             without_stacktrace = "True"
-    
 
         conanfile = f"""\
             [requires]
@@ -105,7 +104,16 @@ class BuildRDKit(build_ext_orig):
 
         if "cp38-macosx_arm64" in os.environ["CIBW_BUILD"]:
             # only in this case, conan detects x68_64 instead of armv8
-            cmd += ["-s", "arch=armv8", "-s", "arch_build=armv8"]
+            cmd += [
+                "-s",
+                "arch=armv8",
+                "-s",
+                "arch_build=armv8",
+                "-e",
+                "MACOSX_DEPLOYMENT_TARGET=11.0",
+                "-e",
+                "CMAKE_OSX_DEPLOYMENT_TARGET=11.0",
+            ]
 
         check_call(cmd)
 
@@ -160,12 +168,12 @@ class BuildRDKit(build_ext_orig):
                 for line in f:
                     if search_exp in line:
                         line = line.replace(search_exp, replace_exp)
-                    print(line, end='')
+                    print(line, end="")
 
         replace_all(
             "CMakeLists.txt",
             'target_link_libraries(rdkit_py_base INTERFACE Boost::${Boost_Python_Lib} "Boost::numpy${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")',
-            'target_link_libraries(rdkit_py_base INTERFACE Boost::${Boost_Python_Lib} "boost::numpy${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")'
+            'target_link_libraries(rdkit_py_base INTERFACE Boost::${Boost_Python_Lib} "boost::numpy${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")',
         )
 
         # Define CMake options
@@ -223,12 +231,17 @@ class BuildRDKit(build_ext_orig):
                 f"-DFREETYPE_LIBRARY={to_win_path(vcpkg_lib / 'freetype.lib')}",
             ]
 
-        # Modifications for MacOS
+        # Modifications for MacOS all
         if sys.platform == "darwin":
             options += [
                 "-DCMAKE_C_FLAGS=-Wno-implicit-function-declaration",
                 # CATCH_CONFIG_NO_CPP17_UNCAUGHT_EXCEPTIONS because MacOS does not fully support C++17.
                 '-DCMAKE_CXX_FLAGS="-Wno-implicit-function-declaration -DCATCH_CONFIG_NO_CPP17_UNCAUGHT_EXCEPTIONS"',
+            ]
+
+        # Modification for MacOS x86_64
+        if "macosx_arm64" in os.environ["CIBW_BUILD"]:
+            options += [
                 # macOS < 10.13 has a incomplete C++17 implementation
                 # See https://github.com/kuelumbus/rdkit-pypi/pull/85 for a discussion
                 "-DCMAKE_OSX_DEPLOYMENT_TARGET=10.13",
@@ -242,6 +255,8 @@ class BuildRDKit(build_ext_orig):
                 # Otherwise, cmake tries to link the system freetype
                 "-DFREETYPE_LIBRARY=/opt/homebrew/lib/libfreetype.dylib",
                 "-DFREETYPE_INCLUDE_DIRS=/opt/homebrew/include",
+                # Arm64 build start with development target 11.0
+                "-DCMAKE_OSX_DEPLOYMENT_TARGET=11.0",
             ]
 
         if "linux" in sys.platform:
@@ -304,19 +319,22 @@ class BuildRDKit(build_ext_orig):
                 [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.dll")]
                 [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.pyd")]
                 [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.lib")]
-                
+
                 [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*.lib")]
-                [copy_file(i, str(to_path)) for i in boost_lib_path_bin_windows_only.rglob("*.dll")]
+                [
+                    copy_file(i, str(to_path))
+                    for i in boost_lib_path_bin_windows_only.rglob("*.dll")
+                ]
 
                 variables["PATH"] = os.environ["PATH"] + os.pathsep + str(to_path)
-            
+
             # VCPKG libs
             variables["PATH"] = os.environ["PATH"] + os.pathsep + str(vcpkg_lib)
 
-        elif "darwin" in sys.platform: 
+        elif "darwin" in sys.platform:
             # Github actions
             to_path = Path("/Users/runner/work/lib")
-            if 'CIRRUS_CI' in os.environ:
+            if "CIRRUS_CI" in os.environ:
                 # on cirrus CI
                 to_path = Path("/Users/admin/lib")
 
@@ -325,7 +343,7 @@ class BuildRDKit(build_ext_orig):
 
             # Add path to DYLD_LIBRARY_PATH for generating stubs
             variables["DYLD_LIBRARY_PATH"] = str(to_path)
-            
+
             # copy all boost and rdkit libs to one path
             [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*dylib")]
             [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*dylib")]
