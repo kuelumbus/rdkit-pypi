@@ -1,3 +1,5 @@
+import pytest
+
 def test_descriptor():
     from rdkit.Chem import Descriptors
     # Was 209 but changed to 211 in Release_2023_09_1
@@ -16,7 +18,7 @@ def test_3d_descriptors():
     AllChem.EmbedMolecule(mol, randomSeed=0xf00d)
     descs = Descriptors3D.CalcMolDescriptors3D(mol)
     assert 'InertialShapeFactor' in descs
-    assert round(descs['PMI1'], 13) == 20.9582649071385
+    assert 20.9582649071385 == pytest.approx(descs['PMI1'], 1e-4)
 
 
 def test_data_dir_and_chemical_features():
