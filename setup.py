@@ -155,10 +155,7 @@ freetype/2.13.2
         # Start build process
         os.chdir(str("rdkit"))
 
-        # Fix a bug in conan or rdkit: target name for numpy is boost::numpy{pyversion} with small 'b'
-        # and not Boost::numpy{pyversion}
-        # Line 345 in 2024_03_04 in CMakeLists.txt
-        # target_link_libraries(rdkit_py_base INTERFACE Boost::${Boost_Python_Lib} "Boost::numpy${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")
+       
         import fileinput
 
         def replace_all(file, search_exp, replace_exp):
@@ -168,11 +165,28 @@ freetype/2.13.2
                         line = line.replace(search_exp, replace_exp)
                     print(line, end="")
 
+        # Fix a bug in conan or rdkit: target name for numpy is boost::numpy{pyversion} with small 'b'
+        # and not Boost::numpy{pyversion}
+        # Line 345 in 2024_03_04 in CMakeLists.txt
+        # target_link_libraries(rdkit_py_base INTERFACE Boost::${Boost_Python_Lib} "Boost::numpy${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")
         replace_all(
             "CMakeLists.txt",
             'target_link_libraries(rdkit_py_base INTERFACE Boost::${Boost_Python_Lib} "Boost::numpy${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")',
             'target_link_libraries(rdkit_py_base INTERFACE Boost::${Boost_Python_Lib} "boost::numpy${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")',
         )
+
+        # Replace Cairo with cairo because conan uses lower case target names
+        replace_all(
+            "Code/GraphMol/MolDraw2D/CMakeLists.txt",
+            'target_link_libraries(MolDraw2D PUBLIC Cairo::Cairo)',
+            'target_link_libraries(MolDraw2D PUBLIC cairo::cairo)',
+        )
+        replace_all(
+            "Code/GraphMol/MolDraw2D/CMakeLists.txt",
+            'target_link_libraries(MolDraw2D_static PUBLIC Cairo::Cairo)',
+            'target_link_libraries(MolDraw2D_static PUBLIC cairo::cairo)',
+        )
+
 
         # Define CMake options
         options = [
