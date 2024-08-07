@@ -42,10 +42,10 @@ jobs:
             python: 312
             bitness: 64
             platform_id: win_amd64
-          - os: windows-2019
-            python: 313
-            bitness: 64
-            platform_id: win_amd64
+          # - os: windows-2019
+          #   python: 313
+          #   bitness: 64
+          #   platform_id: win_amd64
 
           # Linux 64 bit Intel: x86_64
           - os: ubuntu-latest
@@ -64,10 +64,10 @@ jobs:
             python: 312
             bitness: 64
             platform_id: manylinux_x86_64
-          - os: ubuntu-latest
-            python: 313
-            bitness: 64
-            platform_id: manylinux_x86_64
+          # - os: ubuntu-latest
+          #   python: 313
+          #   bitness: 64
+          #   platform_id: manylinux_x86_64
 
           # Linux 64 bit ARM: aarch64 (on Circle CI)
 
@@ -88,10 +88,10 @@ jobs:
             bitness: 64
             python: 312
             platform_id: macosx_arm64
-          - os: macos-14
-            bitness: 64
-            python: 313
-            platform_id: macosx_arm64
+          # - os: macos-14
+          #   bitness: 64
+          #   python: 313
+          #   platform_id: macosx_arm64
 
           # MacOS 64 bit Intel: x86_64
           - os: macos-12
@@ -110,10 +110,10 @@ jobs:
             bitness: 64
             python: 312
             platform_id: macosx_x86_64
-          - os: macos-12
-            bitness: 64
-            python: 313
-            platform_id: macosx_x86_64
+          # - os: macos-12
+          #   bitness: 64
+          #   python: 313
+          #   platform_id: macosx_x86_64
 
     steps:
       - uses: actions/checkout@v4
