@@ -252,7 +252,7 @@ freetype/2.13.2
             ]
 
         # Modification for MacOS x86_64
-        if "macosx_arm64" in os.environ["CIBW_BUILD"]:
+        if "macosx_x86_64" in os.environ["CIBW_BUILD"]:
             options += [
                 # macOS < 10.13 has a incomplete C++17 implementation
                 # See https://github.com/kuelumbus/rdkit-pypi/pull/85 for a discussion
