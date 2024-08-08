@@ -256,11 +256,10 @@ freetype/2.13.2
             options += [
                 # macOS < 10.13 has a incomplete C++17 implementation
                 # See https://github.com/kuelumbus/rdkit-pypi/pull/85 for a discussion
-                "-DCMAKE_OSX_DEPLOYMENT_TARGET=10.13",
+                f"-DCMAKE_OSX_DEPLOYMENT_TARGET={os.environ.get('MACOSX_DEPLOYMENT_TARGET', '10.13')}",
             ]
 
         # Modifications for MacOS arm64 (M1 hardware)
-        variables = {}
         if "macosx_arm64" in os.environ["CIBW_BUILD"]:
             options += [
                 "-DRDK_OPTIMIZE_POPCNT=OFF",
@@ -268,7 +267,7 @@ freetype/2.13.2
                 "-DFREETYPE_LIBRARY=/opt/homebrew/lib/libfreetype.dylib",
                 "-DFREETYPE_INCLUDE_DIRS=/opt/homebrew/include",
                 # Arm64 build start with development target 11.0
-                "-DCMAKE_OSX_DEPLOYMENT_TARGET=11.0",
+                f"-DCMAKE_OSX_DEPLOYMENT_TARGET={os.environ.get('MACOSX_DEPLOYMENT_TARGET', '11.0')}",
             ]
 
         if "linux" in sys.platform:
@@ -294,6 +293,7 @@ freetype/2.13.2
 
         print("!!! --- CMAKE build command and variables for RDKit", file=sys.stderr)
         print(cmds, file=sys.stderr)
+        variables = {}
         print(variables, file=sys.stderr)
 
         # Run CMake and install RDKit

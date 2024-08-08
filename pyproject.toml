@@ -52,6 +52,17 @@ repair-wheel-command = [
     "delocate-wheel --require-archs {delocate_archs} -w {dest_dir} {wheel}",
 ]
 
+# The delocate-wheel command verifies the MACOSX_DEPLOYMENT_TARGET version of the libraries.
+# Since the build platform's macOS version differs from the deployment target, we need to specify it explicitly here.
+# delocate reads the target from the environment variable.
+# The target for x86_64 is set to 10.13.
+environment = { MACOSX_DEPLOYMENT_TARGET="10.13" }
+
+[[tool.cibuildwheel.overrides]]
+# The target for arm64 is 11.0
+select = "*-macosx_arm64"
+environment = { MACOSX_DEPLOYMENT_TARGET="11.0" }
+
 [tool.cibuildwheel.windows]
 
 before-build = [
