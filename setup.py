@@ -62,7 +62,8 @@ class BuildRDKit(build_ext_orig):
         if "macosx_arm64" in os.environ["CIBW_BUILD"]:
             # does not work on macos arm64 for some reason
             without_stacktrace = "True"
-
+            
+        macos_libs = ""
         if "macosx" in os.environ["CIBW_BUILD"]:
             ## install these libraries to meet the development target
             macos_libs = """
