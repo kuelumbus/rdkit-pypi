@@ -62,7 +62,7 @@ class BuildRDKit(build_ext_orig):
         if "macosx_arm64" in os.environ["CIBW_BUILD"]:
             # does not work on macos arm64 for some reason
             without_stacktrace = "True"
-            
+
         macos_libs = ""
         if "macosx" in os.environ["CIBW_BUILD"]:
             ## install these libraries to meet the development target
@@ -176,17 +176,20 @@ freetype/2.13.2
             'target_link_libraries(rdkit_py_base INTERFACE Boost::${Boost_Python_Lib} "boost::numpy${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")',
         )
 
-        # Replace Cairo with cairo because conan uses lower case target names
-        replace_all(
-            "Code/GraphMol/MolDraw2D/CMakeLists.txt",
-            'target_link_libraries(MolDraw2D PUBLIC Cairo::Cairo)',
-            'target_link_libraries(MolDraw2D PUBLIC cairo::cairo)',
-        )
-        replace_all(
-            "Code/GraphMol/MolDraw2D/CMakeLists.txt",
-            'target_link_libraries(MolDraw2D_static PUBLIC Cairo::Cairo)',
-            'target_link_libraries(MolDraw2D_static PUBLIC cairo::cairo)',
-        )
+        
+        if "macosx" in os.environ["CIBW_BUILD"]:
+            # Replace Cairo with cairo because conan uses lower case target names
+            # only on MacOS cairo is installed using conan
+            replace_all(
+                "Code/GraphMol/MolDraw2D/CMakeLists.txt",
+                'target_link_libraries(MolDraw2D PUBLIC Cairo::Cairo)',
+                'target_link_libraries(MolDraw2D PUBLIC cairo::cairo)',
+            )
+            replace_all(
+                "Code/GraphMol/MolDraw2D/CMakeLists.txt",
+                'target_link_libraries(MolDraw2D_static PUBLIC Cairo::Cairo)',
+                'target_link_libraries(MolDraw2D_static PUBLIC cairo::cairo)',
+            )
 
 
         # Define CMake options
