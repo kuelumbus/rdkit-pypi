@@ -27,10 +27,6 @@ jobs:
         include:
           # Window 64 bit
           - os: windows-2019
-            python: 38
-            bitness: 64
-            platform_id: win_amd64
-          - os: windows-2019
             python: 39
             bitness: 64
             platform_id: win_amd64
@@ -46,14 +42,13 @@ jobs:
             python: 312
             bitness: 64
             platform_id: win_amd64
-
+          # - os: windows-2019
+          #   python: 313
+          #   bitness: 64
+          #   platform_id: win_amd64
 
           # Linux 64 bit Intel: x86_64
           - os: ubuntu-latest
-            python: 38
-            bitness: 64
-            platform_id: manylinux_x86_64
-          - os: ubuntu-latest
             python: 39
             bitness: 64
             platform_id: manylinux_x86_64
@@ -69,14 +64,14 @@ jobs:
             python: 312
             bitness: 64
             platform_id: manylinux_x86_64
+          # - os: ubuntu-latest
+          #   python: 313
+          #   bitness: 64
+          #   platform_id: manylinux_x86_64
 
           # Linux 64 bit ARM: aarch64 (on Circle CI)
 
-          # MacOS 64 bit Intel: x86_64
-          - os: macos-14
-            bitness: 64
-            python: 38
-            platform_id: macosx_arm64
+          # MacOS 64 bit Intel: arm64
           - os: macos-14
             bitness: 64
             python: 39
@@ -93,14 +88,14 @@ jobs:
             bitness: 64
             python: 312
             platform_id: macosx_arm64
+          # - os: macos-14
+          #   bitness: 64
+          #   python: 313
+          #   platform_id: macosx_arm64
 
           # MacOS 64 bit Intel: x86_64
           - os: macos-12
             bitness: 64
-            python: 38
-            platform_id: macosx_x86_64
-          - os: macos-12
-            bitness: 64
             python: 39
             platform_id: macosx_x86_64
           - os: macos-12
@@ -115,6 +110,10 @@ jobs:
             bitness: 64
             python: 312
             platform_id: macosx_x86_64
+          # - os: macos-12
+          #   bitness: 64
+          #   python: 313
+          #   platform_id: macosx_x86_64
 
     steps:
       - uses: actions/checkout@v4
@@ -160,7 +159,7 @@ jobs:
             cd C:\\rdkit
             echo "C:\\libs" >> $GITHUB_PATH
           fi
-          python -m pip install cibuildwheel==2.17.0
+          python -m pip install cibuildwheel==2.20.0
           python -m cibuildwheel --output-dir wheelhouse
         shell: bash
 

@@ -36,7 +36,7 @@ class BuildRDKit(build_ext_orig):
 
     def conan_install(self, boost_version, conan_toolchain_path):
         """Run the Conan"""
-        
+
         # This modified conanfile.py for boost does not link libpython*.so
         # When building a platform wheel, we don't want to link libpython*.so.
         mod_conan_path = "conan_boost_mod"
@@ -50,23 +50,34 @@ class BuildRDKit(build_ext_orig):
                 f"{boost_version}@chris/mod_boost",
             ]
         )
-        
+
         without_python_lib = "boost:without_python_lib=False"
         boost_version_string = f"boost/{boost_version}@chris/mod_boost"
         without_stacktrace = "False"
-    
+
         if sys.platform != "win32":
             # if no windows builds, compile boost without python lib.a/.so/.dylib
             without_python_lib = "boost:without_python_lib=True"
-        
+
         if "macosx_arm64" in os.environ["CIBW_BUILD"]:
             # does not work on macos arm64 for some reason
             without_stacktrace = "True"
-    
+
+        macos_libs = ""
+        if "macosx" in os.environ["CIBW_BUILD"]:
+            ## install these libraries to meet the development target
+            macos_libs = """
+pixman/0.43.4
+cairo/1.18.0
+libpng/1.6.43
+fontconfig/2.15.0
+freetype/2.13.2
+"""
 
         conanfile = f"""\
             [requires]
             {boost_version_string}
+            {macos_libs}
 
             [generators]
             deploy
@@ -102,10 +113,6 @@ class BuildRDKit(build_ext_orig):
         # but force build b2 on linux
         if "linux" in sys.platform:
             cmd += ["--build=b2", "-pr:b", "default"]
-
-        if "cp38-macosx_arm64" in os.environ["CIBW_BUILD"]:
-            # only in this case, conan detects x68_64 instead of armv8
-            cmd += ["-s", "arch=armv8", "-s", "arch_build=armv8"]
 
         check_call(cmd)
 
@@ -149,10 +156,7 @@ class BuildRDKit(build_ext_orig):
         # Start build process
         os.chdir(str("rdkit"))
 
-        # Fix a bug in conan or rdkit: target name for numpy is boost::numpy{pyversion} with small 'b'
-        # and not Boost::numpy{pyversion}
-        # Line 345 in 2024_03_04 in CMakeLists.txt
-        # target_link_libraries(rdkit_py_base INTERFACE Boost::${Boost_Python_Lib} "Boost::numpy${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")
+       
         import fileinput
 
         def replace_all(file, search_exp, replace_exp):
@@ -160,13 +164,33 @@ class BuildRDKit(build_ext_orig):
                 for line in f:
                     if search_exp in line:
                         line = line.replace(search_exp, replace_exp)
-                    print(line, end='')
+                    print(line, end="")
 
+        # Fix a bug in conan or rdkit: target name for numpy is boost::numpy{pyversion} with small 'b'
+        # and not Boost::numpy{pyversion}
+        # Line 345 in 2024_03_04 in CMakeLists.txt
+        # target_link_libraries(rdkit_py_base INTERFACE Boost::${Boost_Python_Lib} "Boost::numpy${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")
         replace_all(
             "CMakeLists.txt",
             'target_link_libraries(rdkit_py_base INTERFACE Boost::${Boost_Python_Lib} "Boost::numpy${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")',
-            'target_link_libraries(rdkit_py_base INTERFACE Boost::${Boost_Python_Lib} "boost::numpy${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")'
+            'target_link_libraries(rdkit_py_base INTERFACE Boost::${Boost_Python_Lib} "boost::numpy${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")',
         )
+
+        
+        if "macosx" in os.environ["CIBW_BUILD"]:
+            # Replace Cairo with cairo because conan uses lower case target names
+            # only on MacOS cairo is installed using conan
+            replace_all(
+                "Code/GraphMol/MolDraw2D/CMakeLists.txt",
+                'target_link_libraries(MolDraw2D PUBLIC Cairo::Cairo)',
+                'target_link_libraries(MolDraw2D PUBLIC cairo::cairo)',
+            )
+            replace_all(
+                "Code/GraphMol/MolDraw2D/CMakeLists.txt",
+                'target_link_libraries(MolDraw2D_static PUBLIC Cairo::Cairo)',
+                'target_link_libraries(MolDraw2D_static PUBLIC cairo::cairo)',
+            )
+
 
         # Define CMake options
         options = [
@@ -223,25 +247,31 @@ class BuildRDKit(build_ext_orig):
                 f"-DFREETYPE_LIBRARY={to_win_path(vcpkg_lib / 'freetype.lib')}",
             ]
 
-        # Modifications for MacOS
+        # Modifications for MacOS all
         if sys.platform == "darwin":
             options += [
                 "-DCMAKE_C_FLAGS=-Wno-implicit-function-declaration",
                 # CATCH_CONFIG_NO_CPP17_UNCAUGHT_EXCEPTIONS because MacOS does not fully support C++17.
                 '-DCMAKE_CXX_FLAGS="-Wno-implicit-function-declaration -DCATCH_CONFIG_NO_CPP17_UNCAUGHT_EXCEPTIONS"',
+            ]
+
+        # Modification for MacOS x86_64
+        if "macosx_x86_64" in os.environ["CIBW_BUILD"]:
+            options += [
                 # macOS < 10.13 has a incomplete C++17 implementation
                 # See https://github.com/kuelumbus/rdkit-pypi/pull/85 for a discussion
-                "-DCMAKE_OSX_DEPLOYMENT_TARGET=10.13",
+                f"-DCMAKE_OSX_DEPLOYMENT_TARGET={os.environ.get('MACOSX_DEPLOYMENT_TARGET', '10.13')}",
             ]
 
         # Modifications for MacOS arm64 (M1 hardware)
-        variables = {}
         if "macosx_arm64" in os.environ["CIBW_BUILD"]:
             options += [
                 "-DRDK_OPTIMIZE_POPCNT=OFF",
                 # Otherwise, cmake tries to link the system freetype
                 "-DFREETYPE_LIBRARY=/opt/homebrew/lib/libfreetype.dylib",
                 "-DFREETYPE_INCLUDE_DIRS=/opt/homebrew/include",
+                # Arm64 build start with development target 11.0
+                f"-DCMAKE_OSX_DEPLOYMENT_TARGET={os.environ.get('MACOSX_DEPLOYMENT_TARGET', '11.0')}",
             ]
 
         if "linux" in sys.platform:
@@ -267,6 +297,7 @@ class BuildRDKit(build_ext_orig):
 
         print("!!! --- CMAKE build command and variables for RDKit", file=sys.stderr)
         print(cmds, file=sys.stderr)
+        variables = {}
         print(variables, file=sys.stderr)
 
         # Run CMake and install RDKit
@@ -304,19 +335,22 @@ class BuildRDKit(build_ext_orig):
                 [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.dll")]
                 [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.pyd")]
                 [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*.lib")]
-                
+
                 [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*.lib")]
-                [copy_file(i, str(to_path)) for i in boost_lib_path_bin_windows_only.rglob("*.dll")]
+                [
+                    copy_file(i, str(to_path))
+                    for i in boost_lib_path_bin_windows_only.rglob("*.dll")
+                ]
 
                 variables["PATH"] = os.environ["PATH"] + os.pathsep + str(to_path)
-            
+
             # VCPKG libs
             variables["PATH"] = os.environ["PATH"] + os.pathsep + str(vcpkg_lib)
 
-        elif "darwin" in sys.platform: 
+        elif "darwin" in sys.platform:
             # Github actions
             to_path = Path("/Users/runner/work/lib")
-            if 'CIRRUS_CI' in os.environ:
+            if "CIRRUS_CI" in os.environ:
                 # on cirrus CI
                 to_path = Path("/Users/admin/lib")
 
@@ -325,7 +359,7 @@ class BuildRDKit(build_ext_orig):
 
             # Add path to DYLD_LIBRARY_PATH for generating stubs
             variables["DYLD_LIBRARY_PATH"] = str(to_path)
-            
+
             # copy all boost and rdkit libs to one path
             [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*dylib")]
             [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*dylib")]
