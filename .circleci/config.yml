@@ -51,7 +51,7 @@ workflows:
       - linux-arm64-wheels:
           matrix:
             parameters:
-              python-version: ["39", "310", "311", "312"]
+              python-version: ["39", "310", "311", "312", "313"]
       # - osx-wheels:
       #     matrix:
       #       parameters:
