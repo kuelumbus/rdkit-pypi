@@ -201,7 +201,7 @@ freetype/2.13.2
             # Boost_LIB_VERSION is required by RDKit => Set manually
             f"-DBoost_LIB_VERSION={boost_lib_version}",
             # Select correct python 3 version
-            f"-DPython3_ROOT_DIR={Path(sys.executable) / '..' / '..'}",
+            f"-DPython3_ROOT_DIR={(Path(get_paths()['include']) / ".." / "..").resolve()}",
             # RDKit build flags
             "-DRDK_BUILD_INCHI_SUPPORT=ON",
             "-DRDK_BUILD_AVALON_SUPPORT=ON",
