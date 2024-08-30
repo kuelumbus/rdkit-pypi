@@ -200,9 +200,8 @@ freetype/2.13.2
             # Boost_VERSION_STRING is set but Boost_LIB_VERSION is not set by conan.
             # Boost_LIB_VERSION is required by RDKit => Set manually
             f"-DBoost_LIB_VERSION={boost_lib_version}",
-            # Select correct python interpreter
-            f"-DPYTHON_EXECUTABLE={sys.executable}",
-            f"-DPYTHON_INCLUDE_DIR={get_paths()['include']}",
+            # Select correct python 3 version
+            f"-DPython3_ROOT_DIR={Path(sys.executable) / '..' / '..'}",
             # RDKit build flags
             "-DRDK_BUILD_INCHI_SUPPORT=ON",
             "-DRDK_BUILD_AVALON_SUPPORT=ON",
