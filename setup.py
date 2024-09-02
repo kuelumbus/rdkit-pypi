@@ -5,7 +5,7 @@ from distutils.file_util import copy_file
 from pathlib import Path
 from shutil import copytree, rmtree, ignore_patterns
 from subprocess import call, check_call
-from sysconfig import get_paths
+import sysconfig
 from textwrap import dedent
 
 from setuptools import Extension, find_packages, setup
@@ -202,6 +202,8 @@ freetype/2.13.2
             f"-DBoost_LIB_VERSION={boost_lib_version}",
             # Select correct python 3 version
             f"-DPython3_ROOT_DIR={Path(sys.prefix)}",
+            # Point to the system install path of python to correctly find the python.lib file 
+            f"-DPython3_LIBRARY={sysconfig.get_path('stdlib')}"
             # RDKit build flags
             "-DRDK_BUILD_INCHI_SUPPORT=ON",
             "-DRDK_BUILD_AVALON_SUPPORT=ON",
