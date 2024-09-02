@@ -203,7 +203,7 @@ freetype/2.13.2
             # Select correct python 3 version
             f"-DPython3_ROOT_DIR={Path(sys.prefix)}",
             # Point to the system install path of python to correctly find the python.lib file 
-            f"-DPython3_LIBRARY={sysconfig.get_path('stdlib')}"
+            f"-DPython3_LIBRARY={sysconfig.get_path('stdlib')}",
             # RDKit build flags
             "-DRDK_BUILD_INCHI_SUPPORT=ON",
             "-DRDK_BUILD_AVALON_SUPPORT=ON",
