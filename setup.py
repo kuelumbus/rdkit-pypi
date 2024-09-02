@@ -201,12 +201,11 @@ freetype/2.13.2
             # Boost_LIB_VERSION is required by RDKit => Set manually
             f"-DBoost_LIB_VERSION={boost_lib_version}",
             # Select correct python 3 version
-            f"-DPython3_ROOT_DIR={(Path(get_paths()['include']) / '..' / '..').resolve()}",
+            f"-DPython3_ROOT_DIR={Path(sys.prefix)}",
             # RDKit build flags
             "-DRDK_BUILD_INCHI_SUPPORT=ON",
             "-DRDK_BUILD_AVALON_SUPPORT=ON",
             "-DRDK_BUILD_PYTHON_WRAPPERS=ON",
-            "-DRDK_BOOST_PYTHON3_NAME=python",  # Overwrite this. This is the name of the interface in cmake defined by conan.
             "-DRDK_BUILD_YAEHMOP_SUPPORT=ON",
             "-DRDK_BUILD_XYZ2MOL_SUPPORT=ON",
             "-DRDK_INSTALL_INTREE=OFF",
