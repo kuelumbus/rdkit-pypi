@@ -5,14 +5,14 @@ from distutils.file_util import copy_file
 from pathlib import Path
 from shutil import copytree, rmtree, ignore_patterns
 from subprocess import call, check_call
-from sysconfig import get_paths
+import sysconfig
 from textwrap import dedent
 
 from setuptools import Extension, find_packages, setup
 from setuptools.command.build_ext import build_ext as build_ext_orig
 
 # RDKit version to build (tag from github repository)
-rdkit_tag = "Release_2024_03_5"
+rdkit_tag = "Release_2024_03_6"
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -168,12 +168,12 @@ freetype/2.13.2
 
         # Fix a bug in conan or rdkit: target name for numpy is boost::numpy{pyversion} with small 'b'
         # and not Boost::numpy{pyversion}
-        # Line 345 in 2024_03_04 in CMakeLists.txt
-        # target_link_libraries(rdkit_py_base INTERFACE Boost::${Boost_Python_Lib} "Boost::numpy${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")
+        # Line 312 in 2024_03_06 in CMakeLists.txt
+        # NEW: target_link_libraries(rdkit_py_base INTERFACE "Boost::python${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}" "Boost::numpy${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}")
         replace_all(
             "CMakeLists.txt",
-            'target_link_libraries(rdkit_py_base INTERFACE Boost::${Boost_Python_Lib} "Boost::numpy${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")',
-            'target_link_libraries(rdkit_py_base INTERFACE Boost::${Boost_Python_Lib} "boost::numpy${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")',
+            'target_link_libraries(rdkit_py_base INTERFACE "Boost::python${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}" "Boost::numpy${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}")',
+            'target_link_libraries(rdkit_py_base INTERFACE "boost::python${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}" "boost::numpy${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}")',
         )
 
         
@@ -200,14 +200,15 @@ freetype/2.13.2
             # Boost_VERSION_STRING is set but Boost_LIB_VERSION is not set by conan.
             # Boost_LIB_VERSION is required by RDKit => Set manually
             f"-DBoost_LIB_VERSION={boost_lib_version}",
-            # Select correct python interpreter
-            f"-DPYTHON_EXECUTABLE={sys.executable}",
-            f"-DPYTHON_INCLUDE_DIR={get_paths()['include']}",
+            # Select correct python 3 version
+            f"-DPython3_ROOT_DIR={Path(sys.prefix)}"
+            f"-DPython3_FIND_REGISTRY=LAST",
+            # Point to the system install path of python to correctly find the python.lib file 
+            # f"-DPython3_LIBRARY={sysconfig.get_config_var('LIBDIR')}",
             # RDKit build flags
             "-DRDK_BUILD_INCHI_SUPPORT=ON",
             "-DRDK_BUILD_AVALON_SUPPORT=ON",
             "-DRDK_BUILD_PYTHON_WRAPPERS=ON",
-            "-DRDK_BOOST_PYTHON3_NAME=python",  # Overwrite this. This is the name of the interface in cmake defined by conan.
             "-DRDK_BUILD_YAEHMOP_SUPPORT=ON",
             "-DRDK_BUILD_XYZ2MOL_SUPPORT=ON",
             "-DRDK_INSTALL_INTREE=OFF",
