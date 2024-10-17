@@ -239,7 +239,7 @@ freetype/2.13.2
                 # Setting this on linux or macos fails with
                 # CMake Error at Code/cmake/Modules/RDKitUtils.cmake:148 (Python3_add_library):
                 # Unknown CMake command "Python3_add_library".
-                f"-DPython3_INCLUDE_DIR={sysconfig.get_path('include')}",
+                # f"-DPython3_INCLUDE_DIR={sysconfig.get_path('include')}",
                 f"-DPython3_LIBRARY={sysconfig.get_path('stdlib')}",
                 "-Ax64",
                 # DRDK_INSTALL_STATIC_LIBS should be fixed in newer RDKit builds. Remove?
