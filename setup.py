@@ -208,8 +208,6 @@ freetype/2.13.2
             f"-DBoost_LIB_VERSION={boost_lib_version}",
             # Select correct python 3 version
             f"-DPython3_ROOT_DIR={Path(sys.prefix)}",
-            f"-DPython3_INCLUDE_DIR={sysconfig.get_path('include')}",
-            f"-DPython3_LIBRARY={sysconfig.get_config_var('LIBDIR')}",
             # Point to the system install path of python to correctly find the python.lib file 
             # f"-DPython3_LIBRARY={sysconfig.get_config_var('LIBDIR')}",
             # RDKit build flags
@@ -238,6 +236,11 @@ freetype/2.13.2
         vcpkg_lib = vcpkg_path / "vcpkg_installed" / "x64-windows" / "lib"
         if sys.platform == "win32":
             options += [
+                # Setting this on linux or macos fails with
+                # CMake Error at Code/cmake/Modules/RDKitUtils.cmake:148 (Python3_add_library):
+                # Unknown CMake command "Python3_add_library".
+                f"-DPython3_INCLUDE_DIR={sysconfig.get_path('include')}",
+                f"-DPython3_LIBRARY={sysconfig.get_path('stdlib')}",
                 "-Ax64",
                 # DRDK_INSTALL_STATIC_LIBS should be fixed in newer RDKit builds. Remove?
                 "-DRDK_INSTALL_STATIC_LIBS=OFF",
