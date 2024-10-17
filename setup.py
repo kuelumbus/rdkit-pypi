@@ -191,6 +191,12 @@ freetype/2.13.2
                 'target_link_libraries(MolDraw2D_static PUBLIC cairo::cairo)',
             )
 
+        
+        print("---- Conf vars", file=sys.stderr)
+        print(sysconfig.get_paths(), file=sys.stderr)
+        print(sysconfig.get_config_vars(), file=sys.stderr)
+        print("---- Conf vars", file=sys.stderr)
+        
 
         # Define CMake options
         options = [
@@ -204,7 +210,6 @@ freetype/2.13.2
             f"-DPython3_ROOT_DIR={Path(sys.prefix)}",
             f"-DPython3_INCLUDE_DIR={sysconfig.get_path('include')}",
             f"-DPython3_LIBRARY={sysconfig.get_config_var('LIBDIR')}",
-
             # Point to the system install path of python to correctly find the python.lib file 
             # f"-DPython3_LIBRARY={sysconfig.get_config_var('LIBDIR')}",
             # RDKit build flags
