@@ -200,7 +200,7 @@ freetype/2.13.2
 
         # Define CMake options
         options = [
-            f"-DCMAKE_FIND_DEBUG_MODE=ON", # Enable debug mode
+            # f"-DCMAKE_FIND_DEBUG_MODE=ON", # Enable debug mode
             f"-DCMAKE_TOOLCHAIN_FILE={conan_toolchain_path / 'conan_toolchain.cmake'}",
             # For the toolchain file this needs to be set
             f"-DCMAKE_POLICY_DEFAULT_CMP0091=NEW",
@@ -241,7 +241,7 @@ freetype/2.13.2
                 # CMake Error at Code/cmake/Modules/RDKitUtils.cmake:148 (Python3_add_library):
                 # Unknown CMake command "Python3_add_library".
                 # f"-DPython3_INCLUDE_DIR={sysconfig.get_path('include')}",
-                f"-DPython3_LIBRARY={sysconfig.get_path('stdlib')}",
+                f"-DPython3_LIBRARY={sysconfig.get_path('stdlib')};{sysconfig.get_path('stdlib')}/..;{sysconfig.get_path('scripts')}",
                 "-Ax64",
                 # DRDK_INSTALL_STATIC_LIBS should be fixed in newer RDKit builds. Remove?
                 "-DRDK_INSTALL_STATIC_LIBS=OFF",
@@ -289,13 +289,13 @@ freetype/2.13.2
         if "linux" in sys.platform:
             # Use ninja for linux builds
             cmds = [
-                f"cmake -S . -B build -G Ninja {' '.join(options)} ",
+                f"cmake -S . -B build -G Ninja --debug-find-pkg=python3 {' '.join(options)} ",
                 "cmake --build build --config Release",
                 "cmake --install build",
             ]
         else:
             cmds = [
-                f"cmake -S . -B build {' '.join(options)} ",
+                f"cmake -S . -B build --debug-find-pkg=python3 {' '.join(options)} ",
                 "cmake --build build --config Release",
                 "cmake --install build",
             ]
