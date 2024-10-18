@@ -159,13 +159,13 @@ jobs:
             cd C:\\rdkit
             echo "C:\\libs" >> $GITHUB_PATH
           fi
-          python -m pip install cibuildwheel==2.20.0
+          python -m pip install cibuildwheel==2.21.3
           python -m cibuildwheel --output-dir wheelhouse
         shell: bash
 
-      - name: Setup tmate session
-        if: ${{ failure() }}
-        uses: mxschmitt/action-tmate@v3
+      # - name: Setup tmate session
+      #   if: ${{ failure() }}
+      #   uses: mxschmitt/action-tmate@v3
 
       - uses: actions/upload-artifact@v4
         if: ${{ runner.os == 'Windows' }}
