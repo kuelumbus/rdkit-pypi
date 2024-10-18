@@ -200,6 +200,7 @@ freetype/2.13.2
 
         # Define CMake options
         options = [
+            f"-DCMAKE_FIND_DEBUG_MODE=ON", # Enable debug mode
             f"-DCMAKE_TOOLCHAIN_FILE={conan_toolchain_path / 'conan_toolchain.cmake'}",
             # For the toolchain file this needs to be set
             f"-DCMAKE_POLICY_DEFAULT_CMP0091=NEW",
