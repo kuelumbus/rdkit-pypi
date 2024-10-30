@@ -235,21 +235,31 @@ freetype/2.13.2
         vcpkg_path = cwd
         vcpkg_inc = vcpkg_path / "vcpkg_installed" / "x64-windows" / "include"
         vcpkg_lib = vcpkg_path / "vcpkg_installed" / "x64-windows" / "lib"
+
         if sys.platform == "win32":
+            def to_win_path(pt: Path):
+                return str(pt).replace("\\", "/")
+            
             options += [
                 # Setting this on linux or macos fails with
                 # CMake Error at Code/cmake/Modules/RDKitUtils.cmake:148 (Python3_add_library):
                 # Unknown CMake command "Python3_add_library".
                 # f"-DPython3_INCLUDE_DIR={sysconfig.get_path('include')}",
-                f"-DPython3_LIBRARY='{sysconfig.get_path('stdlib')};{sysconfig.get_path('stdlib')}\\..;{sysconfig.get_path('scripts')}'",
+
+                pt_stdlib = Path(sysconfig.get_path('stdlib'))
+
+                pt_tools = Path(sysconfig.get_path('stdlib')) / ".."
+                pt_tools = pt_tools.absolute()
+
+                pt_scripts = Path(sysconfig.get_path('scripts'))
+                f"-DPython3_LIBRARY='{to_win_path(pt_stdlib)};{to_win_path(pt_tools)};{to_win_path(pt_scripts)}'",
                 "-Ax64",
                 # DRDK_INSTALL_STATIC_LIBS should be fixed in newer RDKit builds. Remove?
                 "-DRDK_INSTALL_STATIC_LIBS=OFF",
                 "-DRDK_INSTALL_DLLS_MSVC=ON",
             ]
 
-            def to_win_path(pt: Path):
-                return str(pt).replace("\\", "/")
+    
 
             # Link cairo and freetype
             options += [
