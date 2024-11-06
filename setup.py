@@ -252,7 +252,8 @@ freetype/2.13.2
                 # CMake Error at Code/cmake/Modules/RDKitUtils.cmake:148 (Python3_add_library):
                 # Unknown CMake command "Python3_add_library".
                 # f"-DPython3_INCLUDE_DIR={sysconfig.get_path('include')}",
-                f'-DPython3_LIBRARY={to_win_path(pt_stdlib)};{to_win_path(pt_tools)};{to_win_path(pt_scripts)}',
+                f'-DPython3_LIBRARY={to_win_path(pt_stdlib)};{to_win_path(pt_tools)}',
+                # f'-DPython3_LIBRARY={to_win_path(pt_stdlib)};{to_win_path(pt_tools)};{to_win_path(pt_scripts)}',
                 "-Ax64",
                 # DRDK_INSTALL_STATIC_LIBS should be fixed in newer RDKit builds. Remove?
                 "-DRDK_INSTALL_STATIC_LIBS=OFF",
