@@ -243,7 +243,7 @@ freetype/2.13.2
             pt_stdlib = Path(sysconfig.get_path('stdlib'))
 
             pt_tools = Path(sysconfig.get_path('stdlib')) / ".."
-            pt_tools = pt_tools.absolute()
+            pt_tools = pt_tools.resolve()
 
             pt_scripts = Path(sysconfig.get_path('scripts'))
             
