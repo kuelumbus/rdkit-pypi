@@ -207,7 +207,6 @@ freetype/2.13.2
 
 
 
-
         print("---- Conf vars", file=sys.stderr)
         print(sysconfig.get_paths(), file=sys.stderr)
         print(sysconfig.get_config_vars(), file=sys.stderr)
@@ -253,28 +252,12 @@ freetype/2.13.2
         if sys.platform == "win32":
             def to_win_path(pt: Path):
                 return str(pt).replace("\\", "/")
-            # pt_stdlib = Path(sysconfig.get_path('stdlib'))
-
-            # pt_tools = Path(sysconfig.get_path('stdlib')) / ".."
-            # pt_tools = pt_tools.resolve()
-            # Copy dll to env dir
-
-            # pt_scripts = Path(sysconfig.get_path('scripts'))
-            
+        
             options += [
-                # Setting this on linux or macos fails with
-                # CMake Error at Code/cmake/Modules/RDKitUtils.cmake:148 (Python3_add_library):
-                # Unknown CMake command "Python3_add_library".
-                # f"-DPython3_INCLUDE_DIR={sysconfig.get_path('include')}",
-                # f'-DPython3_LIBRARY={to_win_path(pt_tools)}',
-                # f'-DPython3_LIBRARY={to_win_path(pt_stdlib)};{to_win_path(pt_tools)};{to_win_path(pt_scripts)}',
-                "-Ax64",
                 # DRDK_INSTALL_STATIC_LIBS should be fixed in newer RDKit builds. Remove?
                 "-DRDK_INSTALL_STATIC_LIBS=OFF",
                 "-DRDK_INSTALL_DLLS_MSVC=ON",
             ]
-
-    
 
             # Link cairo and freetype
             options += [
@@ -318,10 +301,16 @@ freetype/2.13.2
                 "cmake --build build --config Release",
                 "cmake --install build",
             ]
+        elif sys.platform == "win32":
+            cmds = [
+                f"cmake -S . -B build -G Ninja --debug-find-pkg=Python3 {' '.join(options)} ",
+                "cmake --build build --config Release -v",
+                "cmake --install build",
+            ]
         else:
             cmds = [
                 f"cmake -S . -B build --debug-find-pkg=Python3 {' '.join(options)} ",
-                "cmake --build build --config Release -v",
+                "cmake --build build --config Release",
                 "cmake --install build",
             ]
 
