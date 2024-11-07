@@ -185,10 +185,16 @@ freetype/2.13.2
         # )
 
         # on windows; bug in 2024_03_6
+        # replace_all(
+        #     "CMakeLists.txt",
+        #     'target_link_libraries(rdkit_py_base INTERFACE ${Python3_LIBRARY} )',
+        #     'target_link_libraries(rdkit_py_base INTERFACE ${Python3_LIBRARIES} )',
+        # )
+
         replace_all(
-            "CMakeLists.txt",
-            'target_link_libraries(rdkit_py_base INTERFACE ${Python3_LIBRARY} )',
-            'target_link_libraries(rdkit_py_base INTERFACE ${Python3_LIBRARIES} )',
+            "External/pubchem_shape/Wrap/CMakeLists.txt",
+            'find_package(Python3 COMPONENTS Interpreter Development NumPy REQUIRED)',
+            'find_package(Python3 COMPONENTS Interpreter Development NumPy)',
         )
         
         if "macosx" in os.environ["CIBW_BUILD"]:
