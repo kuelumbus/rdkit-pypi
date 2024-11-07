@@ -178,12 +178,18 @@ freetype/2.13.2
 
         # on windows, cmake is not configured to detect the python*.lib dynamic library
         # 
+        # replace_all(
+        #     "CMakeLists.txt",
+        #     'target_link_libraries(rdkit_py_base INTERFACE ${Python3_LIBRARIES} )',
+        #     'message("HERE")\n message(${Python3_LIBRARIES})\n target_link_libraries(rdkit_py_base INTERFACE ${Python3_LIBRARIES} )',
+        # )
+
+        # on windows; bug in 2024_03_6
         replace_all(
             "CMakeLists.txt",
+            'target_link_libraries(rdkit_py_base INTERFACE ${Python3_LIBRARY} )',
             'target_link_libraries(rdkit_py_base INTERFACE ${Python3_LIBRARIES} )',
-            'message("HERE")\n message(${Python3_LIBRARIES})\n target_link_libraries(rdkit_py_base INTERFACE ${Python3_LIBRARIES} )',
         )
-
         
         if "macosx" in os.environ["CIBW_BUILD"]:
             # Replace Cairo with cairo because conan uses lower case target names
