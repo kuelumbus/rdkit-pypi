@@ -51,8 +51,7 @@ class BuildRDKit(build_ext_orig):
             ]
         )
 
-        # set true for all builds
-        without_python_lib = "boost:without_python_lib=True"
+        without_python_lib = "boost:without_python_lib=False"
         boost_version_string = f"boost/{boost_version}@chris/mod_boost"
         without_stacktrace = "False"
 
@@ -304,13 +303,13 @@ freetype/2.13.2
         if "linux" in sys.platform:
             # Use ninja for linux builds
             cmds = [
-                f"cmake -S . -B build -G Ninja --debug-find-pkg=python3 {' '.join(options)} ",
+                f"cmake -S . -B build -G Ninja --debug-find {' '.join(options)} ",
                 "cmake --build build --config Release",
                 "cmake --install build",
             ]
         else:
             cmds = [
-                f"cmake -S . -B build --debug-find-pkg=python3 {' '.join(options)} ",
+                f"cmake -S . -B build --debug-find {' '.join(options)} ",
                 "cmake --build build --config Release -v",
                 "cmake --install build",
             ]
