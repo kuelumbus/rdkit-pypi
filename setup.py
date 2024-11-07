@@ -5,14 +5,14 @@ from distutils.file_util import copy_file
 from pathlib import Path
 from shutil import copytree, rmtree, ignore_patterns
 from subprocess import call, check_call
-from sysconfig import get_paths
+import sysconfig
 from textwrap import dedent
 
 from setuptools import Extension, find_packages, setup
 from setuptools.command.build_ext import build_ext as build_ext_orig
 
 # RDKit version to build (tag from github repository)
-rdkit_tag = "Release_2024_03_5"
+rdkit_tag = "Release_2024_03_6"
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -168,14 +168,28 @@ freetype/2.13.2
 
         # Fix a bug in conan or rdkit: target name for numpy is boost::numpy{pyversion} with small 'b'
         # and not Boost::numpy{pyversion}
-        # Line 345 in 2024_03_04 in CMakeLists.txt
-        # target_link_libraries(rdkit_py_base INTERFACE Boost::${Boost_Python_Lib} "Boost::numpy${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")
+        # Line 312 in 2024_03_06 in CMakeLists.txt
+        # NEW: target_link_libraries(rdkit_py_base INTERFACE "Boost::python${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}" "Boost::numpy${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}")
         replace_all(
             "CMakeLists.txt",
-            'target_link_libraries(rdkit_py_base INTERFACE Boost::${Boost_Python_Lib} "Boost::numpy${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")',
-            'target_link_libraries(rdkit_py_base INTERFACE Boost::${Boost_Python_Lib} "boost::numpy${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")',
+            'target_link_libraries(rdkit_py_base INTERFACE "Boost::python${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}" "Boost::numpy${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}")',
+            'target_link_libraries(rdkit_py_base INTERFACE "boost::python${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}" "boost::numpy${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}")',
         )
 
+        # on windows, cmake is not configured to detect the python*.lib dynamic library
+        # 
+        # replace_all(
+        #     "CMakeLists.txt",
+        #     'target_link_libraries(rdkit_py_base INTERFACE ${Python3_LIBRARIES} )',
+        #     'message("HERE")\n message(${Python3_LIBRARIES})\n target_link_libraries(rdkit_py_base INTERFACE ${Python3_LIBRARIES} )',
+        # )
+
+        # on windows; bug in 2024_03_6
+        replace_all(
+            "CMakeLists.txt",
+            'target_link_libraries(rdkit_py_base INTERFACE ${Python3_LIBRARY} )',
+            'target_link_libraries(rdkit_py_base INTERFACE ${Python3_LIBRARIES} )',
+        )
         
         if "macosx" in os.environ["CIBW_BUILD"]:
             # Replace Cairo with cairo because conan uses lower case target names
@@ -192,22 +206,28 @@ freetype/2.13.2
             )
 
 
+
+        print("---- Conf vars", file=sys.stderr)
+        print(sysconfig.get_paths(), file=sys.stderr)
+        print(sysconfig.get_config_vars(), file=sys.stderr)
+        print("---- Conf vars", file=sys.stderr)
+        
+
         # Define CMake options
         options = [
+            # f"-DCMAKE_FIND_DEBUG_MODE=ON", # Enable debug mode
             f"-DCMAKE_TOOLCHAIN_FILE={conan_toolchain_path / 'conan_toolchain.cmake'}",
             # For the toolchain file this needs to be set
             f"-DCMAKE_POLICY_DEFAULT_CMP0091=NEW",
             # Boost_VERSION_STRING is set but Boost_LIB_VERSION is not set by conan.
             # Boost_LIB_VERSION is required by RDKit => Set manually
             f"-DBoost_LIB_VERSION={boost_lib_version}",
-            # Select correct python interpreter
-            f"-DPYTHON_EXECUTABLE={sys.executable}",
-            f"-DPYTHON_INCLUDE_DIR={get_paths()['include']}",
+            # Select correct python 3 version
+            f"-DPython3_ROOT_DIR={Path(sys.prefix)}",
             # RDKit build flags
             "-DRDK_BUILD_INCHI_SUPPORT=ON",
             "-DRDK_BUILD_AVALON_SUPPORT=ON",
             "-DRDK_BUILD_PYTHON_WRAPPERS=ON",
-            "-DRDK_BOOST_PYTHON3_NAME=python",  # Overwrite this. This is the name of the interface in cmake defined by conan.
             "-DRDK_BUILD_YAEHMOP_SUPPORT=ON",
             "-DRDK_BUILD_XYZ2MOL_SUPPORT=ON",
             "-DRDK_INSTALL_INTREE=OFF",
@@ -228,16 +248,16 @@ freetype/2.13.2
         vcpkg_path = cwd
         vcpkg_inc = vcpkg_path / "vcpkg_installed" / "x64-windows" / "include"
         vcpkg_lib = vcpkg_path / "vcpkg_installed" / "x64-windows" / "lib"
+
         if sys.platform == "win32":
+            def to_win_path(pt: Path):
+                return str(pt).replace("\\", "/")
+        
             options += [
-                "-Ax64",
                 # DRDK_INSTALL_STATIC_LIBS should be fixed in newer RDKit builds. Remove?
                 "-DRDK_INSTALL_STATIC_LIBS=OFF",
                 "-DRDK_INSTALL_DLLS_MSVC=ON",
             ]
-
-            def to_win_path(pt: Path):
-                return str(pt).replace("\\", "/")
 
             # Link cairo and freetype
             options += [
@@ -277,13 +297,19 @@ freetype/2.13.2
         if "linux" in sys.platform:
             # Use ninja for linux builds
             cmds = [
-                f"cmake -S . -B build -G Ninja {' '.join(options)} ",
+                f"cmake -S . -B build -G Ninja --debug-find-pkg=Python3 {' '.join(options)} ",
                 "cmake --build build --config Release",
+                "cmake --install build",
+            ]
+        elif sys.platform == "win32":
+            cmds = [
+                f"cmake -S . -B build --debug-find-pkg=Python3 {' '.join(options)} ",
+                "cmake --build build --config Release -v",
                 "cmake --install build",
             ]
         else:
             cmds = [
-                f"cmake -S . -B build {' '.join(options)} ",
+                f"cmake -S . -B build --debug-find-pkg=Python3 {' '.join(options)} ",
                 "cmake --build build --config Release",
                 "cmake --install build",
             ]
