@@ -176,6 +176,14 @@ freetype/2.13.2
             'target_link_libraries(rdkit_py_base INTERFACE "boost::python${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}" "boost::numpy${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}")',
         )
 
+        # on windows, cmake is not configured to detect the python*.lib dynamic library
+        # 
+        replace_all(
+            "CMakeLists.txt",
+            'target_link_libraries(rdkit_py_base INTERFACE ${Python3_LIBRARIES} )',
+            'message("HERE")\n message(${Python3_LIBRARIES})\n target_link_libraries(rdkit_py_base INTERFACE ${Python3_LIBRARIES} )',
+        )
+
         
         if "macosx" in os.environ["CIBW_BUILD"]:
             # Replace Cairo with cairo because conan uses lower case target names
@@ -191,7 +199,9 @@ freetype/2.13.2
                 'target_link_libraries(MolDraw2D_static PUBLIC cairo::cairo)',
             )
 
-        
+
+
+
         print("---- Conf vars", file=sys.stderr)
         print(sysconfig.get_paths(), file=sys.stderr)
         print(sysconfig.get_config_vars(), file=sys.stderr)
@@ -209,8 +219,6 @@ freetype/2.13.2
             f"-DBoost_LIB_VERSION={boost_lib_version}",
             # Select correct python 3 version
             f"-DPython3_ROOT_DIR={Path(sys.prefix)}",
-            # Point to the system install path of python to correctly find the python.lib file 
-            # f"-DPython3_LIBRARY={sysconfig.get_config_var('LIBDIR')}",
             # RDKit build flags
             "-DRDK_BUILD_INCHI_SUPPORT=ON",
             "-DRDK_BUILD_AVALON_SUPPORT=ON",
@@ -239,16 +247,13 @@ freetype/2.13.2
         if sys.platform == "win32":
             def to_win_path(pt: Path):
                 return str(pt).replace("\\", "/")
-            
-            pt_stdlib = Path(sysconfig.get_path('stdlib'))
+            # pt_stdlib = Path(sysconfig.get_path('stdlib'))
 
-            pt_tools = Path(sysconfig.get_path('stdlib')) / ".."
-            pt_tools = pt_tools.resolve()
+            # pt_tools = Path(sysconfig.get_path('stdlib')) / ".."
+            # pt_tools = pt_tools.resolve()
             # Copy dll to env dir
-            [copy_file(i, str(Path(sys.prefix))) for i in pt_tools.rglob("*.dll")]
 
-
-            pt_scripts = Path(sysconfig.get_path('scripts'))
+            # pt_scripts = Path(sysconfig.get_path('scripts'))
             
             options += [
                 # Setting this on linux or macos fails with
@@ -303,13 +308,13 @@ freetype/2.13.2
         if "linux" in sys.platform:
             # Use ninja for linux builds
             cmds = [
-                f"cmake -S . -B build -G Ninja --debug-find {' '.join(options)} ",
+                f"cmake -S . -B build -G Ninja --debug-find-pkg=Python3 {' '.join(options)} ",
                 "cmake --build build --config Release",
                 "cmake --install build",
             ]
         else:
             cmds = [
-                f"cmake -S . -B build --debug-find {' '.join(options)} ",
+                f"cmake -S . -B build --debug-find-pkg=Python3 {' '.join(options)} ",
                 "cmake --build build --config Release -v",
                 "cmake --install build",
             ]
