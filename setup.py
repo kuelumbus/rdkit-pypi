@@ -310,7 +310,7 @@ freetype/2.13.2
         else:
             cmds = [
                 f"cmake -S . -B build --debug-find-pkg=python3 {' '.join(options)} ",
-                "cmake --build build --config Release -V",
+                "cmake --build build --config Release -v",
                 "cmake --install build",
             ]
 
