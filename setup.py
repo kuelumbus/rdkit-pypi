@@ -303,7 +303,7 @@ freetype/2.13.2
             ]
         elif sys.platform == "win32":
             cmds = [
-                f"cmake -S . -B build -G Ninja --debug-find-pkg=Python3 {' '.join(options)} ",
+                f"cmake -S . -B build --debug-find-pkg=Python3 {' '.join(options)} ",
                 "cmake --build build --config Release -v",
                 "cmake --install build",
             ]
