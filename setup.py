@@ -176,27 +176,6 @@ freetype/2.13.2
             'target_link_libraries(rdkit_py_base INTERFACE "boost::python${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}" "boost::numpy${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}")',
         )
 
-        # on windows, cmake is not configured to detect the python*.lib dynamic library
-        # 
-        # replace_all(
-        #     "CMakeLists.txt",
-        #     'target_link_libraries(rdkit_py_base INTERFACE ${Python3_LIBRARIES} )',
-        #     'message("HERE")\n message(${Python3_LIBRARIES})\n target_link_libraries(rdkit_py_base INTERFACE ${Python3_LIBRARIES} )',
-        # )
-
-        # on windows; bug in 2024_03_6
-        # replace_all(
-        #     "CMakeLists.txt",
-        #     'target_link_libraries(rdkit_py_base INTERFACE ${Python3_LIBRARY} )',
-        #     'target_link_libraries(rdkit_py_base INTERFACE ${Python3_LIBRARIES} )',
-        # )
-
-        replace_all(
-            "External/pubchem_shape/Wrap/CMakeLists.txt",
-            'find_package(Python3 COMPONENTS Interpreter Development NumPy REQUIRED)',
-            'find_package(Python3 COMPONENTS Interpreter Development NumPy)',
-        )
-        
         if "macosx" in os.environ["CIBW_BUILD"]:
             # Replace Cairo with cairo because conan uses lower case target names
             # only on MacOS cairo is installed using conan
@@ -211,6 +190,13 @@ freetype/2.13.2
                 'target_link_libraries(MolDraw2D_static PUBLIC cairo::cairo)',
             )
 
+        # introduced in 2024_09_01 for compiling pubchem shape.
+        replace_all(
+            "External/pubchem_shape/Wrap/CMakeLists.txt",
+            'find_package(Python3 COMPONENTS Interpreter Development NumPy REQUIRED)',
+            'find_package(Python3 COMPONENTS Interpreter Development NumPy)',
+        )
+        
 
 
         print("---- Conf vars", file=sys.stderr)
@@ -299,6 +285,12 @@ freetype/2.13.2
                 # Arm64 build start with development target 11.0
                 f"-DCMAKE_OSX_DEPLOYMENT_TARGET={os.environ.get('MACOSX_DEPLOYMENT_TARGET', '11.0')}",
             ]
+
+        if "cp313-macosx_arm64" in os.environ["CIBW_BUILD"]:
+             options += [
+                 # does not automatically build arm64
+                 "-DCMAKE_OSX_ARCHITECTURES=arm64",
+             ]
 
         if "linux" in sys.platform:
             # Use ninja for linux builds
