@@ -280,17 +280,11 @@ freetype/2.13.2
             options += [
                 "-DRDK_OPTIMIZE_POPCNT=OFF",
                 # Otherwise, cmake tries to link the system freetype
-                "-DFREETYPE_LIBRARY=/opt/homebrew/lib/libfreetype.dylib",
-                "-DFREETYPE_INCLUDE_DIRS=/opt/homebrew/include",
+                # "-DFREETYPE_LIBRARY=/opt/homebrew/lib/libfreetype.dylib",
+                # "-DFREETYPE_INCLUDE_DIRS=/opt/homebrew/include",
                 # Arm64 build start with development target 11.0
                 f"-DCMAKE_OSX_DEPLOYMENT_TARGET={os.environ.get('MACOSX_DEPLOYMENT_TARGET', '11.0')}",
             ]
-
-        if "cp313-macosx_arm64" in os.environ["CIBW_BUILD"]:
-             options += [
-                 # does not automatically build arm64
-                 "-DCMAKE_OSX_ARCHITECTURES=arm64",
-             ]
 
         if "linux" in sys.platform:
             # Use ninja for linux builds
