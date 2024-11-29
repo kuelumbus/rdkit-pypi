@@ -285,7 +285,7 @@ freetype/2.13.2
                 # Arm64 build start with development target 11.0
                 f"-DCMAKE_OSX_DEPLOYMENT_TARGET={os.environ.get('MACOSX_DEPLOYMENT_TARGET', '11.0')}",
                 f"-DCMAKE_OSX_ARCHITECTURES=arm64",
-                f"-CMAKE_VERBOSE_MAKEFILE=ON" # Increase verbosity
+                f"-DCMAKE_VERBOSE_MAKEFILE=ON" # Increase verbosity
             ]
 
         if "linux" in sys.platform:
