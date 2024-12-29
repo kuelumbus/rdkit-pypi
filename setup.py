@@ -205,6 +205,13 @@ freetype/2.13.2
         print("---- Conf vars", file=sys.stderr)
         
 
+
+        print("---- Conf vars", file=sys.stderr)
+        print(sysconfig.get_paths(), file=sys.stderr)
+        print(sysconfig.get_config_vars(), file=sys.stderr)
+        print("---- Conf vars", file=sys.stderr)
+        
+
         # Define CMake options
         options = [
             # f"-DCMAKE_FIND_DEBUG_MODE=ON", # Enable debug mode
@@ -304,7 +311,7 @@ freetype/2.13.2
         else:
             cmds = [
                 f"cmake -S . -B build --debug-find-pkg=Python3 {' '.join(options)} ",
-                "cmake --build build --config Release -v",
+                "cmake --build build --config Release",
                 "cmake --install build",
             ]
 
