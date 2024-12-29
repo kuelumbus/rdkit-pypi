@@ -94,23 +94,23 @@ jobs:
             platform_id: macosx_arm64
 
           # MacOS 64 bit Intel: x86_64
-          - os: macos-12
+          - os: macos-13
             bitness: 64
             python: 39
             platform_id: macosx_x86_64
-          - os: macos-12
+          - os: macos-13
             bitness: 64
             python: 310
             platform_id: macosx_x86_64
-          - os: macos-12
+          - os: macos-13
             bitness: 64
             python: 311
             platform_id: macosx_x86_64
-          - os: macos-12
+          - os: macos-13
             bitness: 64
             python: 312
             platform_id: macosx_x86_64
-          - os: macos-12
+          - os: macos-13
             bitness: 64
             python: 313
             platform_id: macosx_x86_64
