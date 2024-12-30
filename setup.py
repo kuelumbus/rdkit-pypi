@@ -47,17 +47,31 @@ class BuildRDKit(build_ext_orig):
                 "conan",
                 "export",
                 f"{mod_conan_path}/all/",
-                f"{boost_version}@chris/mod_boost",
+                "--version",
+                f"{boost_version}",
+                "--user",
+                "chris",
+                "--channel",
+                "mod_boost",
             ]
         )
 
-        without_python_lib = "boost:without_python_lib=False"
+        # conan2 needs a default profile
+        check_call(
+            [
+                "conan",
+                "profile",
+                "detect",
+            ]
+        )
+
+        without_python_lib = "boost/*:without_python_lib=False"
         boost_version_string = f"boost/{boost_version}@chris/mod_boost"
         without_stacktrace = "False"
 
         if sys.platform != "win32":
             # if no windows builds, compile boost without python lib.a/.so/.dylib
-            without_python_lib = "boost:without_python_lib=True"
+            without_python_lib = "boost/*:without_python_lib=True"
 
         if "macosx_arm64" in os.environ["CIBW_BUILD"]:
             # does not work on macos arm64 for some reason
@@ -80,17 +94,16 @@ freetype/2.13.2
             {macos_libs}
 
             [generators]
-            deploy
             CMakeDeps
             CMakeToolchain
             VirtualRunEnv
 
             [options]
-            boost:shared=True
-            boost:without_python=False
+            boost/*:shared=True
+            boost/*:without_python=False
             {without_python_lib}
-            boost:python_executable={sys.executable}
-            boost:without_stacktrace={without_stacktrace}
+            boost/*:python_executable={sys.executable}
+            boost/*:without_stacktrace={without_stacktrace}
         """
         # boost:debug_level=1
 
@@ -103,7 +116,7 @@ freetype/2.13.2
             "conanfile.txt",
             # build all missing
             "--build=missing",
-            "-if",
+            "--output-folder",
             f"{conan_toolchain_path}",
         ]
 

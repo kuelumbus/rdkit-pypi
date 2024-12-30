@@ -4,7 +4,7 @@ requires = [
     "wheel",
     "cmake == 3.31.1",
     "numpy",
-    "conan == 1.64.0",
+    "conan == 2.11.0",
     "ninja",
     "pybind11-stubgen",
     "Pillow",  # required for building the stubs
