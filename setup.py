@@ -284,7 +284,9 @@ freetype/2.13.2
             # for python 3.13 macOS ARM64, 'CFLAGS', 'LDFLAGS', 'LDSHARED', 'BLDSHARED'  contains '-arch x86_64'
             # set  LDFLAGS to ''
             if "cp313" in os.environ["CIBW_BUILD"]:
-                os.environ['LDFLAGS'] = ''
+                options += [
+                    f"-DLDFLAGS=''"
+                ]
 
 
         if "linux" in sys.platform:
@@ -302,7 +304,7 @@ freetype/2.13.2
             ]
         else:
             cmds = [
-                f"cmake -S . -B build --debug-find-pkg=Python3 {' '.join(options)} ",
+                f"cmake -S . -B build -LAH --debug-find-pkg=Python3 {' '.join(options)} ",
                 "cmake --build build --config Release",
                 "cmake --install build",
             ]
