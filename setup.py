@@ -196,21 +196,8 @@ freetype/2.13.2
             'find_package(Python3 COMPONENTS Interpreter Development NumPy REQUIRED)',
             'find_package(Python3 COMPONENTS Interpreter Development NumPy)',
         )
-        
 
-
-        print("---- Conf vars", file=sys.stderr)
-        print(sysconfig.get_paths(), file=sys.stderr)
-        print(sysconfig.get_config_vars(), file=sys.stderr)
-        print("---- Conf vars", file=sys.stderr)
-        
-
-
-        print("---- Conf vars", file=sys.stderr)
-        print(sysconfig.get_paths(), file=sys.stderr)
-        print(sysconfig.get_config_vars(), file=sys.stderr)
-        print("---- Conf vars", file=sys.stderr)
-        
+  
 
         # Define CMake options
         options = [
@@ -294,6 +281,11 @@ freetype/2.13.2
                 f"-DCMAKE_OSX_ARCHITECTURES=arm64",
                 f"-DCMAKE_VERBOSE_MAKEFILE=ON" # Increase verbosity
             ]
+            # for python 3.13 macOS ARM64, 'CFLAGS', 'LDFLAGS', 'LDSHARED', 'BLDSHARED'  contains '-arch x86_64'
+            # set  LDFLAGS to ''
+            if "cp313" in os.environ["CIBW_BUILD"]:
+                os.environ['LDFLAGS'] = ''
+
 
         if "linux" in sys.platform:
             # Use ninja for linux builds
@@ -321,6 +313,13 @@ freetype/2.13.2
         path_site_packages = rdkit_install_path / "lib" / py_name / "site-packages"
         if sys.platform == "win32":
             path_site_packages = rdkit_install_path / "Lib" / "site-packages"
+        
+        
+        print("---- Conf vars", file=sys.stderr)
+        print(sysconfig.get_paths(), file=sys.stderr)
+        print(sysconfig.get_config_vars(), file=sys.stderr)
+        print("---- Conf vars", file=sys.stderr)     
+
 
         print("!!! --- CMAKE build command and variables for RDKit", file=sys.stderr)
         print(cmds, file=sys.stderr)
