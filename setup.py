@@ -282,10 +282,15 @@ freetype/2.13.2
                 f"-DCMAKE_VERBOSE_MAKEFILE=ON" # Increase verbosity
             ]
             # for python 3.13 macOS ARM64, 'CFLAGS', 'LDFLAGS', 'LDSHARED', 'BLDSHARED'  contains '-arch x86_64'
-            # set  LDFLAGS to ''
+            # RDKit uses LDSHARED to compile the python extension.
+            #  see https://github.com/rdkit/rdkit/blob/498f57a4eb99a67d842cbc3f89f94b302f398a11/CMakeLists.txt#L376C59-L376C95
+            # remove "-arch x86_64" from LDSHARED
             if "cp313" in os.environ["CIBW_BUILD"]:
+                
+                ldshared = sysconfig.get_config_var('LDSHARED').replace("-arch x86_64", "")
+                os.environ['LDSHARED'] = ldshared
                 options += [
-                    f"-DLDFLAGS=''"
+                    f"-DLDSHARED={ldshared}"
                 ]
 
 
