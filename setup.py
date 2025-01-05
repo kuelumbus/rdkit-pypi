@@ -196,21 +196,8 @@ freetype/2.13.2
             'find_package(Python3 COMPONENTS Interpreter Development NumPy REQUIRED)',
             'find_package(Python3 COMPONENTS Interpreter Development NumPy)',
         )
-        
 
-
-        print("---- Conf vars", file=sys.stderr)
-        print(sysconfig.get_paths(), file=sys.stderr)
-        print(sysconfig.get_config_vars(), file=sys.stderr)
-        print("---- Conf vars", file=sys.stderr)
-        
-
-
-        print("---- Conf vars", file=sys.stderr)
-        print(sysconfig.get_paths(), file=sys.stderr)
-        print(sysconfig.get_config_vars(), file=sys.stderr)
-        print("---- Conf vars", file=sys.stderr)
-        
+  
 
         # Define CMake options
         options = [
