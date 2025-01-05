@@ -290,7 +290,7 @@ freetype/2.13.2
                 ldshared = sysconfig.get_config_var('LDSHARED').replace("-arch x86_64", "")
                 os.environ['LDSHARED'] = ldshared
                 options += [
-                    f"-DLDSHARED={ldshared}"
+                    f'-DLDSHARED="{ldshared}"'
                 ]
 
 
