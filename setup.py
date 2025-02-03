@@ -1,11 +1,11 @@
 import os
 import shlex
 import sys
+import sysconfig
 from distutils.file_util import copy_file
 from pathlib import Path
-from shutil import copytree, rmtree, ignore_patterns
+from shutil import copytree, ignore_patterns, rmtree
 from subprocess import call, check_call
-import sysconfig
 from textwrap import dedent
 
 from setuptools import Extension, find_packages, setup
@@ -227,7 +227,7 @@ freetype/2.13.2
             # Speed up builds
             "-DRDK_BUILD_CPP_TESTS=OFF",
             # Fix InChi download
-            "-DINCHI_URL=https://rdkit.org/downloads/INCHI-1-SRC.zip",
+            "-DINCHI_URL=https://github.com/IUPAC-InChI/InChI/releases/download/v1.07.2/INCHI-1-SRC.zip",
         ]
 
         # Modifications for Windows
