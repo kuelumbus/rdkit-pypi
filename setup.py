@@ -1,11 +1,11 @@
 import os
 import shlex
 import sys
-import sysconfig
 from distutils.file_util import copy_file
 from pathlib import Path
-from shutil import copytree, ignore_patterns, rmtree
+from shutil import copytree, rmtree, ignore_patterns
 from subprocess import call, check_call
+import sysconfig
 from textwrap import dedent
 
 from setuptools import Extension, find_packages, setup
