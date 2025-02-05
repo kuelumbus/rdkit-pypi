@@ -226,8 +226,6 @@ freetype/2.13.2
             "-DCMAKE_BUILD_TYPE=Release",
             # Speed up builds
             "-DRDK_BUILD_CPP_TESTS=OFF",
-            # Fix InChi download
-            "-DINCHI_URL=https://rdkit.org/downloads/INCHI-1-SRC.zip",
         ]
 
         # Modifications for Windows
