@@ -156,12 +156,12 @@ freetype/2.13.2
         # Start build process
         os.chdir(str("rdkit"))
 
-        if rdkit_tag == "Release_2025_03_1":
-            # https://github.com/rdkit/rdkit/pull/8399/commits/e5b1e3caf0c362139a5905575b5f995c470b9300
+        if rdkit_tag == "Release_2025_03_2":
+            # https://github.com/rdkit/rdkit/pull/8477/commits/0b8fc6fbf7bee2a0de34daee6088aeb8c8036272
             check_call(["git", "config", "--global", "user.email", '"you@example.com"'])
             check_call(["git", "config", "--global", "user.name", '"Your Name"'])
 
-            check_call(["git", "fetch", "origin", "pull/8399/head:tag_release"])
+            check_call(["git", "fetch", "origin", "pull/8477/head:tag_release"])
             check_call(
                 [
                     "git",
@@ -169,7 +169,7 @@ freetype/2.13.2
                     "--strategy=recursive",
                     "-X",
                     "theirs",
-                    "e5b1e3caf0c362139a5905575b5f995c470b9300",
+                    "0b8fc6fbf7bee2a0de34daee6088aeb8c8036272",
                 ]
             )
     
