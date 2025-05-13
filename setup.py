@@ -156,7 +156,7 @@ freetype/2.13.2
         # Start build process
         os.chdir(str("rdkit"))
 
-        if rdkit_tag = "Release_2025_03_2"
+        if rdkit_tag == "Release_2025_03_2":
             # https://github.com/rdkit/rdkit/pull/8399/commits/e5b1e3caf0c362139a5905575b5f995c470b9300
             check_call(["git", "config", "--global", "user.email", '"you@example.com"'])
             check_call(["git", "config", "--global", "user.name", '"Your Name"'])
