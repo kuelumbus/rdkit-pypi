@@ -156,22 +156,21 @@ freetype/2.13.2
         # Start build process
         os.chdir(str("rdkit"))
 
-        if rdkit_tag == "Release_2025_03_3":
-            # https://github.com/rdkit/rdkit/pull/8399/commits/e5b1e3caf0c362139a5905575b5f995c470b9300
-            check_call(["git", "config", "--global", "user.email", '"you@example.com"'])
-            check_call(["git", "config", "--global", "user.name", '"Your Name"'])
-
-            check_call(["git", "fetch", "origin", "pull/8477/head:tag_release"])
-            check_call(
-                [
-                    "git",
-                    "cherry-pick",
-                    "--strategy=recursive",
-                    "-X",
-                    "theirs",
-                    "0b8fc6fbf7bee2a0de34daee6088aeb8c8036272",
-                ]
-            )
+        # if rdkit_tag == "Release_2025_03_3":
+        #     # https://github.com/rdkit/rdkit/pull/8399/commits/e5b1e3caf0c362139a5905575b5f995c470b9300
+        #     check_call(["git", "config", "--global", "user.email", '"you@example.com"'])
+        #     check_call(["git", "config", "--global", "user.name", '"Your Name"'])
+        #     check_call(["git", "fetch", "origin", "pull/8477/head:tag_release"])
+        #     check_call(
+        #         [
+        #             "git",
+        #             "cherry-pick",
+        #             "--strategy=recursive",
+        #             "-X",
+        #             "theirs",
+        #             "0b8fc6fbf7bee2a0de34daee6088aeb8c8036272",
+        #         ]
+        #     )
     
         import fileinput
 
