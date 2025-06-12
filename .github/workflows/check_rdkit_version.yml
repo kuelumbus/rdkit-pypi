@@ -28,7 +28,7 @@ jobs:
           rm -fr rdkit
           echo "changed=false" >> $GITHUB_OUTPUT
           if [[ "$new_tag" != "$current_tag" ]]; then
-          sed -i "s/rdkit_tag =.*/rdkit_tag = \"$new_tag\"/g" setup.py
+          sed -i "0,/rdkit_tag/ s/rdkit_tag =.*/rdkit_tag = \"$new_tag\"/g" setup.py
           echo "changed=true" >> $GITHUB_OUTPUT
           echo "new_tag=${new_tag}" >> $GITHUB_OUTPUT
           fi
