@@ -423,6 +423,9 @@ freetype/2.13.2
         print(cmds, file=sys.stderr)
         print(variables, file=sys.stderr)
 
+        # Change directory here to prevent circular imports
+        os.chdir(str(cwd))
+
         [
             check_call(
                 shlex.split(c, posix="win32" not in sys.platform),
@@ -438,7 +441,7 @@ freetype/2.13.2
         with open(stubs_error_file, "r") as fin:
             print(fin.read(), file=sys.stderr)
 
-        os.chdir(str(cwd))
+        
 
         # Copy RDKit and additional files to the wheel path
         # Modify RDPaths.py
