@@ -30,6 +30,9 @@ before-all = [
     "yum update -y",
     "yum install freetype-devel libpng-devel pixman-devel zlib-devel eigen3-devel cairo-devel -y"
 ]
+before-build = [
+    "conan profile detect"
+]
 
 repair-wheel-command = [
     # for boost libs
@@ -43,7 +46,10 @@ environment-pass = ["CIBW_BUILD"]
 
 # Disable installing libraries using brew because they do not meet the development target
 # eigen cairo freetype libpixman
-before-all = ["brew install gnu-sed"]
+before-all = [
+    "brew install gnu-sed",
+    "conan profile detect",
+]
 
 repair-wheel-command = [
     "export DYLD_LIBRARY_PATH='/usr/local/lib:/usr/lib:/Users/admin/lib:/Users/runner/work/lib'",
@@ -67,6 +73,7 @@ environment = { MACOSX_DEPLOYMENT_TARGET="11.0" }
 
 before-build = [
     "pip install delvewheel",
+    "conan profile detect",
 ]
 
 environment = { TMP='C:\\temp', TEMP='C:\\temp', RUNNER_TEMP='C:\\temp'}
