@@ -47,12 +47,13 @@ class BuildRDKit(build_ext_orig):
                 "conan",
                 "export",
                 f"{mod_conan_path}/all/",
-                f"{boost_version}@chris/mod_boost",
+                "--version",
+                f"{boost_version}",
             ]
         )
 
         without_python_lib = "boost:without_python_lib=False"
-        boost_version_string = f"boost/{boost_version}@chris/mod_boost"
+        boost_version_string = f"boost/{boost_version}"
         without_stacktrace = "False"
 
         if sys.platform != "win32":
@@ -80,7 +81,6 @@ freetype/2.13.2
             {macos_libs}
 
             [generators]
-            deploy
             CMakeDeps
             CMakeToolchain
             VirtualRunEnv
@@ -103,16 +103,16 @@ freetype/2.13.2
             "conanfile.txt",
             # build all missing
             "--build=missing",
-            "-if",
+            "--output-folder",
             f"{conan_toolchain_path}",
         ]
 
         if sys.platform == "win32":
-            cmd += ["-pr:b", "default"]
+            cmd += ["--profile:build", "default"]
 
         # but force build b2 on linux
         if "linux" in sys.platform:
-            cmd += ["--build=b2", "-pr:b", "default"]
+            cmd += ["--build=b2", "--profile:build", "default"]
 
         check_call(cmd)
 

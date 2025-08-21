@@ -21,7 +21,6 @@ import shutil
 import sys
 import yaml
 
-required_conan_version = ">=1.53.0"
 
 # When adding (or removing) an option, also add this option to the list in
 # `rebuild-dependencies.yml` and re-run that script.
@@ -2048,6 +2047,4 @@ class BoostConan(ConanFile):
                 (self.settings.compiler == "gcc" and Version(self.settings.compiler.version) == "10"):
                 self.cpp_info.components["cobalt"].cxxflags.append("-fcoroutines")
 
-        #TODO: remove in the future, user_info deprecated in conan2, but kept for compatibility while recipe is cross-compatible.
-        self.user_info.stacktrace_addr2line_available = self._stacktrace_addr2line_available
         self.conf_info.define("user.boost:stacktrace_addr2line_available", self._stacktrace_addr2line_available)

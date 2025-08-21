@@ -4,7 +4,7 @@ requires = [
     "wheel",
     "cmake == 3.31.1",
     "numpy",
-    "conan == 1.66.0",
+    "conan>=2.0.0,<3.0.0",
     "ninja",
     "pybind11-stubgen",
     "Pillow",  # required for building the stubs
@@ -71,7 +71,7 @@ before-build = [
 
 environment = { TMP='C:\\temp', TEMP='C:\\temp', RUNNER_TEMP='C:\\temp'}
 repair-wheel-command = [
-    "C:\\rdkit\\conan\\conanrun.bat",
+    ".\\conan\\conanrun.ps1",
     "delvewheel show -v --add-path C:\\libs;C:\\rdkit\\vcpkg_installed\\x64-windows\\bin {wheel}",
     "delvewheel repair -v --add-path C:\\libs;C:\\rdkit\\vcpkg_installed\\x64-windows\\bin -w {dest_dir} {wheel}"
     ]
