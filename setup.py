@@ -37,6 +37,9 @@ class BuildRDKit(build_ext_orig):
     def conan_install(self, boost_version, conan_toolchain_path):
         """Run the Conan"""
 
+        # Create default profile if it doesn't exist (Conan 2 requirement)
+        check_call(["conan", "profile", "detect", "--force"])
+
         # This modified conanfile.py for boost does not link libpython*.so
         # When building a platform wheel, we don't want to link libpython*.so.
         mod_conan_path = "conan_boost_mod"
@@ -47,72 +50,32 @@ class BuildRDKit(build_ext_orig):
                 "conan",
                 "export",
                 f"{mod_conan_path}/all/",
-                f"{boost_version}@chris/mod_boost",
+                f"--name=boost",
+                f"--version={boost_version}",
+                f"--user=chris",
+                f"--channel=mod_boost",
             ]
         )
 
-        without_python_lib = "boost:without_python_lib=False"
-        boost_version_string = f"boost/{boost_version}@chris/mod_boost"
-        without_stacktrace = "False"
-
-        if sys.platform != "win32":
-            # if no windows builds, compile boost without python lib.a/.so/.dylib
-            without_python_lib = "boost:without_python_lib=True"
-
-        if "macosx_arm64" in os.environ["CIBW_BUILD"]:
-            # does not work on macos arm64 for some reason
-            without_stacktrace = "True"
-
-        macos_libs = ""
-        if "macosx" in os.environ["CIBW_BUILD"]:
-            ## install these libraries to meet the development target
-            macos_libs = """
-pixman/0.43.4
-cairo/1.18.0
-libpng/1.6.43
-fontconfig/2.15.0
-freetype/2.13.2
-"""
-
-        conanfile = f"""\
-            [requires]
-            {boost_version_string}
-            {macos_libs}
-
-            [generators]
-            deploy
-            CMakeDeps
-            CMakeToolchain
-            VirtualRunEnv
-
-            [options]
-            boost:shared=True
-            boost:without_python=False
-            {without_python_lib}
-            boost:python_executable={sys.executable}
-            boost:without_stacktrace={without_stacktrace}
-        """
-        # boost:debug_level=1
-
-        Path("conanfile.txt").write_text(dedent(conanfile))
-
-        # run conan install
+        # run conan install using conanfile.py
         cmd = [
             "conan",
             "install",
-            "conanfile.txt",
+            ".",  # Use current directory with conanfile.py
             # build all missing
             "--build=missing",
-            "-if",
+            "--output-folder",
             f"{conan_toolchain_path}",
+            # copies files to output folder
+            "--deployer=direct_deploy",
         ]
 
         if sys.platform == "win32":
-            cmd += ["-pr:b", "default"]
+            cmd += ["--profile:build", "default"]
 
         # but force build b2 on linux
         if "linux" in sys.platform:
-            cmd += ["--build=b2", "-pr:b", "default"]
+            cmd += ["--build=b2/*", "--profile:build", "default"]
 
         check_call(cmd)
 
@@ -355,8 +318,8 @@ freetype/2.13.2
         # While repairing the wheels, the built libs need to be copied to the platform wheels
         # Also, the libs needs to be accessible for building the stubs
         rdkit_lib_path = rdkit_install_path / "lib"
-        boost_lib_path = conan_toolchain_path / "boost" / "lib"
-        boost_lib_path_bin_windows_only = conan_toolchain_path / "boost" / "bin"
+        boost_lib_path = conan_toolchain_path / "direct_deploy" / "boost" / "lib"
+        boost_lib_path_bin_windows_only = conan_toolchain_path / "direct_deploy" / "boost" / "bin"
 
         cmds = []
         if "linux" in sys.platform:
@@ -407,6 +370,7 @@ freetype/2.13.2
             [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*dylib")]
 
         # Build the RDKit stubs
+
         cmds += [
             f"cmake --build build --config Release --target stubs -v",
         ]
