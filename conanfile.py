@@ -4,6 +4,7 @@ from conan import ConanFile
 from conan.tools.cmake import CMakeDeps, CMakeToolchain
 from conan.tools.env import VirtualRunEnv
 from conan.tools.files import copy
+from pathlib import Path
 
 
 class RDKitConan(ConanFile):
@@ -13,7 +14,7 @@ class RDKitConan(ConanFile):
         # Configure boost options
         self.options["boost/*"].shared = True
         self.options["boost/*"].without_python = False
-        self.options["boost/*"].python_executable = sys.executable
+        self.options["boost/*"].python_executable = Path(sys.executable).abspath()
         
         # Platform-specific configurations
         if self.settings.os == "Macos" and self.settings.arch == "armv8":
