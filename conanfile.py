@@ -14,7 +14,7 @@ class RDKitConan(ConanFile):
         # Configure boost options
         self.options["boost/*"].shared = True
         self.options["boost/*"].without_python = False
-        self.options["boost/*"].python_executable = Path(sys.executable).abspath()
+        self.options["boost/*"].python_executable = Path(sys.executable).absolute()
         
         # Platform-specific configurations
         if self.settings.os == "Macos" and self.settings.arch == "armv8":
