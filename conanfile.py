@@ -16,13 +16,10 @@ class RDKitConan(ConanFile):
         self.options["boost/*"].shared = True
         self.options["boost/*"].without_python = False
 
-        pt_path = str(Path(sys.executable))
-        if self.settings.os == "Windows":
-            # Because the workflows run on Windows runners with the Git Bash shell,
-            # as_posix returns "/" paths
-            pt_path = pt_path.as_posix()
-
-        self.options["boost/*"].python_executable = pt_path
+        # We always need a posix path with forward slashes
+        # Because the workflows run on Windows runners with the Git Bash shell,
+        # as_posix returns "/" paths
+        self.options["boost/*"].python_executable =  Path(sys.executable).as_posix()
 
         # Platform-specific configurations
         if self.settings.os == "Macos" and self.settings.arch == "armv8":
