@@ -7,6 +7,7 @@ from conan.tools.files import copy
 from pathlib import Path
 
 
+
 class RDKitConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     
@@ -14,8 +15,15 @@ class RDKitConan(ConanFile):
         # Configure boost options
         self.options["boost/*"].shared = True
         self.options["boost/*"].without_python = False
-        self.options["boost/*"].python_executable = Path(sys.executable).absolute()
-        
+
+        pt_path = str(Path(sys.executable))
+        if self.settings.os == "Windows":
+            # Because the workflows run on Windows runners with the Git Bash shell,
+            # as_posix returns "/" paths
+            pt_path = pt_path.as_posix()
+
+        self.options["boost/*"].python_executable = pt_path
+
         # Platform-specific configurations
         if self.settings.os == "Macos" and self.settings.arch == "armv8":
             # stacktrace does not work on macOS arm64 for some reason
