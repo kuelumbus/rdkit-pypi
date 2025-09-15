@@ -154,6 +154,13 @@ class BuildRDKit(build_ext_orig):
             'target_link_libraries(rdkit_py_base INTERFACE "boost::python${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}" "boost::numpy${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}")',
         )
 
+        if "linux" in sys.platform:
+            replace_all(
+                "External/Osmordred/CMakeLists.txt",
+                "include_directories(Osmordred LAPACK::LAPACK ${LAPACK_INCLUDE_DIRS})",
+                "include_directories(Osmordred /usr/include/lapacke)"
+            )
+
         if "macosx" in os.environ["CIBW_BUILD"]:
             # Replace Cairo with cairo because conan uses lower case target names
             # only on MacOS cairo is installed using conan
@@ -464,7 +471,7 @@ class BuildRDKit(build_ext_orig):
 
 setup(
     name="rdkit",
-    version=rdkit_tag.replace("Release_", "").replace("_", "."),
+    version=rdkit_tag.replace("Release_", "").replace("_", ".") + "+osmordred",
     description="A collection of chemoinformatics and machine-learning software written in C++ and Python",
     author="Christopher Kuenneth",
     author_email="chris@kuenneth.dev",
@@ -481,7 +488,7 @@ setup(
         "Pillow",
     ],
     ext_modules=[
-        RDKit("rdkit", rdkit_tag=rdkit_tag),
+        RDKit("rdkit", rdkit_tag="0507923186191ee6dd9aa4c17fff57355ecb368b"), # Head of osmordred branch
     ],
     cmdclass=dict(build_ext=BuildRDKit),
 )

@@ -28,7 +28,10 @@ build-frontend = { name = "pip", args = ["--no-clean"] }
 [tool.cibuildwheel.linux]
 before-all = [
     "yum update -y",
-    "yum install freetype-devel libpng-devel pixman-devel zlib-devel eigen3-devel cairo-devel -y"
+    "yum install freetype-devel libpng-devel pixman-devel zlib-devel cairo-devel lapack-devel openblas-devel -y",
+    # Osmordred needs eigen 3.4.0, this seems to be the easiest way to get it
+    "curl https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz | gzip -dc | tar xvf -",
+    "mkdir /usr/include/eigen3 && mv eigen-3.4.0/signature_of_eigen3_matrix_library eigen-3.4.0/Eigen eigen-3.4.0/unsupported /usr/include/eigen3"
 ]
 
 repair-wheel-command = [
