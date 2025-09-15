@@ -488,7 +488,7 @@ setup(
         "Pillow",
     ],
     ext_modules=[
-        RDKit("rdkit", rdkit_tag="0507923186191ee6dd9aa4c17fff57355ecb368b"), # Head of osmordred branch
+        RDKit("rdkit", rdkit_tag="osmordred"),
     ],
     cmdclass=dict(build_ext=BuildRDKit),
 )
