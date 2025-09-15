@@ -110,7 +110,7 @@ class BuildRDKit(build_ext_orig):
 
         # Clone RDKit from git at rdkit_tag
         check_call(
-            ["git", "clone", "-b", f"{ext.rdkit_tag}", "https://github.com/rdkit/rdkit"]
+            ["git", "clone", "-b", f"{ext.rdkit_tag}", "https://github.com/bp-kelley/rdkit"]
         )
 
         # Location of license file
