@@ -361,7 +361,7 @@ class BuildRDKit(build_ext_orig):
 
         elif "darwin" in sys.platform:
             # Github actions
-            to_path = Path("/Users/runner/work/lib")
+            to_path = Path.home() / "work/lib"
             if "CIRRUS_CI" in os.environ:
                 # on cirrus CI
                 to_path = Path("/Users/admin/lib")
