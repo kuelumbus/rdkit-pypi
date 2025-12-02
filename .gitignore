@@ -1,3 +1,11 @@
 
 wheelhouse*/
 .vscode/
+
+
+artifact/
+__pycache__/
+*.pyc
+
+.env
+upload_rdkit.sh
