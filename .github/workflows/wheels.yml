@@ -27,10 +27,6 @@ jobs:
         include:
           # Window 64 bit
           - os: windows-2022
-            python: 39
-            bitness: 64
-            platform_id: win_amd64
-          - os: windows-2022
             python: 310
             bitness: 64
             platform_id: win_amd64
@@ -52,10 +48,6 @@ jobs:
             platform_id: win_amd64
 
           # Linux 64 bit Intel: x86_64
-          - os: ubuntu-latest
-            python: 39
-            bitness: 64
-            platform_id: manylinux_x86_64
           - os: ubuntu-latest
             python: 310
             bitness: 64
@@ -82,10 +74,6 @@ jobs:
           # MacOS 64 bit Intel: arm64
           - os: macos-14
             bitness: 64
-            python: 39
-            platform_id: macosx_arm64
-          - os: macos-14
-            bitness: 64
             python: 310
             platform_id: macosx_arm64
           - os: macos-14
@@ -106,10 +94,6 @@ jobs:
             platform_id: macosx_arm64
 
           # MacOS 64 bit Intel: x86_64
-          - os: macos-13
-            bitness: 64
-            python: 39
-            platform_id: macosx_x86_64
           - os: macos-13
             bitness: 64
             python: 310
