@@ -22,7 +22,7 @@ Please open an issue if you find something missing or not working as expected.
 | ------- | ------- | --- | --------------------------------------------------- | -------------- | --- | ---- | ---- | ---- | ---- | ---- | -------------- |
 | Linux   | intel   | 64  | glibc >= 2.28 (e.g., Ubuntu 18.04+, CentOS 6+, ...) | last: 2024.3.5 | last: 2025.9.2    | ✔️    | ✔️    | ✔️    | ✔️    | ✔️    | Github Actions |
 | Linux   | aarch64 | 64  | glibc >= 2.28 (e.g., Raspberry Pi, ...)             | last: 2024.3.5 | last: 2025.9.2   | ✔️    | ✔️    | ✔️    | ✔️    | ✔️    | Circle CI      |
-| macOS   | intel   | 64  | >= macOS 10.15                                      | last: 2024.3.5 | last: 2025.9.2   | ✔️    | ✔️    | ✔️    | ✔️    | ✔️    | Github Actions |
+| macOS   | intel   | 64  | >= macOS 10.15                                      | last: 2024.3.5 | last: 2025.9.2   | last: 2025.9.4    | last: 2025.9.4    | last: 2025.9.4    | last: 2025.9.4    | last: 2025.9.4    | Github Actions |
 | macOS   | armv8   | 64  | >= macOS 11, M-Hardware                             | last: 2024.3.5 | last: 2025.9.2   | ✔️    | ✔️    | ✔️    | ✔️    | ✔️    | Github Actions | 
 | Windows | intel   | 64  |                                                     | last: 2024.3.5 | last: 2025.9.2   | ✔️    | ✔️    | ✔️    | ✔️    | ✔️    | Github Actions |
 
