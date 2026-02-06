@@ -21,9 +21,9 @@ from setuptools.command.build_ext import build_ext as build_ext_orig
 #   RDKIT_OSMORDRED_VERSION=2025-9-4-v2
 #   RDKIT_OSMORDRED_VERSION=2025-9-3-v1
 #
-# Optional: RDKIT_CATCH2_LEGACY=1
-#   Use this on older macOS (SDK < 26) that still has std::uncaught_exception()
-#   Modern macOS (SDK 26+) removed this function, so don't use this flag there.
+# Optional: RDKIT_CATCH2_LEGACY=0 or RDKIT_CATCH2_LEGACY=1
+#   Default is 1 (legacy mode) for maximum compatibility with older macOS SDKs.
+#   Set to 0 for modern macOS (SDK 26+) where std::uncaught_exception() was removed.
 #
 # Build command:
 #   RDKIT_OSMORDRED_VERSION=2025-9-5-v3 CIBW_BUILD=cp311-manylinux_x86_64 python3 -m cibuildwheel ...
@@ -72,7 +72,7 @@ rdkit_tag, rdkit_version = parse_version_to_tag(version_input)
 # Source repository
 rdkit_repo = "https://github.com/guillaume-osmo/rdkit-osmordred"
 
-catch2_legacy = os.environ.get("RDKIT_CATCH2_LEGACY", "0") == "1"
+catch2_legacy = os.environ.get("RDKIT_CATCH2_LEGACY", "1") == "1"
 print(f"=== Building rdkit-osmordredv2 ===", file=sys.stderr)
 print(f"  Tag: {rdkit_tag}", file=sys.stderr)
 print(f"  Version: {rdkit_version}", file=sys.stderr)
@@ -303,7 +303,8 @@ class BuildRDKit(build_ext_orig):
         # Modifications for MacOS all
         if sys.platform == "darwin":
             # Check if we need legacy Catch2 compatibility (for older macOS SDKs < 26)
-            use_catch2_legacy = os.environ.get("RDKIT_CATCH2_LEGACY", "0") == "1"
+            # Default is "1" (legacy mode) for maximum compatibility
+            use_catch2_legacy = os.environ.get("RDKIT_CATCH2_LEGACY", "1") == "1"
             
             if use_catch2_legacy:
                 # For older macOS: use the legacy flag that requires std::uncaught_exception()

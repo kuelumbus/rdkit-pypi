@@ -100,21 +100,22 @@ This is a C++ compatibility issue between different macOS SDK versions:
 Use the `RDKIT_CATCH2_LEGACY` environment variable to select the appropriate mode:
 
 ```bash
-# For modern macOS (SDK 26+) - DEFAULT
+# For older macOS (SDK < 26) - DEFAULT
+# Legacy mode is enabled by default for maximum compatibility
 RDKIT_OSMORDRED_VERSION=2025-9-4-v2 \
 CIBW_BUILD=cp311-macosx_arm64 \
 pip wheel . --no-deps -w wheelhouse -v
 
-# For older macOS (SDK < 26)
+# For modern macOS (SDK 26+) - disable legacy mode
 RDKIT_OSMORDRED_VERSION=2025-9-4-v2 \
-RDKIT_CATCH2_LEGACY=1 \
+RDKIT_CATCH2_LEGACY=0 \
 CIBW_BUILD=cp311-macosx_arm64 \
 pip wheel . --no-deps -w wheelhouse -v
 ```
 
 The build output will show which mode is being used:
-- `Catch2 Legacy: False` = modern mode (default)
-- `Catch2 Legacy: True` = legacy mode for older macOS
+- `Catch2 Legacy: True` = legacy mode (default, for older macOS)
+- `Catch2 Legacy: False` = modern mode for macOS SDK 26+
 
 ## Environment Variables
 
