@@ -1,4 +1,5 @@
 import os
+import re
 import shlex
 import sys
 from distutils.file_util import copy_file
@@ -11,8 +12,74 @@ from textwrap import dedent
 from setuptools import Extension, find_packages, setup
 from setuptools.command.build_ext import build_ext as build_ext_orig
 
-# RDKit version to build (tag from github repository)
-rdkit_tag = "Release_2025_09_4"
+# =============================================================================
+# CONFIGURATION
+# =============================================================================
+# Set via environment variable RDKIT_OSMORDRED_VERSION or defaults to v3
+# Examples:
+#   RDKIT_OSMORDRED_VERSION=2025-9-5-v3  (short form, recommended)
+#   RDKIT_OSMORDRED_VERSION=2025-9-4-v2
+#   RDKIT_OSMORDRED_VERSION=2025-9-3-v1
+#
+# Optional: RDKIT_CATCH2_LEGACY=1
+#   Use this on older macOS (SDK < 26) that still has std::uncaught_exception()
+#   Modern macOS (SDK 26+) removed this function, so don't use this flag there.
+#
+# Build command:
+#   RDKIT_OSMORDRED_VERSION=2025-9-5-v3 CIBW_BUILD=cp311-manylinux_x86_64 python3 -m cibuildwheel ...
+#
+# For older macOS:
+#   RDKIT_OSMORDRED_VERSION=2025-9-4-v2 RDKIT_CATCH2_LEGACY=1 CIBW_BUILD=cp311-macosx_arm64 pip wheel ...
+# =============================================================================
+
+def parse_version_to_tag(version_input):
+    """
+    Parse version input and derive rdkit_tag and rdkit_version.
+    
+    Input format: "2025-9-5-v3" or "2025-9-4-v2" or "2025-9-3-v1"
+    
+    Returns: (rdkit_tag, rdkit_version)
+    
+    Examples:
+      - "2025-9-5-v3" -> tag: calcphyschemprop-release-2025.09.5-v3, version: 2025.9.5+osmordredv2
+      - "2025-9-4-v2" -> tag: calcphyschemprop-release-2025.09.4-v2, version: 2025.9.4+osmordredv2
+      - "2025-9-3-v1" -> tag: calcphyschemprop-release-2025.09.3-v1, version: 2025.9.3+osmordredv2
+    """
+    # Parse: 2025-9-5-v3 -> year=2025, month=9, patch=5, suffix=v3
+    match = re.match(r"(\d+)-(\d+)-(\d+)-(v\d+)", version_input)
+    if not match:
+        raise ValueError(
+            f"Cannot parse version: {version_input}\n"
+            f"Expected format: 2025-9-X-vY (e.g., 2025-9-5-v3)"
+        )
+    
+    year, month, patch, suffix = match.groups()
+    
+    # Build the git tag: calcphyschemprop-release-2025.09.5-v3
+    # Month needs zero-padding: 9 -> 09
+    month_padded = month.zfill(2)
+    rdkit_tag = f"calcphyschemprop-release-{year}.{month_padded}.{patch}-{suffix}"
+    
+    # Build the wheel version: 2025.9.5+osmordredv2
+    rdkit_version = f"{year}.{month}.{patch}+osmordredv2"
+    
+    return rdkit_tag, rdkit_version
+
+# Get version from environment variable or use default
+version_input = os.environ.get("RDKIT_OSMORDRED_VERSION", "2025-9-5-v3")
+rdkit_tag, rdkit_version = parse_version_to_tag(version_input)
+
+# Source repository
+rdkit_repo = "https://github.com/guillaume-osmo/rdkit-osmordred"
+
+catch2_legacy = os.environ.get("RDKIT_CATCH2_LEGACY", "0") == "1"
+print(f"=== Building rdkit-osmordredv2 ===", file=sys.stderr)
+print(f"  Tag: {rdkit_tag}", file=sys.stderr)
+print(f"  Version: {rdkit_version}", file=sys.stderr)
+print(f"  Repo: {rdkit_repo}", file=sys.stderr)
+print(f"  Catch2 Legacy: {catch2_legacy}", file=sys.stderr)
+print(f"==================================", file=sys.stderr)
+# =============================================================================
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -109,48 +176,22 @@ class BuildRDKit(build_ext_orig):
         rdkit_install_path.mkdir(parents=True, exist_ok=True)
 
         # Clone RDKit from git at rdkit_tag
+        # Using guillaume-osmo/rdkit-osmordred repository
         check_call(
-            ["git", "clone", "-b", f"{ext.rdkit_tag}", "https://github.com/rdkit/rdkit"]
+            ["git", "clone", "-b", f"{ext.rdkit_tag}", rdkit_repo]
         )
 
+        # The cloned directory name depends on the repo URL
+        # guillaume-osmo/rdkit-osmordred -> rdkit-osmordred
+        # bp-kelley/rdkit -> rdkit
+        cloned_dir = "rdkit-osmordred" if "rdkit-osmordred" in rdkit_repo else "rdkit"
+        
         # Location of license file
-        license_file = build_path / "rdkit" / "license.txt"
+        license_file = build_path / cloned_dir / "license.txt"
 
         # Start build process
-        os.chdir(str("rdkit"))
-        if rdkit_tag == "Release_2025_09_4":
-            # Cherry-pick fix for MolAlign: brace-init BestAlignmentParams in wrapper
-            # https://github.com/rdkit/rdkit/pull/9042/commits/7c15baca9d662506b61d3395a0d5139be2b67640
-            check_call(["git", "config", "--global", "user.email", '"you@example.com"'])
-            check_call(["git", "config", "--global", "user.name", '"Your Name"'])
-            check_call(["git", "fetch", "origin", "pull/9042/head:pr_9042"])
-            check_call(
-                [
-                    "git",
-                    "cherry-pick",
-                    "--strategy=recursive",
-                    "-X",
-                    "theirs",
-                    "7c15baca9d662506b61d3395a0d5139be2b67640",
-                ]
-            )
+        os.chdir(str(cloned_dir))
 
-        # if rdkit_tag == "Release_2025_03_3":
-        #     # https://github.com/rdkit/rdkit/pull/8399/commits/e5b1e3caf0c362139a5905575b5f995c470b9300
-        #     check_call(["git", "config", "--global", "user.email", '"you@example.com"'])
-        #     check_call(["git", "config", "--global", "user.name", '"Your Name"'])
-        #     check_call(["git", "fetch", "origin", "pull/8477/head:tag_release"])
-        #     check_call(
-        #         [
-        #             "git",
-        #             "cherry-pick",
-        #             "--strategy=recursive",
-        #             "-X",
-        #             "theirs",
-        #             "0b8fc6fbf7bee2a0de34daee6088aeb8c8036272",
-        #         ]
-        #     )
-    
         import fileinput
 
         def replace_all(file, search_exp, replace_exp):
@@ -169,6 +210,20 @@ class BuildRDKit(build_ext_orig):
             'target_link_libraries(rdkit_py_base INTERFACE "Boost::python${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}" "Boost::numpy${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}")',
             'target_link_libraries(rdkit_py_base INTERFACE "boost::python${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}" "boost::numpy${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}")',
         )
+
+        # =========================================================================
+        # OSMORDREDV2: LAPACK configuration for guillaume-osmo/rdkit-osmordred
+        # The repo uses integrated Osmordred in Code/GraphMol/Descriptors/
+        # CMakeLists.txt pattern: include_directories(${LAPACK_INCLUDE_DIRS})
+        # =========================================================================
+        if "linux" in sys.platform:
+            # For Linux (manylinux), patch to use hardcoded lapacke path
+            # because find_package(LAPACK) doesn't always set LAPACK_INCLUDE_DIRS
+            replace_all(
+                "Code/GraphMol/Descriptors/CMakeLists.txt",
+                "include_directories(${LAPACK_INCLUDE_DIRS})",
+                "include_directories(/usr/include/lapacke)"
+            )
 
         if "macosx" in os.environ["CIBW_BUILD"]:
             # Replace Cairo with cairo because conan uses lower case target names
@@ -191,8 +246,6 @@ class BuildRDKit(build_ext_orig):
             'find_package(Python3 COMPONENTS Interpreter Development NumPy)',
         )
 
-  
-
         # Define CMake options
         options = [
             # f"-DCMAKE_FIND_DEBUG_MODE=ON", # Enable debug mode
@@ -213,6 +266,8 @@ class BuildRDKit(build_ext_orig):
             "-DRDK_INSTALL_INTREE=OFF",
             "-DRDK_BUILD_CAIRO_SUPPORT=ON",
             "-DRDK_BUILD_FREESASA_SUPPORT=ON",
+            # OSMORDREDV2: Enable Osmordred, RDKit217, SMARTS291 descriptors
+            "-DRDK_BUILD_OSMORDRED_SUPPORT=ON",
             # Disable system libs for finding boost
             "-DBoost_NO_SYSTEM_PATHS=ON",
             # build stuff
@@ -230,7 +285,7 @@ class BuildRDKit(build_ext_orig):
         if sys.platform == "win32":
             def to_win_path(pt: Path):
                 return str(pt).replace("\\", "/")
-        
+
             options += [
                 # DRDK_INSTALL_STATIC_LIBS should be fixed in newer RDKit builds. Remove?
                 "-DRDK_INSTALL_STATIC_LIBS=OFF",
@@ -247,11 +302,40 @@ class BuildRDKit(build_ext_orig):
 
         # Modifications for MacOS all
         if sys.platform == "darwin":
-            options += [
-                "-DCMAKE_C_FLAGS=-Wno-implicit-function-declaration",
-                # CATCH_CONFIG_NO_CPP17_UNCAUGHT_EXCEPTIONS because MacOS does not fully support C++17.
-                '-DCMAKE_CXX_FLAGS="-Wno-implicit-function-declaration -DCATCH_CONFIG_NO_CPP17_UNCAUGHT_EXCEPTIONS"',
-            ]
+            # Check if we need legacy Catch2 compatibility (for older macOS SDKs < 26)
+            use_catch2_legacy = os.environ.get("RDKIT_CATCH2_LEGACY", "0") == "1"
+            
+            if use_catch2_legacy:
+                # For older macOS: use the legacy flag that requires std::uncaught_exception()
+                print("  Using Catch2 legacy mode (RDKIT_CATCH2_LEGACY=1)", file=sys.stderr)
+                options += [
+                    "-DCMAKE_C_FLAGS=-Wno-implicit-function-declaration",
+                    '-DCMAKE_CXX_FLAGS="-Wno-implicit-function-declaration -DCATCH_CONFIG_NO_CPP17_UNCAUGHT_EXCEPTIONS"',
+                ]
+            else:
+                # For modern macOS (SDK 26+): don't use the legacy flag
+                # std::uncaught_exception() was removed, use std::uncaught_exceptions() instead
+                print("  Using modern Catch2 mode (set RDKIT_CATCH2_LEGACY=1 for older macOS)", file=sys.stderr)
+                options += [
+                    "-DCMAKE_C_FLAGS=-Wno-implicit-function-declaration",
+                    '-DCMAKE_CXX_FLAGS=-Wno-implicit-function-declaration',
+                ]
+            
+            # OSMORDREDV2: Add homebrew LAPACK paths for macOS
+            # The lapacke library is installed via: brew install lapack
+            homebrew_prefix = Path("/opt/homebrew")  # Apple Silicon
+            if not homebrew_prefix.exists():
+                homebrew_prefix = Path("/usr/local")  # Intel Mac
+            
+            lapack_path = homebrew_prefix / "opt" / "lapack"
+            if lapack_path.exists():
+                options += [
+                    f"-DCMAKE_PREFIX_PATH={lapack_path}",
+                    f"-DLAPACK_ROOT={lapack_path}",
+                    f"-DLAPACKE_LIB={lapack_path}/lib/liblapacke.dylib",
+                    f"-DLAPACK_INCLUDE_DIRS={lapack_path}/include",
+                ]
+                print(f"  Using homebrew LAPACK at: {lapack_path}", file=sys.stderr)
 
         # Modification for MacOS x86_64
         if "macosx_x86_64" in os.environ["CIBW_BUILD"]:
@@ -281,6 +365,14 @@ class BuildRDKit(build_ext_orig):
                 new = '${Python3_EXECUTABLE} -c "import sysconfig; print(sysconfig.get_config_var(\'LDSHARED\').lstrip().split(\' \', 1)[1].replace(\'-arch x86_64\', \'\'))"'
                 replace_all("CMakeLists.txt", old, new)
 
+        # OSMORDREDV2: Linux LAPACK configuration
+        if "linux" in sys.platform:
+            # manylinux has lapack in standard locations after yum install
+            options += [
+                "-DLAPACK_INCLUDE_DIRS=/usr/include/lapacke",
+                "-DCMAKE_PREFIX_PATH=/usr",
+            ]
+            print("  Using Linux LAPACK at /usr/include/lapacke", file=sys.stderr)
 
         if "linux" in sys.platform:
             # Use ninja for linux builds
@@ -308,12 +400,12 @@ class BuildRDKit(build_ext_orig):
         path_site_packages = rdkit_install_path / "lib" / py_name / "site-packages"
         if sys.platform == "win32":
             path_site_packages = rdkit_install_path / "Lib" / "site-packages"
-        
-        
+
+
         print("---- Conf vars", file=sys.stderr)
         print(sysconfig.get_paths(), file=sys.stderr)
         print(sysconfig.get_config_vars(), file=sys.stderr)
-        print("---- Conf vars", file=sys.stderr)     
+        print("---- Conf vars", file=sys.stderr)
 
 
         print("!!! --- CMAKE build command and variables for RDKit", file=sys.stderr)
@@ -370,7 +462,7 @@ class BuildRDKit(build_ext_orig):
 
         elif "darwin" in sys.platform:
             # Github actions
-            to_path = Path("/Users/runner/work/lib")
+            to_path = Path.home() / "work/lib"
             if "CIRRUS_CI" in os.environ:
                 # on cirrus CI
                 to_path = Path("/Users/admin/lib")
@@ -413,12 +505,12 @@ class BuildRDKit(build_ext_orig):
 
         # Print the stubs error file to rdkit-stubs/gen_rdkit_stubs.err
         stubs_error_file = (
-            build_path / "rdkit" / "build" / "rdkit-stubs" / "gen_rdkit_stubs.err"
+            build_path / cloned_dir / "build" / "rdkit-stubs" / "gen_rdkit_stubs.err"
         )
         with open(stubs_error_file, "r") as fin:
             print(fin.read(), file=sys.stderr)
 
-        # Change directory here 
+        # Change directory here
         os.chdir(str(cwd))
 
         # Copy RDKit and additional files to the wheel path
@@ -480,14 +572,14 @@ class BuildRDKit(build_ext_orig):
 
 setup(
     name="rdkit",
-    version=rdkit_tag.replace("Release_", "").replace("_", "."),
+    version=rdkit_version,
     description="A collection of chemoinformatics and machine-learning software written in C++ and Python",
     author="Christopher Kuenneth",
     author_email="chris@kuenneth.dev",
     url="https://github.com/kuelumbus/rdkit-pypi",
     project_urls={
         "RDKit": "http://rdkit.org/",
-        "RDKit on Github": "https://github.com/rdkit/rdkit",
+        "RDKit on Github": "https://github.com/guillaume-osmo/rdkit-osmordred",
     },
     license="BSD-3-Clause",
     long_description=long_description,

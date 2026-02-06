@@ -53,4 +53,73 @@ cd rdkit-pypi
 CIBW_BUILD=cp313-manylinux_x86_64 python3 -m cibuildwheel --platform linux --output-dir wheelhouse --config-file pyproject.toml
 ```
 
-Replace `*` in `cp*-manylinux_x86_64` with `310`, `311`, `312`, `313`, or `314` to build for different Python
+Replace `*` in `cp*-manylinux_x86_64` with `310`, `311`, `312`, `313`, or `314` to build for different Python versions.
+
+## Local builds on macOS
+
+### Prerequisites
+
+Install the required dependencies via Homebrew:
+
+```bash
+brew install lapack eigen gnu-sed
+```
+
+### Building with pip wheel
+
+For local macOS builds, use `pip wheel` directly (avoids cibuildwheel's requirement for system Python):
+
+```bash
+git clone https://github.com/kuelumbus/rdkit-pypi.git
+cd rdkit-pypi
+
+# For macOS ARM64 (Apple Silicon M1/M2/M3)
+RDKIT_OSMORDRED_VERSION=2025-9-4-v2 \
+CIBW_BUILD=cp311-macosx_arm64 \
+pip wheel . --no-deps -w wheelhouse -v
+
+# For macOS x86_64 (Intel)
+RDKIT_OSMORDRED_VERSION=2025-9-4-v2 \
+CIBW_BUILD=cp311-macosx_x86_64 \
+pip wheel . --no-deps -w wheelhouse -v
+```
+
+### macOS SDK Compatibility (RDKIT_CATCH2_LEGACY)
+
+If you encounter a compilation error like:
+
+```
+error: no member named 'uncaught_exception' in namespace 'std'; did you mean 'uncaught_exceptions'?
+```
+
+This is a C++ compatibility issue between different macOS SDK versions:
+
+- **Modern macOS (SDK 26+)**: Uses `std::uncaught_exceptions()` (C++17/20 standard)
+- **Older macOS (SDK < 26)**: Uses `std::uncaught_exception()` (deprecated, removed in C++20)
+
+Use the `RDKIT_CATCH2_LEGACY` environment variable to select the appropriate mode:
+
+```bash
+# For modern macOS (SDK 26+) - DEFAULT
+RDKIT_OSMORDRED_VERSION=2025-9-4-v2 \
+CIBW_BUILD=cp311-macosx_arm64 \
+pip wheel . --no-deps -w wheelhouse -v
+
+# For older macOS (SDK < 26)
+RDKIT_OSMORDRED_VERSION=2025-9-4-v2 \
+RDKIT_CATCH2_LEGACY=1 \
+CIBW_BUILD=cp311-macosx_arm64 \
+pip wheel . --no-deps -w wheelhouse -v
+```
+
+The build output will show which mode is being used:
+- `Catch2 Legacy: False` = modern mode (default)
+- `Catch2 Legacy: True` = legacy mode for older macOS
+
+## Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `RDKIT_OSMORDRED_VERSION` | Version string in format `YYYY-M-P-vN` (e.g., `2025-9-4-v2`) | `2025-9-5-v3` |
+| `CIBW_BUILD` | Target platform (e.g., `cp311-macosx_arm64`, `cp311-manylinux_x86_64`) | Required |
+| `RDKIT_CATCH2_LEGACY` | Set to `1` for older macOS SDK compatibility | `0` |

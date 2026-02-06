@@ -28,7 +28,11 @@ build-frontend = { name = "pip", args = ["--no-clean"] }
 [tool.cibuildwheel.linux]
 before-all = [
     "yum update -y",
-    "yum install freetype-devel libpng-devel pixman-devel zlib-devel eigen3-devel cairo-devel -y"
+    # Osmordredv2 needs: lapack-devel, openblas-devel, and Eigen 3.4.0
+    "yum install freetype-devel libpng-devel pixman-devel zlib-devel cairo-devel lapack-devel openblas-devel -y",
+    # Osmordredv2 needs eigen 3.4.0 (yum's eigen3-devel is too old)
+    "curl https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz | gzip -dc | tar xvf -",
+    "mkdir /usr/include/eigen3 && mv eigen-3.4.0/signature_of_eigen3_matrix_library eigen-3.4.0/Eigen eigen-3.4.0/unsupported /usr/include/eigen3"
 ]
 
 repair-wheel-command = [
@@ -46,7 +50,7 @@ environment-pass = ["CIBW_BUILD"]
 before-all = ["brew install gnu-sed"]
 
 repair-wheel-command = [
-    "export DYLD_LIBRARY_PATH='/usr/local/lib:/usr/lib:/Users/admin/lib:/Users/runner/work/lib'",
+    "export DYLD_LIBRARY_PATH=/usr/local/lib:/usr/lib:/Users/admin/lib:${HOME}/work/lib",
     "source conan/conanrun.sh",
     "delocate-listdeps {wheel}",
     "delocate-wheel --require-archs {delocate_archs} -w {dest_dir} {wheel}",
