@@ -2,10 +2,28 @@
 wheelhouse*/
 .vscode/
 
-
 artifact/
 __pycache__/
 *.pyc
 
 .env
 upload_rdkit.sh
+
+# Build artifacts - DO NOT COMMIT
+.dylibs/
+bcfp/
+bcfp.bak/
+build/
+conan/
+external/
+fastforest/
+molftp/
+molftp.bak/
+rdkit/
+rdkit.local_backup/
+rdkit-source/
+rdkit-source.zip
+rdkit.egg-info/
+*.dylib
+*.so
+*.whl
