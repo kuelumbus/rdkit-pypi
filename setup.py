@@ -12,7 +12,7 @@ from setuptools import Extension, find_packages, setup
 from setuptools.command.build_ext import build_ext as build_ext_orig
 
 # RDKit version to build (tag from github repository)
-rdkit_tag = "Release_2025_09_5"
+rdkit_tag = "Release_2025_09_6"
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -38,7 +38,7 @@ class BuildRDKit(build_ext_orig):
         """Run the Conan"""
 
         # Create default profile if it doesn't exist (Conan 2 requirement)
-        check_call(["conan", "profile", "detect", "--force"])
+        check_call(["conan", "profile", "detect", "--exist-ok"])
 
         # This modified conanfile.py for boost does not link libpython*.so
         # When building a platform wheel, we don't want to link libpython*.so.
