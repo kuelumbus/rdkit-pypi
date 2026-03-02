@@ -38,7 +38,7 @@ class BuildRDKit(build_ext_orig):
         """Run the Conan"""
 
         # Create default profile if it doesn't exist (Conan 2 requirement)
-        check_call(["conan", "profile", "detect", "--force"])
+        check_call(["conan", "profile", "detect", "--exist-ok"])
 
         # This modified conanfile.py for boost does not link libpython*.so
         # When building a platform wheel, we don't want to link libpython*.so.
