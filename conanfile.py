@@ -55,6 +55,11 @@ class RDKitConan(ConanFile):
     def generate(self):
         # Generate CMake dependencies
         deps = CMakeDeps(self)
+
+        # Force Conan to name the generated expat target 'EXPAT::EXPAT' instead of 'expat::expat'
+        # introduced in 2023.06.4 because of ChemDraw parser requires this
+        deps.set_property("expat", "cmake_target_name", "EXPAT::EXPAT")
+
         deps.generate()
         
         # Generate CMake toolchain
