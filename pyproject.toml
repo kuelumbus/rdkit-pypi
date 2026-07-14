@@ -28,7 +28,7 @@ build-frontend = { name = "pip", args = ["--no-clean"] }
 [tool.cibuildwheel.linux]
 before-all = [
     "yum update -y",
-    "yum install freetype-devel libpng-devel pixman-devel zlib-devel eigen3-devel cairo-devel expat-devel -y"
+    "yum install freetype-devel libpng-devel pixman-devel zlib-devel eigen3-devel cairo-devel -y"
 ]
 
 repair-wheel-command = [

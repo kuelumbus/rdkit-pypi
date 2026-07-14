@@ -38,6 +38,7 @@ class RDKitConan(ConanFile):
         # Main boost requirement - use modified version
         self.requires("boost/1.85.0@chris/mod_boost")
         # self.requires("boost/1.85.0")
+        self.requires("expat/2.7.5")
         
         # Platform-specific requirements
         if self.settings.os == "Macos" and os.environ.get("CIBW_BUILD", "").startswith("cp"):
