@@ -57,13 +57,23 @@ class RDKitConan(ConanFile):
         deps = CMakeDeps(self)
 
         # Force Conan to name the generated expat target 'EXPAT::EXPAT' instead of 'expat::expat'
-        # introduced in 2023.06.4 because of ChemDraw parser requires this
+        # introduced in 2026.03.4 because of ChemDraw parser requires this
         deps.set_property("expat", "cmake_target_name", "EXPAT::EXPAT")
 
         deps.generate()
         
         # Generate CMake toolchain
         tc = CMakeToolchain(self)
+
+        # The vendored expatpp links EXPAT::EXPAT only PRIVATEly, so expat's include
+        # dir does not propagate to consumers of expatpp.h (which #includes <expat.h>).
+        # On Linux/macOS this is masked by expat.h living in default system include
+        # paths; on MSVC it breaks the ChemDraw build (C1083). Inject the include dir
+        # globally so headers always match the Conan expat we link against.
+        expat_inc = self.dependencies["expat"].cpp_info.includedirs[0].replace("\\", "/")
+        tc.extra_cxxflags.append("-I" + expat_inc)
+        tc.extra_cflags.append("-I" + expat_inc)
+
         tc.generate()
         
         # Generate virtual run environment
