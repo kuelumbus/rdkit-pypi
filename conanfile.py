@@ -60,6 +60,22 @@ class RDKitConan(ConanFile):
         # introduced in 2026.03.4 because of ChemDraw parser requires this
         deps.set_property("expat", "cmake_target_name", "EXPAT::EXPAT")
 
+        # Fix a bug in conan or rdkit: the boost python/numpy component targets are generated
+        # as boost::python{X}{Y} / boost::numpy{X}{Y} (lowercase 'b'), but RDKit's CMakeLists.txt
+        # expects Boost::python{X}{Y} / Boost::numpy{X}{Y}. Force the target names to match
+        # instead of patching RDKit's CMakeLists.txt.
+        py_major, py_minor = sys.version_info.major, sys.version_info.minor
+        deps.set_property(
+            f"boost::python{py_major}{py_minor}", "cmake_target_name", f"Boost::python{py_major}{py_minor}"
+        )
+        deps.set_property(
+            f"boost::numpy{py_major}{py_minor}", "cmake_target_name", f"Boost::numpy{py_major}{py_minor}"
+        )
+
+        # Force Conan to name the generated cairo target 'Cairo::Cairo' instead of 'cairo::cairo'
+        # so it matches what RDKit's MolDraw2D CMakeLists.txt expects, instead of patching it.
+        deps.set_property("cairo", "cmake_target_name", "Cairo::Cairo")
+
         deps.generate()
         
         # Generate CMake toolchain
