@@ -41,3 +41,17 @@ def test_data_dir_and_chemical_features():
 def test_rdkit_chem_draw_import():
     # This segfaults if the compiled cairo version from centos is used
     from rdkit.Chem.Draw import ReactionToImage  # noqa: F401
+
+
+def test_chemdraw_parser_roundtrip():
+    # Exercises the new (2026.03.4) expat-based CDXML parser: write a molecule
+    # to a ChemDraw block and read it back, checking the structure survives.
+    from rdkit import Chem
+    from rdkit.Chem import rdChemDraw
+
+    mol = Chem.MolFromSmiles("NCc1ccccc1")
+    block = rdChemDraw.MolToChemDrawBlock(mol)
+    parsed = rdChemDraw.MolsFromChemDrawBlock(block)
+
+    assert len(parsed) == 1
+    assert Chem.MolToSmiles(Chem.RemoveHs(parsed[0])) == Chem.MolToSmiles(mol)
