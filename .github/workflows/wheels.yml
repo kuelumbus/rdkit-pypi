@@ -72,23 +72,23 @@ jobs:
           # Linux 64 bit ARM: aarch64 (on Circle CI)
 
           # MacOS 64 bit Intel: arm64
-          - os: macos-14
+          - os: macos-15
             bitness: 64
             python: 310
             platform_id: macosx_arm64
-          - os: macos-14
+          - os: macos-15
             bitness: 64
             python: 311
             platform_id: macosx_arm64
-          - os: macos-14
+          - os: macos-15
             bitness: 64
             python: 312
             platform_id: macosx_arm64
-          - os: macos-14
+          - os: macos-15
             bitness: 64
             python: 313
             platform_id: macosx_arm64
-          - os: macos-14
+          - os: macos-15
             bitness: 64
             python: 314
             platform_id: macosx_arm64
