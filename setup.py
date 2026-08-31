@@ -37,8 +37,9 @@ class BuildRDKit(build_ext_orig):
     def conan_install(self, boost_version, conan_toolchain_path):
         """Run the Conan"""
 
-        # Create default profile if it doesn't exist (Conan 2 requirement)
-        check_call(["conan", "profile", "detect", "--exist-ok"])
+        # Regenerate the Unix profile after selecting the compiler below.
+        profile_mode = "--exist-ok" if sys.platform == "win32" else "--force"
+        check_call(["conan", "profile", "detect", profile_mode])
 
         # This modified conanfile.py for boost does not link libpython*.so
         # When building a platform wheel, we don't want to link libpython*.so.
@@ -90,6 +91,16 @@ class BuildRDKit(build_ext_orig):
         """
 
         cwd = Path().absolute()
+
+        if sys.platform == "linux":
+            os.environ.update(
+                CC="clang", CXX="clang++", AR="llvm-ar", RANLIB="llvm-ranlib"
+            )
+            os.environ["LDFLAGS"] = (
+                f"{os.environ.get('LDFLAGS', '')} -fuse-ld=lld".strip()
+            )
+        elif sys.platform == "darwin":
+            os.environ.update(CC="clang", CXX="clang++")
 
         # Install boost and other libraries using Conan
         conan_toolchain_path = cwd / "conan"
@@ -197,6 +208,9 @@ class BuildRDKit(build_ext_orig):
             # Speed up builds
             "-DRDK_BUILD_CPP_TESTS=OFF",
         ]
+
+        if sys.platform != "win32":
+            options.append("-DRDK_LTO_MODE=THIN")
 
         # Modifications for Windows
         vcpkg_path = cwd
