@@ -10,7 +10,7 @@ from pathlib import Path
 
 class RDKitConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
-    
+
     def configure(self):
         # Configure boost options
         self.options["boost/*"].shared = True
@@ -27,24 +27,34 @@ class RDKitConan(ConanFile):
             self.options["boost/*"].without_stacktrace = True
         else:
             self.options["boost/*"].without_stacktrace = False
-            
+
         # Configure Python library linking for wheel building
         if self.settings.os == "Windows":
             self.options["boost/*"].without_python_lib = False
         else:
             self.options["boost/*"].without_python_lib = True
 
+        if self.settings.os == "Windows" and self.settings.arch == "armv8":
+            # The arm64 cl.exe cannot reserve the PCH address space Boost.Math's
+            # tr1 sources ask for, and fails with C3859 / C1076.
+            self.options["boost/*"].pch = False
+
+            # boost_context's arm64 assembly does not export make/jump_fcontext, so
+            # the shared boost_coroutine cannot link. RDKit uses neither library.
+            self.options["boost/*"].without_context = True
+            self.options["boost/*"].without_coroutine = True
+
     def requirements(self):
         # Main boost requirement - use modified version
         self.requires("boost/1.85.0@chris/mod_boost")
         # self.requires("boost/1.85.0")
         self.requires("expat/2.7.5")
-        
+
         # Platform-specific requirements
         if self.settings.os == "Macos" and os.environ.get("CIBW_BUILD", "").startswith("cp"):
             # macOS libraries to meet development target
             self.requires("pixman/0.43.4")
-            self.requires("cairo/1.18.0") 
+            self.requires("cairo/1.18.0")
             self.requires("libpng/1.6.43")
             self.requires("fontconfig/2.15.0")
             self.requires("freetype/2.13.2")
@@ -77,7 +87,7 @@ class RDKitConan(ConanFile):
         deps.set_property("cairo", "cmake_target_name", "Cairo::Cairo")
 
         deps.generate()
-        
+
         # Generate CMake toolchain
         tc = CMakeToolchain(self)
 
@@ -91,7 +101,7 @@ class RDKitConan(ConanFile):
         tc.extra_cflags.append("-I" + expat_inc)
 
         tc.generate()
-        
+
         # Generate virtual run environment
         env = VirtualRunEnv(self)
         env.generate()

@@ -6,9 +6,9 @@ on:
   push:
     branches: [ main ]
   pull_request:
-  
 
-permissions: 
+
+permissions:
   contents: write
 
 env:
@@ -25,27 +25,55 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Window 64 bit
+          # Windows 64 bit
           - os: windows-2022
             python: 310
             bitness: 64
             platform_id: win_amd64
+            vcpkg_triplet: x64-windows
           - os: windows-2022
             python: 311
             bitness: 64
             platform_id: win_amd64
+            vcpkg_triplet: x64-windows
           - os: windows-2022
             python: 312
             bitness: 64
             platform_id: win_amd64
+            vcpkg_triplet: x64-windows
           - os: windows-2022
             python: 313
             bitness: 64
             platform_id: win_amd64
+            vcpkg_triplet: x64-windows
           - os: windows-2022
             python: 314
             bitness: 64
             platform_id: win_amd64
+            vcpkg_triplet: x64-windows
+
+          # Windows 64 bit ARM: arm64
+          # CPython only ships official win_arm64 builds from 3.11 onwards
+          - os: windows-11-arm
+            python: 311
+            bitness: 64
+            platform_id: win_arm64
+            vcpkg_triplet: arm64-windows
+          - os: windows-11-arm
+            python: 312
+            bitness: 64
+            platform_id: win_arm64
+            vcpkg_triplet: arm64-windows
+          - os: windows-11-arm
+            python: 313
+            bitness: 64
+            platform_id: win_arm64
+            vcpkg_triplet: arm64-windows
+          - os: windows-11-arm
+            python: 314
+            bitness: 64
+            platform_id: win_arm64
+            vcpkg_triplet: arm64-windows
 
           # Linux 64 bit Intel: x86_64
           - os: ubuntu-latest
@@ -121,13 +149,13 @@ jobs:
       - name: Copy to C:\
         if: ${{ runner.os == 'Windows' }}
         run: |
-          Copy-Item -Path D:\a\rdkit-pypi\rdkit-pypi -Destination C:\rdkit -Recurse
+          Copy-Item -Path "${{ github.workspace }}" -Destination C:\rdkit -Recurse
 
       - uses: actions/setup-python@v5
         name: Install Python
         with:
           python-version: '3.13'
-      
+
       - name: Export GitHub Actions cache environment variables for vcpkg
         if: ${{ runner.os == 'Windows' }}
         uses: actions/github-script@v7
@@ -135,12 +163,12 @@ jobs:
           script: |
             core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
-      
+
       - name: Install libraries with vcpkg
         if: ${{ runner.os == 'Windows' }}
         run: |
           cd C:\\rdkit
-          vcpkg --triplet x64-windows install
+          vcpkg --triplet ${{ matrix.vcpkg_triplet }} install
 
       - name: Install libraries with chocolatey
         if: ${{ runner.os == 'Windows' }}
@@ -173,5 +201,5 @@ jobs:
         with:
           name: cp${{ matrix.python }}-${{ matrix.platform_id }}-${{ strategy.job-index }}
           path: ./wheelhouse/*.whl
-      
+
 

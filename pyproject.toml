@@ -75,3 +75,11 @@ repair-wheel-command = [
     "delvewheel show -v --add-path C:\\libs;C:\\rdkit\\vcpkg_installed\\x64-windows\\bin {wheel}",
     "delvewheel repair -v --add-path C:\\libs;C:\\rdkit\\vcpkg_installed\\x64-windows\\bin -w {dest_dir} {wheel}"
     ]
+
+[[tool.cibuildwheel.overrides]]
+select = "*-win_arm64"
+repair-wheel-command = [
+    "C:\\rdkit\\conan\\conanrun.bat",
+    "delvewheel show -v --add-path C:\\libs;C:\\rdkit\\vcpkg_installed\\arm64-windows\\bin {wheel}",
+    "delvewheel repair -v --add-path C:\\libs;C:\\rdkit\\vcpkg_installed\\arm64-windows\\bin -w {dest_dir} {wheel}"
+    ]
