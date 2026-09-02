@@ -180,6 +180,8 @@ class BuildRDKit(build_ext_orig):
             f"-DBoost_LIB_VERSION={boost_lib_version}",
             # Select correct python 3 version
             f"-DPython3_ROOT_DIR={Path(sys.prefix)}",
+            # RDKit uses the FindPython module (not FindPython3)since Release_2026_03_6
+            f"-DPython_ROOT_DIR={Path(sys.prefix)}",
             # RDKit build flags
             "-DRDK_BUILD_INCHI_SUPPORT=ON",
             "-DRDK_BUILD_AVALON_SUPPORT=ON",
