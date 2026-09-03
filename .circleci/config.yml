@@ -18,7 +18,7 @@ jobs:
             CIBW_ARCHS: aarch64
 
           command: |
-            python3 -m pip install cibuildwheel==4.1.0
+            python3 -m pip install cibuildwheel==4.2.0
             python3 -m cibuildwheel --output-dir wheelhouse
       - store_artifacts:
           path: wheelhouse/
@@ -51,7 +51,7 @@ workflows:
       - linux-arm64-wheels:
           matrix:
             parameters:
-              python-version: ["310", "311", "312", "313", "314"]
+              python-version: ["310", "311", "312", "313", "314", "315"]
       # - osx-wheels:
       #     matrix:
       #       parameters:

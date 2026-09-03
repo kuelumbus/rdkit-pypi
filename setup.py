@@ -251,10 +251,10 @@ class BuildRDKit(build_ext_orig):
                 f"-DCMAKE_OSX_ARCHITECTURES=arm64",
                 f"-DCMAKE_VERBOSE_MAKEFILE=ON" # Increase verbosity
             ]
-            # for python 3.13 and 3.14 macOS ARM64, 'CFLAGS', 'LDFLAGS', 'LDSHARED', 'BLDSHARED'  contains '-arch x86_64'
+            # for python 3.13+ macOS ARM64, 'CFLAGS', 'LDFLAGS', 'LDSHARED', 'BLDSHARED'  contains '-arch x86_64'
             #  see https://github.com/rdkit/rdkit/blob/498f57a4eb99a67d842cbc3f89f94b302f398a11/CMakeLists.txt#L376C59-L376C95
             # remove "-arch x86_64" from PYTHON_LDSHARED
-            if "cp313" in os.environ["CIBW_BUILD"] or "cp314" in os.environ["CIBW_BUILD"]:
+            if any(cp in os.environ["CIBW_BUILD"] for cp in ("cp313", "cp314", "cp315")):
                 for python_var in ("Python3_EXECUTABLE", "Python_EXECUTABLE"):
                     old = f'${{{python_var}}} -c "import sysconfig; print(sysconfig.get_config_var(\'LDSHARED\').lstrip().split(\' \', 1)[1])"'
                     new = f'${{{python_var}}} -c "import sysconfig; print(sysconfig.get_config_var(\'LDSHARED\').lstrip().split(\' \', 1)[1].replace(\'-arch x86_64\', \'\'))"'
