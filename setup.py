@@ -12,7 +12,7 @@ from setuptools import Extension, find_packages, setup
 from setuptools.command.build_ext import build_ext as build_ext_orig
 
 # RDKit version to build (tag from github repository)
-rdkit_tag = "Release_2026_03_5"
+rdkit_tag = "Release_2026_03_6"
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -180,6 +180,8 @@ class BuildRDKit(build_ext_orig):
             f"-DBoost_LIB_VERSION={boost_lib_version}",
             # Select correct python 3 version
             f"-DPython3_ROOT_DIR={Path(sys.prefix)}",
+            # RDKit uses the FindPython module (not FindPython3)since Release_2026_03_6
+            f"-DPython_ROOT_DIR={Path(sys.prefix)}",
             # RDKit build flags
             "-DRDK_BUILD_INCHI_SUPPORT=ON",
             "-DRDK_BUILD_AVALON_SUPPORT=ON",
@@ -249,13 +251,14 @@ class BuildRDKit(build_ext_orig):
                 f"-DCMAKE_OSX_ARCHITECTURES=arm64",
                 f"-DCMAKE_VERBOSE_MAKEFILE=ON" # Increase verbosity
             ]
-            # for python 3.13 and 3.14 macOS ARM64, 'CFLAGS', 'LDFLAGS', 'LDSHARED', 'BLDSHARED'  contains '-arch x86_64'
+            # for python 3.13+ macOS ARM64, 'CFLAGS', 'LDFLAGS', 'LDSHARED', 'BLDSHARED'  contains '-arch x86_64'
             #  see https://github.com/rdkit/rdkit/blob/498f57a4eb99a67d842cbc3f89f94b302f398a11/CMakeLists.txt#L376C59-L376C95
             # remove "-arch x86_64" from PYTHON_LDSHARED
-            if "cp313" in os.environ["CIBW_BUILD"] or "cp314" in os.environ["CIBW_BUILD"]:
-                old =  '${Python3_EXECUTABLE} -c "import sysconfig; print(sysconfig.get_config_var(\'LDSHARED\').lstrip().split(\' \', 1)[1])"'
-                new = '${Python3_EXECUTABLE} -c "import sysconfig; print(sysconfig.get_config_var(\'LDSHARED\').lstrip().split(\' \', 1)[1].replace(\'-arch x86_64\', \'\'))"'
-                replace_all("CMakeLists.txt", old, new)
+            if any(cp in os.environ["CIBW_BUILD"] for cp in ("cp313", "cp314", "cp315")):
+                for python_var in ("Python3_EXECUTABLE", "Python_EXECUTABLE"):
+                    old = f'${{{python_var}}} -c "import sysconfig; print(sysconfig.get_config_var(\'LDSHARED\').lstrip().split(\' \', 1)[1])"'
+                    new = f'${{{python_var}}} -c "import sysconfig; print(sysconfig.get_config_var(\'LDSHARED\').lstrip().split(\' \', 1)[1].replace(\'-arch x86_64\', \'\'))"'
+                    replace_all("CMakeLists.txt", old, new)
 
 
         if "linux" in sys.platform:
