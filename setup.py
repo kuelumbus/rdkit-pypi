@@ -109,8 +109,18 @@ class BuildRDKit(build_ext_orig):
         rdkit_install_path.mkdir(parents=True, exist_ok=True)
 
         # Clone RDKit from git at rdkit_tag
+        # Shallow clone to save time/bandwidth; if a cherry-pick block below needs
+        # commits outside this tag's history, fetch with --unshallow first.
         check_call(
-            ["git", "clone", "-b", f"{ext.rdkit_tag}", "https://github.com/rdkit/rdkit"]
+            [
+                "git",
+                "clone",
+                "--depth",
+                "1",
+                "-b",
+                f"{ext.rdkit_tag}",
+                "https://github.com/rdkit/rdkit",
+            ]
         )
 
         # Location of license file
@@ -271,13 +281,13 @@ class BuildRDKit(build_ext_orig):
         elif sys.platform == "win32":
             cmds = [
                 f"cmake -S . -B build --debug-find-pkg=Python3 {' '.join(options)} ",
-                "cmake --build build --config Release -v",
+                "cmake --build build --config Release -v --parallel",
                 "cmake --install build",
             ]
         else:
             cmds = [
                 f"cmake -S . -B build -LAH --debug-find-pkg=Python3 {' '.join(options)} ",
-                "cmake --build build --config Release",
+                "cmake --build build --config Release --parallel",
                 "cmake --install build",
             ]
 
