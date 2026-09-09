@@ -30,11 +30,13 @@ jobs:
             python: 313
             bitness: 64
             platform_id: manylinux_x86_64
+            platform: auto
 
           # Pyodide
           - os: ubuntu-latest
             python: 313
             platform_id: pyodide_wasm32
+            platform: pyodide
     steps:
       - uses: actions/checkout@v4
 
@@ -71,6 +73,7 @@ jobs:
 
       - name: Build wheels
         env:
+          CIBW_PLATFORM: ${{ matrix.platform }}
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
 
         run: |
