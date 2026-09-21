@@ -378,6 +378,10 @@ class BuildRDKit(build_ext_orig):
             [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*dylib")]
             [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*dylib")]
 
+            # Strip local/debug symbols to reduce wheel size
+            for f in to_path.glob("*dylib"):
+                call(["strip", "-x", str(f)])
+
         # Build the RDKit stubs
 
         cmds += [
@@ -449,6 +453,11 @@ class BuildRDKit(build_ext_orig):
         copytree(dir_rdkit_stubs, wheel_path / "rdkit-stubs", ignore=_logpath)
         # Copy the Python files
         copytree(path_site_packages / "rdkit", wheel_path / "rdkit", ignore=_logpath)
+
+        if sys.platform == "darwin":
+            # Strip local/debug symbols from the RDKit extension modules (.so bundles)
+            for f in (wheel_path / "rdkit").rglob("*.so"):
+                call(["strip", "-x", str(f)])
         # Copy the data directory
         copytree(rdkit_data_path, wheel_path / "rdkit" / "Data", ignore=_logpath)
         # Copy the contrib directory
