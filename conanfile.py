@@ -21,13 +21,16 @@ class RDKitConan(ConanFile):
         # as_posix returns "/" paths
         self.options["boost/*"].python_executable =  Path(sys.executable).as_posix()
 
-        # Platform-specific configurations
-        if self.settings.os == "Macos" and self.settings.arch == "armv8":
-            # stacktrace does not work on macOS arm64 for some reason
-            self.options["boost/*"].without_stacktrace = True
-        else:
-            self.options["boost/*"].without_stacktrace = False
-            
+        # RDKit only actually needs these compiled Boost libraries:
+        for _lib in (
+            "atomic", "charconv", "chrono", "cobalt", "container", "context",
+            "contract", "coroutine", "date_time", "exception", "fiber",
+            "filesystem", "graph", "graph_parallel", "json", "locale", "log",
+            "math", "mpi", "nowide", "program_options", "stacktrace", "test",
+            "thread", "timer", "type_erasure", "url", "wave",
+        ):
+            setattr(self.options["boost/*"], f"without_{_lib}", True)
+
         # Configure Python library linking for wheel building
         if self.settings.os == "Windows":
             self.options["boost/*"].without_python_lib = False

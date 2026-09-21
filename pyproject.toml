@@ -34,7 +34,7 @@ before-all = [
 repair-wheel-command = [
     # for boost libs
     'source conan/conanrun.sh',
-    'auditwheel repair -w {dest_dir} {wheel}'
+    'auditwheel repair --strip -w {dest_dir} {wheel}'
 ]
 
 environment-pass = ["CIBW_BUILD"]
@@ -73,5 +73,5 @@ environment = { TMP='C:\\temp', TEMP='C:\\temp', RUNNER_TEMP='C:\\temp'}
 repair-wheel-command = [
     "C:\\rdkit\\conan\\conanrun.bat",
     "delvewheel show -v --add-path C:\\libs;C:\\rdkit\\vcpkg_installed\\x64-windows\\bin {wheel}",
-    "delvewheel repair -v --add-path C:\\libs;C:\\rdkit\\vcpkg_installed\\x64-windows\\bin -w {dest_dir} {wheel}"
+    "delvewheel repair -v --strip --add-path C:\\libs;C:\\rdkit\\vcpkg_installed\\x64-windows\\bin -w {dest_dir} {wheel}"
     ]
