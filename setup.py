@@ -168,12 +168,20 @@ class BuildRDKit(build_ext_orig):
         )
 
         # in Release_2026_09_1: requires Development.Embed component
-        # manylinux Python installs don'tprovide libpython, so find_package(Python ...) fails
+        # manylinux Python installs don't provide libpython, so find_package(Python ...) fails
         # Make it optional
         replace_all(
             "CMakeLists.txt",
             "find_package(Python COMPONENTS Interpreter Development.Module Development.Embed NumPy)",
             "find_package(Python COMPONENTS Interpreter Development.Module NumPy OPTIONAL_COMPONENTS Development.Embed)",
+        )
+
+        # Release_2026_09_1 added RDKit::detail::RecursiveLocker in SubstructMatch.cpp, but the struct carries no export macro.
+        # Wrap/Mol.cpp uses it, so rdchem fails to link on Windows
+        replace_all(
+            "Code/GraphMol/Substruct/SubstructDetails.h",
+            "struct RecursiveLocker {",
+            "struct RDKIT_SUBSTRUCTMATCH_EXPORT RecursiveLocker {",
         )
 
 
