@@ -10,31 +10,38 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Check out RDKit repo
-        uses: actions/checkout@v3
-        with:
-          repository: rdkit/rdkit
-          path: rdkit
-          fetch-depth: 0
 
-      - name: Get most tags and compare
+      - name: Get latest release tag and compare
         id: tags
         shell: bash
         run: |
-          current_tag=$(grep rdkit_tag setup.py | head -1 | xargs -n 1 | tail -1)
-          cd rdkit
-          new_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
-          cd ..
-          rm -fr rdkit
-          echo "changed=false" >> $GITHUB_OUTPUT
+          set -euo pipefail
+
+          current_tag=$(sed -n 's/^rdkit_tag *= *"\(.*\)".*/\1/p' setup.py | head -1)
+
+          # Only final releases: excludes betas (Release_2026_09_1b1)
+          new_tag=$(git ls-remote --tags --refs https://github.com/rdkit/rdkit 'Release_*' \
+            | sed 's|.*refs/tags/||' \
+            | grep -E '^Release_[0-9]{4}_[0-9]{2}_[0-9]+$' \
+            | sort -V | tail -1)
+
+          if [[ -z "$current_tag" || -z "$new_tag" ]]; then
+            echo "Could not determine tags (current='$current_tag' new='$new_tag')" >&2
+            exit 1
+          fi
+
+          echo "current=$current_tag new=$new_tag"
+
           if [[ "$new_tag" != "$current_tag" ]]; then
-          sed -i "0,/rdkit_tag/ s/rdkit_tag =.*/rdkit_tag = \"$new_tag\"/g" setup.py
-          echo "changed=true" >> $GITHUB_OUTPUT
-          echo "new_tag=${new_tag}" >> $GITHUB_OUTPUT
+            sed -i "0,/rdkit_tag/ s/rdkit_tag =.*/rdkit_tag = \"$new_tag\"/g" setup.py
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "new_tag=${new_tag}" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Create Pull Request
-        if: ${{ steps.tags.outputs.changed }}
+        if: ${{ steps.tags.outputs.changed == 'true' }}
         uses: gr2m/create-or-update-pull-request-action@v1.x
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
