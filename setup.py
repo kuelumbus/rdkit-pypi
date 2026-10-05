@@ -160,13 +160,6 @@ class BuildRDKit(build_ext_orig):
                         line = line.replace(search_exp, replace_exp)
                     print(line, end="")
 
-        # introduced in 2024_09_01 for compiling pubchem shape.
-        replace_all(
-            "External/pubchem_shape/Wrap/CMakeLists.txt",
-            'find_package(Python3 COMPONENTS Interpreter Development NumPy REQUIRED)',
-            'find_package(Python3 COMPONENTS Interpreter Development NumPy)',
-        )
-
         # in Release_2026_09_1: requires Development.Embed component
         # manylinux Python installs don't provide libpython, so find_package(Python ...) fails
         # Make it optional
