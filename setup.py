@@ -167,7 +167,16 @@ class BuildRDKit(build_ext_orig):
             'find_package(Python3 COMPONENTS Interpreter Development NumPy)',
         )
 
-  
+        # in Release_2026_09_1: requires Development.Embed component
+        # manylinux Python installs don'tprovide libpython, so find_package(Python ...) fails
+        # Make it optional
+        replace_all(
+            "CMakeLists.txt",
+            "find_package(Python COMPONENTS Interpreter Development.Module Development.Embed NumPy)",
+            "find_package(Python COMPONENTS Interpreter Development.Module NumPy OPTIONAL_COMPONENTS Development.Embed)",
+        )
+
+
 
         # Define CMake options
         options = [
