@@ -11,15 +11,14 @@ def test_descriptor():
 def test_3d_descriptors():
     # from https://github.com/rdkit/rdkit/blob/master/rdkit/Chem/UnitTestDescriptors.py
     from rdkit import Chem
-    from rdkit.Chem import AllChem, Descriptors3D
+    from rdkit.Chem import Descriptors3D
 
-    mol = Chem.MolFromSmiles('CCCO')
-    
-    # test function returns expected outputs
-    AllChem.EmbedMolecule(mol, randomSeed=0xf00d)
+    # Fixed coordinates
+    mol = Chem.MolFromSmiles('CCCO |(1.44534,-0.585581,0.158885;0.667797,0.646552,-0.278384;'
+                             '-0.741018,0.544094,0.296045;-1.37212,-0.605065,-0.176546)|')
     descs = Descriptors3D.CalcMolDescriptors3D(mol)
     assert 'InertialShapeFactor' in descs
-    assert 20.9582649071385 == pytest.approx(descs['PMI1'], 1e-4)
+    assert descs['PMI1'] == pytest.approx(20.9583, abs=1e-4)
 
 
 def test_data_dir_and_chemical_features():

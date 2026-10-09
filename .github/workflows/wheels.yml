@@ -161,6 +161,13 @@ jobs:
           choco install pkgconfiglite --allow-empty-checksums
         shell: pwsh
 
+      # Ninja needs cl.exe/link.exe on PATH
+      - name: Set up MSVC environment for Ninja
+        if: ${{ runner.os == 'Windows' }}
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
       - name: Build wheels
         env:
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}

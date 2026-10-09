@@ -12,7 +12,7 @@ from setuptools import Extension, find_packages, setup
 from setuptools.command.build_ext import build_ext as build_ext_orig
 
 # RDKit version to build (tag from github repository)
-rdkit_tag = "Release_2026_03_6"
+rdkit_tag = "Release_2026_09_1"
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -160,14 +160,24 @@ class BuildRDKit(build_ext_orig):
                         line = line.replace(search_exp, replace_exp)
                     print(line, end="")
 
-        # introduced in 2024_09_01 for compiling pubchem shape.
+        # in Release_2026_09_1: requires Development.Embed component
+        # manylinux Python installs don't provide libpython, so find_package(Python ...) fails
+        # Make it optional
         replace_all(
-            "External/pubchem_shape/Wrap/CMakeLists.txt",
-            'find_package(Python3 COMPONENTS Interpreter Development NumPy REQUIRED)',
-            'find_package(Python3 COMPONENTS Interpreter Development NumPy)',
+            "CMakeLists.txt",
+            "find_package(Python COMPONENTS Interpreter Development.Module Development.Embed NumPy)",
+            "find_package(Python COMPONENTS Interpreter Development.Module NumPy OPTIONAL_COMPONENTS Development.Embed)",
         )
 
-  
+        # Release_2026_09_1 added RDKit::detail::RecursiveLocker in SubstructMatch.cpp, but the struct carries no export macro.
+        # Wrap/Mol.cpp uses it, so rdchem fails to link on Windows
+        replace_all(
+            "Code/GraphMol/Substruct/SubstructDetails.h",
+            "struct RecursiveLocker {",
+            "struct RDKIT_SUBSTRUCTMATCH_EXPORT RecursiveLocker {",
+        )
+
+
 
         # Define CMake options
         options = [
@@ -261,25 +271,12 @@ class BuildRDKit(build_ext_orig):
                     replace_all("CMakeLists.txt", old, new)
 
 
-        if "linux" in sys.platform:
-            # Use ninja for linux builds
-            cmds = [
-                f"cmake -S . -B build -G Ninja --debug-find-pkg=Python3 {' '.join(options)} ",
-                "cmake --build build --config Release",
-                "cmake --install build",
-            ]
-        elif sys.platform == "win32":
-            cmds = [
-                f"cmake -S . -B build --debug-find-pkg=Python3 {' '.join(options)} ",
-                "cmake --build build --config Release -v",
-                "cmake --install build",
-            ]
-        else:
-            cmds = [
-                f"cmake -S . -B build -LAH --debug-find-pkg=Python3 {' '.join(options)} ",
-                "cmake --build build --config Release",
-                "cmake --install build",
-            ]
+        # Ninja on every platform.
+        cmds = [
+            f"cmake -S . -B build -G Ninja --debug-find-pkg=Python3 {' '.join(options)} ",
+            "cmake --build build --config Release",
+            "cmake --install build",
+        ]
 
         # Define the rdkit_files path
         py_name = "python" + ".".join(map(str, sys.version_info[:2]))
