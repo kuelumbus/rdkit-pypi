@@ -271,25 +271,12 @@ class BuildRDKit(build_ext_orig):
                     replace_all("CMakeLists.txt", old, new)
 
 
-        if "linux" in sys.platform:
-            # Use ninja for linux builds
-            cmds = [
-                f"cmake -S . -B build -G Ninja --debug-find-pkg=Python3 {' '.join(options)} ",
-                "cmake --build build --config Release",
-                "cmake --install build",
-            ]
-        elif sys.platform == "win32":
-            cmds = [
-                f"cmake -S . -B build --debug-find-pkg=Python3 {' '.join(options)} ",
-                "cmake --build build --config Release -v",
-                "cmake --install build",
-            ]
-        else:
-            cmds = [
-                f"cmake -S . -B build -LAH --debug-find-pkg=Python3 {' '.join(options)} ",
-                "cmake --build build --config Release",
-                "cmake --install build",
-            ]
+        # Ninja on every platform.
+        cmds = [
+            f"cmake -S . -B build -G Ninja --debug-find-pkg=Python3 {' '.join(options)} ",
+            "cmake --build build --config Release",
+            "cmake --install build",
+        ]
 
         # Define the rdkit_files path
         py_name = "python" + ".".join(map(str, sys.version_info[:2]))

@@ -9,3 +9,5 @@ __pycache__/
 
 .env
 upload_rdkit.sh
+
+IMPROVEMENTS.md
