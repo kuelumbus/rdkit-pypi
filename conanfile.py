@@ -82,7 +82,7 @@ class RDKitConan(ConanFile):
         deps.generate()
         
         # Generate CMake toolchain
-        tc = CMakeToolchain(self)
+        tc = CMakeToolchain(self, generator="Ninja")
 
         # The vendored expatpp links EXPAT::EXPAT only PRIVATEly, so expat's include
         # dir does not propagate to consumers of expatpp.h (which #includes <expat.h>).
