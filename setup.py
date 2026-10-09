@@ -210,6 +210,13 @@ class BuildRDKit(build_ext_orig):
             "-DRDK_BUILD_CPP_TESTS=OFF",
         ]
 
+        # Hide symbols that are not part of RDKit's public API. This needs the RecursiveLocker export patch applied above.
+        if sys.platform != "win32":
+            options += [
+                "-DCMAKE_CXX_VISIBILITY_PRESET=hidden",
+                "-DCMAKE_VISIBILITY_INLINES_HIDDEN=ON",
+            ]
+
         # Modifications for Windows
         vcpkg_path = cwd
         vcpkg_inc = vcpkg_path / "vcpkg_installed" / "x64-windows" / "include"
