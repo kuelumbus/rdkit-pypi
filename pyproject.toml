@@ -16,7 +16,7 @@ build-backend = "setuptools.build_meta"
 build-verbosity = 1
 # test
 test-requires = "pytest"
-test-command = "pytest --exitfirst --verbose --failed-first {package}/tests"
+test-command = "pytest --verbose --failed-first {package}/tests"
 # test-skip = "*-win_amd64"
 
 
