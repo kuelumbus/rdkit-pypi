@@ -37,6 +37,13 @@ class RDKitConan(ConanFile):
         else:
             self.options["boost/*"].without_python_lib = True
 
+        # RDKit only draws to cairo image surfaces
+        if self.settings.os == "Linux":
+            for _opt in ("with_xlib", "with_xlib_xrender", "with_xcb"):
+                setattr(self.options["cairo/*"], _opt, False)
+        self.options["cairo/*"].with_glib = False
+        self.options["cairo/*"].with_lzo = False
+
     def requirements(self):
         # Main boost requirement - use modified version
         self.requires("boost/1.85.0@chris/mod_boost")
@@ -44,10 +51,9 @@ class RDKitConan(ConanFile):
         self.requires("expat/2.7.5")
         
         # Platform-specific requirements
-        if self.settings.os == "Macos" and os.environ.get("CIBW_BUILD", "").startswith("cp"):
-            # macOS libraries to meet development target
+        if self.settings.os in ("Macos", "Linux") and os.environ.get("CIBW_BUILD", "").startswith("cp"):
             self.requires("pixman/0.43.4")
-            self.requires("cairo/1.18.0") 
+            self.requires("cairo/1.18.0")
             self.requires("libpng/1.6.43")
             self.requires("fontconfig/2.15.0")
             self.requires("freetype/2.13.2")
