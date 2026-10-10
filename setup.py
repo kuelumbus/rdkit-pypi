@@ -110,7 +110,15 @@ class BuildRDKit(build_ext_orig):
 
         # Clone RDKit from git at rdkit_tag
         check_call(
-            ["git", "clone", "-b", f"{ext.rdkit_tag}", "https://github.com/rdkit/rdkit"]
+            [
+                "git",
+                "clone",
+                "--depth",
+                "1",
+                "-b",
+                f"{ext.rdkit_tag}",
+                "https://github.com/rdkit/rdkit",
+            ]
         )
 
         # Location of license file
@@ -118,38 +126,6 @@ class BuildRDKit(build_ext_orig):
 
         # Start build process
         os.chdir(str("rdkit"))
-        if rdkit_tag == "Release_2025_09_4":
-            # Cherry-pick fix for MolAlign: brace-init BestAlignmentParams in wrapper
-            # https://github.com/rdkit/rdkit/pull/9042/commits/7c15baca9d662506b61d3395a0d5139be2b67640
-            check_call(["git", "config", "--global", "user.email", '"you@example.com"'])
-            check_call(["git", "config", "--global", "user.name", '"Your Name"'])
-            check_call(["git", "fetch", "origin", "pull/9042/head:pr_9042"])
-            check_call(
-                [
-                    "git",
-                    "cherry-pick",
-                    "--strategy=recursive",
-                    "-X",
-                    "theirs",
-                    "7c15baca9d662506b61d3395a0d5139be2b67640",
-                ]
-            )
-
-        # if rdkit_tag == "Release_2025_03_3":
-        #     # https://github.com/rdkit/rdkit/pull/8399/commits/e5b1e3caf0c362139a5905575b5f995c470b9300
-        #     check_call(["git", "config", "--global", "user.email", '"you@example.com"'])
-        #     check_call(["git", "config", "--global", "user.name", '"Your Name"'])
-        #     check_call(["git", "fetch", "origin", "pull/8477/head:tag_release"])
-        #     check_call(
-        #         [
-        #             "git",
-        #             "cherry-pick",
-        #             "--strategy=recursive",
-        #             "-X",
-        #             "theirs",
-        #             "0b8fc6fbf7bee2a0de34daee6088aeb8c8036272",
-        #         ]
-        #     )
     
         import fileinput
 
@@ -209,6 +185,13 @@ class BuildRDKit(build_ext_orig):
             # Speed up builds
             "-DRDK_BUILD_CPP_TESTS=OFF",
         ]
+
+        # Hide symbols that are not part of RDKit's public API. This needs the RecursiveLocker export patch applied above.
+        if sys.platform != "win32":
+            options += [
+                "-DCMAKE_CXX_VISIBILITY_PRESET=hidden",
+                "-DCMAKE_VISIBILITY_INLINES_HIDDEN=ON",
+            ]
 
         # Modifications for Windows
         vcpkg_path = cwd
