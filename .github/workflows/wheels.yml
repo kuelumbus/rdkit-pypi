@@ -77,7 +77,31 @@ jobs:
             bitness: 64
             platform_id: manylinux_x86_64
 
-          # Linux 64 bit ARM: aarch64 (on Circle CI)
+          # Linux 64 bit ARM: aarch64
+          - os: ubuntu-26.04-arm
+            python: 310
+            bitness: 64
+            platform_id: manylinux_aarch64
+          - os: ubuntu-26.04-arm
+            python: 311
+            bitness: 64
+            platform_id: manylinux_aarch64
+          - os: ubuntu-26.04-arm
+            python: 312
+            bitness: 64
+            platform_id: manylinux_aarch64
+          - os: ubuntu-26.04-arm
+            python: 313
+            bitness: 64
+            platform_id: manylinux_aarch64
+          - os: ubuntu-26.04-arm
+            python: 314
+            bitness: 64
+            platform_id: manylinux_aarch64
+          - os: ubuntu-26.04-arm
+            python: 315
+            bitness: 64
+            platform_id: manylinux_aarch64
 
           # MacOS 64 bit Intel: arm64
           - os: macos-15
