@@ -127,6 +127,10 @@ jobs:
           #   python: 314
           #   platform_id: macosx_x86_64
 
+          # Pyodide
+          - os: ubuntu-latest
+            python: 313
+            platform_id: pyodide_wasm32
     steps:
       - uses: actions/checkout@v4
 
