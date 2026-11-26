@@ -51,6 +51,11 @@ jobs:
             bitness: 64
             platform_id: win_amd64
             vcpkg_triplet: x64-windows
+          - os: windows-2022
+            python: 315
+            bitness: 64
+            platform_id: win_amd64
+            vcpkg_triplet: x64-windows
 
           # Windows 64 bit ARM: arm64
           # CPython only ships official win_arm64 builds from 3.11 onwards
@@ -71,6 +76,11 @@ jobs:
             vcpkg_triplet: arm64-windows
           - os: windows-11-arm
             python: 314
+            bitness: 64
+            platform_id: win_arm64
+            vcpkg_triplet: arm64-windows
+          - os: windows-11-arm
+            python: 315
             bitness: 64
             platform_id: win_arm64
             vcpkg_triplet: arm64-windows
@@ -96,6 +106,10 @@ jobs:
             python: 314
             bitness: 64
             platform_id: manylinux_x86_64
+          - os: ubuntu-latest
+            python: 315
+            bitness: 64
+            platform_id: manylinux_x86_64
 
           # Linux 64 bit ARM: aarch64 (on Circle CI)
 
@@ -119,6 +133,10 @@ jobs:
           - os: macos-15
             bitness: 64
             python: 314
+            platform_id: macosx_arm64
+          - os: macos-15
+            bitness: 64
+            python: 315
             platform_id: macosx_arm64
 
           # MacOS 64 bit Intel: x86_64
@@ -177,6 +195,13 @@ jobs:
           choco install pkgconfiglite --allow-empty-checksums
         shell: pwsh
 
+      # Ninja needs cl.exe/link.exe on PATH
+      - name: Set up MSVC environment for Ninja
+        if: ${{ runner.os == 'Windows' }}
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
       - name: Build wheels
         env:
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
@@ -186,7 +211,7 @@ jobs:
             cd C:\\rdkit
             echo "C:\\libs" >> $GITHUB_PATH
           fi
-          python -m pip install cibuildwheel==4.1.0
+          python -m pip install cibuildwheel==4.2.0
           python -m cibuildwheel --output-dir wheelhouse
         shell: bash
 

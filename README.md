@@ -16,13 +16,14 @@ Please open an issue if you find something missing or not working as expected.
 ![GitHub Repo stars](https://img.shields.io/github/stars/kuelumbus/rdkit-pypi?style=for-the-badge&logo=github)
 ## Available Builds
 
-| OS      | Arch    | Bit | Conditions                                          | 3.8            | 3.9 | 3.10 | 3.11 | 3.12 | 3.13 | 3.14 | CI             |
-| ------- | ------- | --- | --------------------------------------------------- | -------------- | --- | ---- | ---- | ---- | ---- | ---- | -------------- |
-| Linux   | intel   | 64  | glibc >= 2.28 (e.g., Ubuntu 18.04+, CentOS 6+, ...) | last: 2024.3.5 | last: 2025.9.2    | ✔️    | ✔️    | ✔️    | ✔️    | ✔️    | Github Actions |
-| Linux   | aarch64 | 64  | glibc >= 2.28 (e.g., Raspberry Pi, ...)             | last: 2024.3.5 | last: 2025.9.2   | ✔️    | ✔️    | ✔️    | ✔️    | ✔️    | Circle CI      |
-| macOS   | intel   | 64  | >= macOS 10.15                                      | last: 2024.3.5 | last: 2025.9.2   | last: 2025.9.3    | last: 2025.9.3    | last: 2025.9.3    | last: 2025.9.3    | last: 2025.9.3    | Github Actions |
-| macOS   | armv8   | 64  | >= macOS 11, M-Hardware                             | last: 2024.3.5 | last: 2025.9.2   | ✔️    | ✔️    | ✔️    | ✔️    | ✔️    | Github Actions | 
-| Windows | intel   | 64  |                                                     | last: 2024.3.5 | last: 2025.9.2   | ✔️    | ✔️    | ✔️    | ✔️    | ✔️    | Github Actions |
+| OS      | Arch    | Bit | Conditions                                          | 3.8            | 3.9 | 3.10 | 3.11 | 3.12 | 3.13 | 3.14 | 3.15 | CI             |
+| ------- | ------- | --- | --------------------------------------------------- | -------------- | --- | ---- | ---- | ---- | ---- | ---- | ---- | -------------- |
+| Linux   | intel   | 64  | glibc >= 2.28 (e.g., Ubuntu 18.04+, CentOS 6+, ...) | last: 2024.3.5 | last: 2025.9.2    | ✔️    | ✔️    | ✔️    | ✔️    | ✔️    | ✔️    | Github Actions |
+| Linux   | aarch64 | 64  | glibc >= 2.28 (e.g., Raspberry Pi, ...)             | last: 2024.3.5 | last: 2025.9.2   | ✔️    | ✔️    | ✔️    | ✔️    | ✔️    | ✔️    | Circle CI      |
+| macOS   | armv8   | 64  | >= macOS 11, M-Hardware                             | last: 2024.3.5 | last: 2025.9.2   | ✔️    | ✔️    | ✔️    | ✔️    | ✔️    | ✔️    | Github Actions | 
+| Windows | intel   | 64  |                                                     | last: 2024.3.5 | last: 2025.9.2   | ✔️    | ✔️    | ✔️    | ✔️    | ✔️    | ✔️    | Github Actions |
+
+macOS Intel (x86_64) wheels are no longer built. The last available versions were 2024.3.5 (Python 3.8), 2025.9.2 (Python 3.9), and 2025.9.3 (Python 3.10-3.13).
 
 ## Installation
 
@@ -53,4 +54,4 @@ cd rdkit-pypi
 CIBW_BUILD=cp313-manylinux_x86_64 python3 -m cibuildwheel --platform linux --output-dir wheelhouse --config-file pyproject.toml
 ```
 
-Replace `*` in `cp*-manylinux_x86_64` with `310`, `311`, `312`, `313`, or `314` to build for different Python
+Replace `*` in `cp*-manylinux_x86_64` with `310`, `311`, `312`, `313`, `314`, or `315` to build for different Python

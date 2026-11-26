@@ -21,12 +21,15 @@ class RDKitConan(ConanFile):
         # as_posix returns "/" paths
         self.options["boost/*"].python_executable =  Path(sys.executable).as_posix()
 
-        # Platform-specific configurations
-        if self.settings.os == "Macos" and self.settings.arch == "armv8":
-            # stacktrace does not work on macOS arm64 for some reason
-            self.options["boost/*"].without_stacktrace = True
-        else:
-            self.options["boost/*"].without_stacktrace = False
+        # RDKit only actually needs these compiled Boost libraries:
+        for _lib in (
+            "atomic", "charconv", "chrono", "cobalt", "container", "context",
+            "contract", "coroutine", "date_time", "exception", "fiber",
+            "filesystem", "graph", "graph_parallel", "json", "locale", "log",
+            "math", "mpi", "nowide", "program_options", "stacktrace", "test",
+            "thread", "timer", "type_erasure", "url", "wave",
+        ):
+            setattr(self.options["boost/*"], f"without_{_lib}", True)
 
         # Configure Python library linking for wheel building
         if self.settings.os == "Windows":
@@ -39,10 +42,12 @@ class RDKitConan(ConanFile):
             # tr1 sources ask for, and fails with C3859 / C1076.
             self.options["boost/*"].pch = False
 
-            # boost_context's arm64 assembly does not export make/jump_fcontext, so
-            # the shared boost_coroutine cannot link. RDKit uses neither library.
-            self.options["boost/*"].without_context = True
-            self.options["boost/*"].without_coroutine = True
+        # RDKit only draws to cairo image surfaces
+        if self.settings.os == "Linux":
+            for _opt in ("with_xlib", "with_xlib_xrender", "with_xcb"):
+                setattr(self.options["cairo/*"], _opt, False)
+        self.options["cairo/*"].with_glib = False
+        self.options["cairo/*"].with_lzo = False
 
     def requirements(self):
         # Main boost requirement - use modified version
@@ -51,8 +56,7 @@ class RDKitConan(ConanFile):
         self.requires("expat/2.7.5")
 
         # Platform-specific requirements
-        if self.settings.os == "Macos" and os.environ.get("CIBW_BUILD", "").startswith("cp"):
-            # macOS libraries to meet development target
+        if self.settings.os in ("Macos", "Linux") and os.environ.get("CIBW_BUILD", "").startswith("cp"):
             self.requires("pixman/0.43.4")
             self.requires("cairo/1.18.0")
             self.requires("libpng/1.6.43")
@@ -89,7 +93,7 @@ class RDKitConan(ConanFile):
         deps.generate()
 
         # Generate CMake toolchain
-        tc = CMakeToolchain(self)
+        tc = CMakeToolchain(self, generator="Ninja")
 
         # The vendored expatpp links EXPAT::EXPAT only PRIVATEly, so expat's include
         # dir does not propagate to consumers of expatpp.h (which #includes <expat.h>).

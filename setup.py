@@ -12,7 +12,7 @@ from setuptools import Extension, find_packages, setup
 from setuptools.command.build_ext import build_ext as build_ext_orig
 
 # RDKit version to build (tag from github repository)
-rdkit_tag = "Release_2026_03_5"
+rdkit_tag = "Release_2026_09_2"
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -110,7 +110,15 @@ class BuildRDKit(build_ext_orig):
 
         # Clone RDKit from git at rdkit_tag
         check_call(
-            ["git", "clone", "-b", f"{ext.rdkit_tag}", "https://github.com/rdkit/rdkit"]
+            [
+                "git",
+                "clone",
+                "--depth",
+                "1",
+                "-b",
+                f"{ext.rdkit_tag}",
+                "https://github.com/rdkit/rdkit",
+            ]
         )
 
         # Location of license file
@@ -118,38 +126,6 @@ class BuildRDKit(build_ext_orig):
 
         # Start build process
         os.chdir(str("rdkit"))
-        if rdkit_tag == "Release_2025_09_4":
-            # Cherry-pick fix for MolAlign: brace-init BestAlignmentParams in wrapper
-            # https://github.com/rdkit/rdkit/pull/9042/commits/7c15baca9d662506b61d3395a0d5139be2b67640
-            check_call(["git", "config", "--global", "user.email", '"you@example.com"'])
-            check_call(["git", "config", "--global", "user.name", '"Your Name"'])
-            check_call(["git", "fetch", "origin", "pull/9042/head:pr_9042"])
-            check_call(
-                [
-                    "git",
-                    "cherry-pick",
-                    "--strategy=recursive",
-                    "-X",
-                    "theirs",
-                    "7c15baca9d662506b61d3395a0d5139be2b67640",
-                ]
-            )
-
-        # if rdkit_tag == "Release_2025_03_3":
-        #     # https://github.com/rdkit/rdkit/pull/8399/commits/e5b1e3caf0c362139a5905575b5f995c470b9300
-        #     check_call(["git", "config", "--global", "user.email", '"you@example.com"'])
-        #     check_call(["git", "config", "--global", "user.name", '"Your Name"'])
-        #     check_call(["git", "fetch", "origin", "pull/8477/head:tag_release"])
-        #     check_call(
-        #         [
-        #             "git",
-        #             "cherry-pick",
-        #             "--strategy=recursive",
-        #             "-X",
-        #             "theirs",
-        #             "0b8fc6fbf7bee2a0de34daee6088aeb8c8036272",
-        #         ]
-        #     )
 
         import fileinput
 
@@ -160,11 +136,21 @@ class BuildRDKit(build_ext_orig):
                         line = line.replace(search_exp, replace_exp)
                     print(line, end="")
 
-        # introduced in 2024_09_01 for compiling pubchem shape.
+        # in Release_2026_09_1: requires Development.Embed component
+        # manylinux Python installs don't provide libpython, so find_package(Python ...) fails
+        # Make it optional
         replace_all(
-            "External/pubchem_shape/Wrap/CMakeLists.txt",
-            'find_package(Python3 COMPONENTS Interpreter Development NumPy REQUIRED)',
-            'find_package(Python3 COMPONENTS Interpreter Development NumPy)',
+            "CMakeLists.txt",
+            "find_package(Python COMPONENTS Interpreter Development.Module Development.Embed NumPy)",
+            "find_package(Python COMPONENTS Interpreter Development.Module NumPy OPTIONAL_COMPONENTS Development.Embed)",
+        )
+
+        # Release_2026_09_1 added RDKit::detail::RecursiveLocker in SubstructMatch.cpp, but the struct carries no export macro.
+        # Wrap/Mol.cpp uses it, so rdchem fails to link on Windows
+        replace_all(
+            "Code/GraphMol/Substruct/SubstructDetails.h",
+            "struct RecursiveLocker {",
+            "struct RDKIT_SUBSTRUCTMATCH_EXPORT RecursiveLocker {",
         )
 
 
@@ -180,6 +166,8 @@ class BuildRDKit(build_ext_orig):
             f"-DBoost_LIB_VERSION={boost_lib_version}",
             # Select correct python 3 version
             f"-DPython3_ROOT_DIR={Path(sys.prefix)}",
+            # RDKit uses the FindPython module (not FindPython3)since Release_2026_03_6
+            f"-DPython_ROOT_DIR={Path(sys.prefix)}",
             # RDKit build flags
             "-DRDK_BUILD_INCHI_SUPPORT=ON",
             "-DRDK_BUILD_AVALON_SUPPORT=ON",
@@ -197,6 +185,13 @@ class BuildRDKit(build_ext_orig):
             # Speed up builds
             "-DRDK_BUILD_CPP_TESTS=OFF",
         ]
+
+        # Hide symbols that are not part of RDKit's public API. This needs the RecursiveLocker export patch applied above.
+        if sys.platform != "win32":
+            options += [
+                "-DCMAKE_CXX_VISIBILITY_PRESET=hidden",
+                "-DCMAKE_VISIBILITY_INLINES_HIDDEN=ON",
+            ]
 
         # Modifications for Windows
         if sys.platform == "win32":
@@ -261,34 +256,22 @@ class BuildRDKit(build_ext_orig):
                 f"-DCMAKE_OSX_ARCHITECTURES=arm64",
                 f"-DCMAKE_VERBOSE_MAKEFILE=ON" # Increase verbosity
             ]
-            # for python 3.13 and 3.14 macOS ARM64, 'CFLAGS', 'LDFLAGS', 'LDSHARED', 'BLDSHARED'  contains '-arch x86_64'
+            # for python 3.13+ macOS ARM64, 'CFLAGS', 'LDFLAGS', 'LDSHARED', 'BLDSHARED'  contains '-arch x86_64'
             #  see https://github.com/rdkit/rdkit/blob/498f57a4eb99a67d842cbc3f89f94b302f398a11/CMakeLists.txt#L376C59-L376C95
             # remove "-arch x86_64" from PYTHON_LDSHARED
-            if "cp313" in os.environ["CIBW_BUILD"] or "cp314" in os.environ["CIBW_BUILD"]:
-                old =  '${Python3_EXECUTABLE} -c "import sysconfig; print(sysconfig.get_config_var(\'LDSHARED\').lstrip().split(\' \', 1)[1])"'
-                new = '${Python3_EXECUTABLE} -c "import sysconfig; print(sysconfig.get_config_var(\'LDSHARED\').lstrip().split(\' \', 1)[1].replace(\'-arch x86_64\', \'\'))"'
-                replace_all("CMakeLists.txt", old, new)
+            if any(cp in os.environ["CIBW_BUILD"] for cp in ("cp313", "cp314", "cp315")):
+                for python_var in ("Python3_EXECUTABLE", "Python_EXECUTABLE"):
+                    old = f'${{{python_var}}} -c "import sysconfig; print(sysconfig.get_config_var(\'LDSHARED\').lstrip().split(\' \', 1)[1])"'
+                    new = f'${{{python_var}}} -c "import sysconfig; print(sysconfig.get_config_var(\'LDSHARED\').lstrip().split(\' \', 1)[1].replace(\'-arch x86_64\', \'\'))"'
+                    replace_all("CMakeLists.txt", old, new)
 
 
-        if "linux" in sys.platform:
-            # Use ninja for linux builds
-            cmds = [
-                f"cmake -S . -B build -G Ninja --debug-find-pkg=Python3 {' '.join(options)} ",
-                "cmake --build build --config Release",
-                "cmake --install build",
-            ]
-        elif sys.platform == "win32":
-            cmds = [
-                f"cmake -S . -B build --debug-find-pkg=Python3 {' '.join(options)} ",
-                "cmake --build build --config Release -v",
-                "cmake --install build",
-            ]
-        else:
-            cmds = [
-                f"cmake -S . -B build -LAH --debug-find-pkg=Python3 {' '.join(options)} ",
-                "cmake --build build --config Release",
-                "cmake --install build",
-            ]
+        # Ninja on every platform.
+        cmds = [
+            f"cmake -S . -B build -G Ninja --debug-find-pkg=Python3 {' '.join(options)} ",
+            "cmake --build build --config Release",
+            "cmake --install build",
+        ]
 
         # Define the rdkit_files path
         py_name = "python" + ".".join(map(str, sys.version_info[:2]))
@@ -373,6 +356,10 @@ class BuildRDKit(build_ext_orig):
             [copy_file(i, str(to_path)) for i in rdkit_lib_path.rglob("*dylib")]
             [copy_file(i, str(to_path)) for i in boost_lib_path.rglob("*dylib")]
 
+            # Strip local/debug symbols to reduce wheel size
+            for f in to_path.glob("*dylib"):
+                call(["strip", "-x", str(f)])
+
         # Build the RDKit stubs
 
         cmds += [
@@ -444,6 +431,11 @@ class BuildRDKit(build_ext_orig):
         copytree(dir_rdkit_stubs, wheel_path / "rdkit-stubs", ignore=_logpath)
         # Copy the Python files
         copytree(path_site_packages / "rdkit", wheel_path / "rdkit", ignore=_logpath)
+
+        if sys.platform == "darwin":
+            # Strip local/debug symbols from the RDKit extension modules (.so bundles)
+            for f in (wheel_path / "rdkit").rglob("*.so"):
+                call(["strip", "-x", str(f)])
         # Copy the data directory
         copytree(rdkit_data_path, wheel_path / "rdkit" / "Data", ignore=_logpath)
         # Copy the contrib directory

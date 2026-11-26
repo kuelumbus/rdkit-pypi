@@ -16,7 +16,7 @@ build-backend = "setuptools.build_meta"
 build-verbosity = 1
 # test
 test-requires = "pytest"
-test-command = "pytest --exitfirst --verbose --failed-first {package}/tests"
+test-command = "pytest --verbose --failed-first {package}/tests"
 # test-skip = "*-win_amd64"
 
 
@@ -28,13 +28,13 @@ build-frontend = { name = "pip", args = ["--no-clean"] }
 [tool.cibuildwheel.linux]
 before-all = [
     "yum update -y",
-    "yum install freetype-devel libpng-devel pixman-devel zlib-devel eigen3-devel cairo-devel -y"
+    "yum install zlib-devel eigen3-devel -y"
 ]
 
 repair-wheel-command = [
     # for boost libs
     'source conan/conanrun.sh',
-    'auditwheel repair -w {dest_dir} {wheel}'
+    'auditwheel repair --strip -w {dest_dir} {wheel}'
 ]
 
 environment-pass = ["CIBW_BUILD"]
@@ -73,7 +73,7 @@ environment = { TMP='C:\\temp', TEMP='C:\\temp', RUNNER_TEMP='C:\\temp'}
 repair-wheel-command = [
     "C:\\rdkit\\conan\\conanrun.bat",
     "delvewheel show -v --add-path C:\\libs;C:\\rdkit\\vcpkg_installed\\x64-windows\\bin {wheel}",
-    "delvewheel repair -v --add-path C:\\libs;C:\\rdkit\\vcpkg_installed\\x64-windows\\bin -w {dest_dir} {wheel}"
+    "delvewheel repair -v --strip --add-path C:\\libs;C:\\rdkit\\vcpkg_installed\\x64-windows\\bin -w {dest_dir} {wheel}"
     ]
 
 [[tool.cibuildwheel.overrides]]
