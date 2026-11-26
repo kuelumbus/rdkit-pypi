@@ -205,6 +205,7 @@ jobs:
       - name: Build wheels
         env:
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+          VCPKG_TRIPLET: ${{ matrix.vcpkg_triplet }}
 
         run: |
           if [ "$RUNNER_OS" == "Windows" ]; then
