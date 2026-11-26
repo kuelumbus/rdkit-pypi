@@ -71,7 +71,12 @@ class BuildRDKit(build_ext_orig):
         ]
 
         if sys.platform == "win32":
-            cmd += ["--profile:build", "default"]
+            # Conan's default Visual Studio generator for newer MSVC versions
+            # (e.g. "Visual Studio 18 2026") is unknown to the pinned CMake.
+            cmd += [
+                "--profile:build", "default",
+                "-c:a", "tools.cmake.cmaketoolchain:generator=Ninja",
+            ]
 
         # but force build b2 on linux
         if "linux" in sys.platform:
