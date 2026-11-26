@@ -71,7 +71,12 @@ class BuildRDKit(build_ext_orig):
         ]
 
         if sys.platform == "win32":
-            cmd += ["--profile:build", "default"]
+            # Conan's default Visual Studio generator for newer MSVC versions
+            # (e.g. "Visual Studio 18 2026") is unknown to the pinned CMake.
+            cmd += [
+                "--profile:build", "default",
+                "-c:a", "tools.cmake.cmaketoolchain:generator=Ninja",
+            ]
 
         # but force build b2 on linux
         if "linux" in sys.platform:
@@ -126,7 +131,7 @@ class BuildRDKit(build_ext_orig):
 
         # Start build process
         os.chdir(str("rdkit"))
-    
+
         import fileinput
 
         def replace_all(file, search_exp, replace_exp):
@@ -194,14 +199,26 @@ class BuildRDKit(build_ext_orig):
             ]
 
         # Modifications for Windows
-        vcpkg_path = cwd
-        vcpkg_inc = vcpkg_path / "vcpkg_installed" / "x64-windows" / "include"
-        vcpkg_lib = vcpkg_path / "vcpkg_installed" / "x64-windows" / "lib"
-
         if sys.platform == "win32":
             def to_win_path(pt: Path):
                 return str(pt).replace("\\", "/")
-        
+
+            # Modifications for Windows x86_64
+            if "win_amd64" in os.environ["CIBW_BUILD"]:
+                vcpkg_triplet = "x64-windows"
+
+            # Modifications for Windows arm64
+            if "win_arm64" in os.environ["CIBW_BUILD"]:
+                vcpkg_triplet = "arm64-windows"
+                options += [
+                    # POPCNT is an x86-only intrinsic
+                    "-DRDK_OPTIMIZE_POPCNT=OFF",
+                ]
+
+            vcpkg_path = cwd
+            vcpkg_inc = vcpkg_path / "vcpkg_installed" / vcpkg_triplet / "include"
+            vcpkg_lib = vcpkg_path / "vcpkg_installed" / vcpkg_triplet / "lib"
+
             options += [
                 # DRDK_INSTALL_STATIC_LIBS should be fixed in newer RDKit builds. Remove?
                 "-DRDK_INSTALL_STATIC_LIBS=OFF",
@@ -267,12 +284,12 @@ class BuildRDKit(build_ext_orig):
         path_site_packages = rdkit_install_path / "lib" / py_name / "site-packages"
         if sys.platform == "win32":
             path_site_packages = rdkit_install_path / "Lib" / "site-packages"
-        
-        
+
+
         print("---- Conf vars", file=sys.stderr)
         print(sysconfig.get_paths(), file=sys.stderr)
         print(sysconfig.get_config_vars(), file=sys.stderr)
-        print("---- Conf vars", file=sys.stderr)     
+        print("---- Conf vars", file=sys.stderr)
 
 
         print("!!! --- CMAKE build command and variables for RDKit", file=sys.stderr)
@@ -381,7 +398,7 @@ class BuildRDKit(build_ext_orig):
         with open(stubs_error_file, "r") as fin:
             print(fin.read(), file=sys.stderr)
 
-        # Change directory here 
+        # Change directory here
         os.chdir(str(cwd))
 
         # Copy RDKit and additional files to the wheel path

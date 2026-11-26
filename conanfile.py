@@ -10,7 +10,7 @@ from pathlib import Path
 
 class RDKitConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
-    
+
     def configure(self):
         # Configure boost options
         self.options["boost/*"].shared = True
@@ -37,6 +37,11 @@ class RDKitConan(ConanFile):
         else:
             self.options["boost/*"].without_python_lib = True
 
+        if self.settings.os == "Windows" and self.settings.arch == "armv8":
+            # The arm64 cl.exe cannot reserve the PCH address space Boost.Math's
+            # tr1 sources ask for, and fails with C3859 / C1076.
+            self.options["boost/*"].pch = False
+
         # RDKit only draws to cairo image surfaces
         if self.settings.os == "Linux":
             for _opt in ("with_xlib", "with_xlib_xrender", "with_xcb"):
@@ -49,7 +54,7 @@ class RDKitConan(ConanFile):
         self.requires("boost/1.85.0@chris/mod_boost")
         # self.requires("boost/1.85.0")
         self.requires("expat/2.7.5")
-        
+
         # Platform-specific requirements
         if self.settings.os in ("Macos", "Linux") and os.environ.get("CIBW_BUILD", "").startswith("cp"):
             self.requires("pixman/0.43.4")
@@ -86,7 +91,7 @@ class RDKitConan(ConanFile):
         deps.set_property("cairo", "cmake_target_name", "Cairo::Cairo")
 
         deps.generate()
-        
+
         # Generate CMake toolchain
         tc = CMakeToolchain(self, generator="Ninja")
 
@@ -100,7 +105,7 @@ class RDKitConan(ConanFile):
         tc.extra_cflags.append("-I" + expat_inc)
 
         tc.generate()
-        
+
         # Generate virtual run environment
         env = VirtualRunEnv(self)
         env.generate()

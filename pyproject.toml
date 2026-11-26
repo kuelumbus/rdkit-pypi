@@ -69,9 +69,9 @@ before-build = [
     "pip install delvewheel",
 ]
 
-environment = { TMP='C:\\temp', TEMP='C:\\temp', RUNNER_TEMP='C:\\temp'}
+# VCPKG_TRIPLET is set per matrix entry in .github/workflows/wheels.yml
 repair-wheel-command = [
     "C:\\rdkit\\conan\\conanrun.bat",
-    "delvewheel show -v --add-path C:\\libs;C:\\rdkit\\vcpkg_installed\\x64-windows\\bin {wheel}",
-    "delvewheel repair -v --strip --add-path C:\\libs;C:\\rdkit\\vcpkg_installed\\x64-windows\\bin -w {dest_dir} {wheel}"
+    "delvewheel show -v --add-path C:\\libs;C:\\rdkit\\vcpkg_installed\\%VCPKG_TRIPLET%\\bin {wheel}",
+    "delvewheel repair -v --strip --add-path C:\\libs;C:\\rdkit\\vcpkg_installed\\%VCPKG_TRIPLET%\\bin -w {dest_dir} {wheel}"
     ]
